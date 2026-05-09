@@ -1,0 +1,292 @@
+.view-container {
+  margin-top: 80px;
+  min-height: 100vh;
+  background: #f1f5f9;
+  padding-bottom: 80px;
+}
+
+.view-content-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 30px;
+  max-width: 1300px;
+  margin: -60px auto 0;
+  position: relative;
+  z-index: 5;
+  padding: 0 20px;
+}
+
+.details-card, .reviews-card, .business-info-card, .booking-card {
+  background: white;
+  padding: 35px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  margin-bottom: 25px;
+}
+
+.pkg-hero {
+  height: 550px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+.pkg-hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+}
+
+.hero-content {
+  width: 100%;
+  padding: 60px;
+  color: white;
+  z-index: 2;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  margin: 15px 0;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.cat-badge {
+  background: #ec4899;
+  padding: 6px 18px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  color: #475569;
+}
+
+.price-tag {
+  background: white;
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.booking-card {
+  border: 1px solid #e0f2f1;
+}
+
+.booking-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.date-input-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 5px;
+}
+
+.date-input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #f1f5f9;
+  border-radius: 12px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.date-input-group input:focus {
+  border-color: #008080;
+}
+
+.price-summary {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.price-row, .total-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.total-row {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #008080;
+}
+
+.book-now-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #008080, #20b2aa);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.book-now-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+.biz-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.biz-badge { background: #f0fdf4; color: #16a34a; padding: 4px 12px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; }
+.biz-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; color: #64748b; }
+
+.biz-header h3{
+  color: #1e293b;
+}
+.map-wrapper {
+  margin-top: 25px;
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.leaflet-map-container {
+  height: 350px;
+  width: 100%;
+  border-radius: 15px;
+  z-index: 1;
+}
+
+.modern-rev-form { background: #f8fafc; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; }
+
+.stars { display: flex; gap: 5px; margin-bottom: 15px; }
+.star { font-size: 1.8rem; color: #cbd5e1; cursor: pointer; }
+.star.active { color: #fbbf24; }
+
+.modern-rev-form textarea {
+  width: 100%; min-height: 100px; padding: 15px; border-radius: 12px;
+  border: 1.5px solid #e2e8f0; margin-bottom: 15px; font-family: inherit;
+}
+
+.single-review {
+  padding: 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rev-user { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.avatar {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;
+}
+
+.rev-actions { display: flex; gap: 10px; margin-top: 10px; }
+.rev-actions button {
+  background: #f1f5f9; border: none; padding: 6px 14px; border-radius: 50px;
+  cursor: pointer; font-size: 0.85rem; transition: 0.2s;
+}
+
+.animate-in { animation: fadeInUp 0.5s ease-out; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 1024px) {
+  .view-content-grid { grid-template-columns: 1fr; }
+  .pkg-hero { height: 400px; }
+}
+
+.details-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.save-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+.save-btn.saved {
+  background: #ffebee;
+  color: #e91e63;
+  border-color: #e91e63;
+}
+
+.save-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ── Description text overflow fix ───────────────────────── */
+.description-text {
+  word-wrap:      break-word;
+  overflow-wrap:  break-word;
+  word-break:     break-word;
+  white-space:    pre-wrap;
+  line-height:    1.75;
+  color:          #475569;
+  font-size:      0.97rem;
+  margin-top:     14px;
+}
+
+/* ── Details header row with actions ─────────────────────── */
+.details-header-flex {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     flex-start;
+  margin-bottom:   4px;
+  flex-wrap:       wrap;
+  gap:             10px;
+}
+.details-header-actions {
+  display:     flex;
+  gap:         10px;
+  flex-wrap:   wrap;
+  align-items: center;
+}
+
+/* ── Provider Profile button ──────────────────────────────── */
+.provider-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             6px;
+  padding:         8px 18px;
+  border-radius:   20px;
+  border:          1.5px solid #6366f1;
+  background:      #eff6ff;
+  color:           #4338ca;
+  font-size:       0.85rem;
+  font-weight:     700;
+  cursor:          pointer;
+  transition:      all 0.22s ease;
+  white-space:     nowrap;
+}
+.provider-btn:hover {
+  background:      #4338ca;
+  color:           #fff;
+  transform:       translateY(-2px);
+  box-shadow:      0 6px 18px rgba(67,56,202,0.22);
+}
+
+/* Full-width variant inside the business card */
+.provider-btn-full {
+  width:           100%;
+  justify-content: center;
+  margin:          18px 0 4px;
+  border-radius:   14px;
+  padding:         12px;
+  font-size:       0.93rem;
+}

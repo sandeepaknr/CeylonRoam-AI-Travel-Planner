@@ -1,0 +1,90 @@
+.master-container {
+  padding: 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+.tab-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  background: #e2e8f0;
+  padding: 5px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.tab-switcher button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+  color: #64748b;
+}
+
+.tab-switcher button.active {
+  background: white;
+  color: #1e293b;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 25px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+}
+
+.form-card input, .form-card textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.add-btn {
+  width: 100%;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: 0.2s;
+}
+
+.list-item:hover { background: #f8fafc; }
+
+.list-item p { font-size: 0.85rem; color: #64748b; margin: 0; }
+
+.del-btn {
+  background: #fee2e2;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

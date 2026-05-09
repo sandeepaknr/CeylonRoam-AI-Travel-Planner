@@ -1,0 +1,208 @@
+.business-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  padding: 120px 5% 50px; 
+  background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), 
+              url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-attachment: fixed;
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(90deg, #00f2fe, #4facfe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.badge {
+  font-size: 0.8rem;
+  background: #00f2fe;
+  color: #0f172a;
+  padding: 2px 10px;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin: 40px 0;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #00f2fe;
+  margin: 10px 0;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #10b981; 
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.tool-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 40px 30px;
+  border-radius: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-10px);
+  border-color: #00f2fe;
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.tool-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Biz category tag in header ─────────────────────────── */
+.biz-cat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 12px;
+  background: rgba(0,242,254,0.12);
+  border: 1px solid rgba(0,242,254,0.3);
+  color: #00f2fe;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 9999px;
+}
+
+/* ── Post Actions block ──────────────────────────────────── */
+.bt-post-actions {
+  margin: 32px 0 16px;
+}
+.bt-post-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 14px;
+}
+.bt-post-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Base post card */
+.bt-post-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+  text-align: center;
+  background: none;
+  color: white;
+}
+
+/* Service card — teal */
+.bt-service {
+  background: rgba(0,128,128,0.15);
+  border-color: rgba(0,242,254,0.3);
+}
+.bt-service:hover {
+  background: rgba(0,128,128,0.30);
+  border-color: #00f2fe;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0,242,254,0.15);
+}
+
+/* Package card — indigo */
+.bt-package {
+  background: rgba(99,102,241,0.12);
+  border-color: rgba(99,102,241,0.3);
+}
+.bt-package:hover {
+  background: rgba(99,102,241,0.25);
+  border-color: #818cf8;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(99,102,241,0.20);
+}
+
+/* Disabled state */
+.bt-disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.bt-disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.bt-post-icon  { font-size: 2.4rem; }
+.bt-post-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.bt-post-desc {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.5;
+}
+.bt-disabled-msg { color: rgba(255,100,100,0.6) !important; }
+
+@media (max-width: 600px) {
+  .bt-post-row { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,3 @@
+/* App.css — just import the global tokens, pages handle own styles */
+* { box-sizing: border-box; }
+body { padding-top: 68px; } /* Always clear fixed navbar height */

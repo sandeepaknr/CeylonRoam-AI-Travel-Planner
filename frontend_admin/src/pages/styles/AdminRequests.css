@@ -1,0 +1,118 @@
+.admin-req-wrapper {
+  padding: 40px;
+  background-color: #f1f5f9;
+  min-height: 100vh;
+}
+
+.admin-req-header { margin-bottom: 30px; }
+.admin-req-header h2 { font-size: 1.8rem; color: #0f172a; }
+
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.req-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e2e8f0;
+}
+
+.req-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.badge-category {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.req-body p {
+  font-size: 0.9rem;
+  margin: 5px 0;
+  color: #475569;
+}
+
+.req-desc-box {
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  color: #64748b;
+  border-left: 4px solid #3b82f6;
+}
+
+.req-footer {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  padding-top: 20px;
+}
+
+.btn-approve {
+  flex: 2;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-reject {
+  flex: 1;
+  background: #fff;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-approve:hover { background: #059669; }
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-data-card {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  background: white;
+  border-radius: 15px;
+  border: 2px dashed #e2e8f0;
+}

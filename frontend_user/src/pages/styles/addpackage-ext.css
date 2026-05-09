@@ -1,0 +1,342 @@
+/* ================================================================
+   ADD PACKAGE PAGE — CeylonRoam Design System
+   Self-contained: overrides the dark glass-container for this
+   specific page without touching managepackages.css (shared).
+   ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ══════════════════════════════════════════════════════════
+   DESIGN TOKENS (scoped to .ap-page)
+══════════════════════════════════════════════════════════ */
+.ap-page {
+  --font:        'Poppins', 'Inter', system-ui, sans-serif;
+  --ink:         #0f172a;
+  --ink-60:      #475569;
+  --ink-40:      #94a3b8;
+  --border:      #e2e8f0;
+  --surface:     #f8fafc;
+  --surface-b:   #f0f9ff;
+  --white:       #ffffff;
+  --primary:     #0369a1;
+  --primary-l:   #e0f2fe;
+  --primary-d:   #0c4a6e;
+  --green:       #16a34a;
+  --green-l:     #dcfce7;
+  --amber:       #d97706;
+  --amber-l:     #fef3c7;
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  --spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  font-family:   var(--font);
+  -webkit-font-smoothing: antialiased;
+
+  /* Page background — clean off-white */
+  min-height: 100vh;
+  background: var(--surface);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 100px 24px 80px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CARD — bento-box container
+══════════════════════════════════════════════════════════ */
+.ap-card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 28px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  padding: 48px 52px 52px;
+  animation: ap-slide-up 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes ap-slide-up {
+  from { opacity: 0; transform: translateY(28px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Page header ── */
+.ap-page-header {
+  margin-bottom: 36px;
+}
+
+.ap-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--primary);
+  background: var(--primary-l);
+  padding: 5px 16px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+  border: 1px solid #bae6fd;
+}
+
+.ap-page-title {
+  font-family: var(--font);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.ap-page-sub {
+  font-size: 15px;
+  color: var(--ink-60);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FORM LAYOUT
+══════════════════════════════════════════════════════════ */
+.ap-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Field group */
+.ap-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Label */
+.ap-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink-60);
+  display: block;
+}
+
+/* Inputs & textareas & selects */
+.ap-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ink);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.18s ease;
+}
+.ap-input::placeholder { color: var(--ink-40); }
+.ap-input:focus {
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(3,105,161,0.08);
+}
+
+textarea.ap-input {
+  resize: vertical;
+  line-height: 1.65;
+  min-height: 100px;
+}
+
+/* Select — custom chevron */
+select.ap-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230369a1' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px 8px;
+  cursor: pointer;
+  padding-right: 44px;
+}
+select.ap-input option { background: var(--white); color: var(--ink); }
+
+/* Hint text */
+.ap-hint {
+  font-size: 12px;
+  color: var(--ink-40);
+  font-weight: 400;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* ── Two-column grid ── */
+.ap-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Section divider ── */
+.ap-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-40);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 4px 0;
+}
+.ap-section-divider::before,
+.ap-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FILE UPLOAD ZONE
+══════════════════════════════════════════════════════════ */
+.ap-file-zone {
+  border: 2px dashed var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  padding: 28px 24px;
+  text-align: center;
+  transition: border-color 0.2s var(--ease), background 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+.ap-file-zone:hover {
+  border-color: var(--primary);
+  background: var(--surface-b);
+}
+.ap-file-zone-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+.ap-file-zone-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-60);
+  margin-bottom: 4px;
+}
+.ap-file-zone-hint {
+  font-size: 12px;
+  color: var(--ink-40);
+}
+.ap-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+/* Selected file name pill */
+.ap-file-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-l);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  margin-top: 10px;
+  border: 1px solid #bae6fd;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════
+   INCLUSIONS PREVIEW PILLS
+══════════════════════════════════════════════════════════ */
+.ap-inclusions-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px;
+  background: var(--green-l);
+  border: 1.5px solid #bbf7d0;
+  border-radius: 16px;
+}
+
+.ap-inclusion-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--white);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid #bbf7d0;
+  letter-spacing: 0.2px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SUBMIT BUTTON
+══════════════════════════════════════════════════════════ */
+.ap-submit-btn {
+  width: 100%;
+  padding: 17px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 6px 20px rgba(3,105,161,0.28);
+  transition: transform 0.3s var(--spring), box-shadow 0.25s var(--ease), background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.ap-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(3,105,161,0.36);
+  background: var(--primary-d);
+}
+.ap-submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.ap-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Spinner */
+.ap-spinner {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ap-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes ap-spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .ap-page    { padding: 88px 16px 60px; }
+  .ap-card    { padding: 32px 24px 40px; border-radius: 20px; }
+  .ap-two-col { grid-template-columns: 1fr; }
+}

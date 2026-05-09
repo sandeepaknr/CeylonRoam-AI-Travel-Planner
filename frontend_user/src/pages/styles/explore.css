@@ -1,0 +1,639 @@
+/* ================================================================
+   PACKAGES — Ultra-Premium Explore Page
+   "Agoda-level" immersive card design
+   ================================================================ */
+
+/* ══════════════════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════════════════ */
+.explore-container {
+  display: flex;
+  gap: 36px;
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 96px 40px 96px;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background: #fafaf8;
+  align-items: flex-start;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FILTER SIDEBAR
+══════════════════════════════════════════════════════════ */
+.filter-sidebar {
+  flex: 0 0 280px;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 28px;
+  padding: 36px 28px;
+  box-shadow:
+    0 20px 40px -10px rgba(0,0,0,0.05),
+    0 2px 8px rgba(0,0,0,0.03);
+  height: fit-content;
+  position: sticky;
+  top: 88px;
+  border: none;
+}
+
+.filter-sidebar h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0a3d62;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1.5px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.filter-group label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #94a3b8;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 14px;
+  background: #f8fafc;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  transition: all 0.25s ease;
+}
+.filter-group select:focus {
+  background-color: #e8f4fd;
+  box-shadow: 0 0 0 3px rgba(26,111,168,0.10);
+}
+
+/* Price range slider */
+.price-range-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0a3d62;
+}
+
+.filter-group input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #1a6fa8 0%, #e2e8f0 100%);
+  outline: none;
+  cursor: pointer;
+}
+.filter-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #1a6fa8;
+  box-shadow: 0 3px 10px rgba(26,111,168,0.30);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.filter-group input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Buttons */
+.filter-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 13px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  background: transparent;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+}
+.reset-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.trip-plan-cta {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #0a3d62 0%, #1a6fa8 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(10,61,98,0.28);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  letter-spacing: 0.2px;
+}
+.trip-plan-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(10,61,98,0.38);
+}
+
+/* ══════════════════════════════════════════════════════════
+   PACKAGES DISPLAY AREA
+══════════════════════════════════════════════════════════ */
+.packages-display { flex: 1; min-width: 0; }
+
+.grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.grid-header h2 {
+  /* Make sure Plus Jakarta Sans is applied globally, or add it here if needed */
+  font-size: clamp(32px, 4vw, 56px); /* Responsive sizing: Min 32px, fluid 4vw, Max 56px */
+  font-weight: 600;                  /* Extra bold for that premium striking look */
+  line-height: 1.06;                 /* Tight line-height for large headings */
+  letter-spacing: -1.5px;            /* Sleek negative spacing (Airbnb/Mindtrip vibe) */
+  color: var(--ink);                 /* Using your custom dark color token */
+}
+
+.result-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  letter-spacing: 0.3px;
+}
+
+/* ── Package Grid ───────────────────────────────────────── */
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   PACKAGE CARD — Immersive / Image-First
+══════════════════════════════════════════════════════════ */
+.matte-card {
+  background: #fff;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  box-shadow:
+    0 20px 40px -10px rgba(0,0,0,0.06),
+    0 2px 8px rgba(0,0,0,0.03);
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+.matte-card:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 40px 70px -16px rgba(10,61,98,0.16),
+    0 8px 24px rgba(0,0,0,0.06);
+}
+
+/* Image container — the STAR */
+.card-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3; /* Taller image height for better proportions */
+  overflow: hidden;
+  background: linear-gradient(135deg, #e8f4fd 30%, #d8f3dc 100%);
+}
+.card-img img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+.matte-card:hover .card-img img {
+  transform: scale(1.07);
+}
+
+/* Gradient overlay on image (bottom) */
+.card-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(5,15,30,0.35) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.matte-card:hover .card-img::after { opacity: 0.7; }
+
+
+
+/* Save / heart button */
+.card-save-btn {
+  position: absolute;
+  top: 14px; right: 14px;
+  z-index: 2;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.88);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.25s ease;
+}
+.card-save-btn:hover {
+  background: #fff;
+  transform: scale(1.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* ── Card Info ───────────────────────────────────────────── */
+.card-info {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+/* 1. Title & Rating */
+.card-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.card-info h4 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink, #0f172a);
+  line-height: 1.25;
+  margin: 0;
+  /* Text Truncation */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+/* 2. Location & Landmarks */
+.card-location-area {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+}
+.loc-primary {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0284c7;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin: 0;
+}
+.loc-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.loc-distance {
+  font-size: 12.5px;
+  color: var(--ink-60, #64748b);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* 3. Badges & Perks */
+.card-perks-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.perk-badge-clean {
+  align-self: flex-start;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.perk-row-credit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0369a1;
+}
+
+/* 4. Highlights Footer */
+.card-highlights-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--gray-eb, #e2e8f0);
+  padding-top: 10px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+.highlights-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-60, #64748b);
+}
+.highlights-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.h-icon-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink, #1e293b);
+  border-right: 1px solid var(--gray-eb, #e2e8f0);
+  padding-right: 8px;
+}
+.h-icon-group:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.card-info-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 2px 0;
+}
+
+.price-box-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+.price-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.amt {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0a3d62;
+  line-height: 1;
+}
+.amt-per { font-size: 12px; font-weight: 400; color: #94a3b8; }
+
+.view-btn-full {
+  width: 100%;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #0369a1, #0c4a6e);
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 4px 14px rgba(3,105,161,0.2);
+}
+.view-btn-full:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(3,105,161,0.35);
+}
+
+/* ── No Results ─────────────────────────────────────────── */
+.no-results {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 96px 24px;
+  background: #fff;
+  border-radius: 32px;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.04);
+}
+.no-results-icon { font-size: 52px; margin-bottom: 16px; }
+.no-results-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+.no-results p { font-size: 15px; color: #94a3b8; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 1280px) {
+  .explore-container { padding: 88px 24px 72px; gap: 24px; }
+  .filter-sidebar { flex: 0 0 240px; }
+  .explore-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 1024px) {
+  .explore-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .explore-container { flex-direction: column; padding: 88px 20px 60px; }
+  .filter-sidebar { flex: none; width: 100%; position: static; border-radius: 20px; }
+}
+
+@media (max-width: 640px) {
+  .explore-grid { grid-template-columns: 1fr; }
+  .grid-header h2 { font-size: 24px; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GROUPED CATEGORY SECTIONS
+   Used by ExplorePage, BookServices, ProviderProfile
+══════════════════════════════════════════════════════════ */
+.ep-category-section {
+  margin-bottom: 52px;
+}
+
+.ep-section-heading {
+  display:         flex;
+  align-items:     center;
+  gap:             12px;
+  margin-bottom:   22px;
+  padding-bottom:  14px;
+  border-bottom:   2px solid #f1f5f9;
+}
+
+.ep-section-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.ep-section-heading h3 {
+  font-size:      22px;
+  font-weight:    600;
+  color:          #0f172a;
+  letter-spacing: -1.2px;
+  margin:         0;
+  flex:           1;
+}
+
+.ep-section-count {
+  display:          inline-flex;
+  align-items:      center;
+  justify-content:  center;
+  min-width:        28px;
+  height:           28px;
+  padding:          0 10px;
+  border-radius:    9999px;
+  background:       #f1f5f9;
+  color:            #475569;
+  font-size:        12px;
+  font-weight:      700;
+  font-family:      'Poppins', sans-serif;
+  flex-shrink:      0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TOUR CARD additions (ExplorePage — Packages)
+══════════════════════════════════════════════════════════ */
+
+/* Duration badge — bottom-left overlay on image */
+.tour-duration-badge {
+  position:   absolute;
+  bottom:     12px;
+  left:       14px;
+  z-index:    3;
+  background: rgba(15,23,42,0.75);
+  backdrop-filter: blur(8px);
+  color:      rgba(255,255,255,0.92);
+  font-size:  11px;
+  font-weight: 600;
+  padding:    4px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Inclusions chip row */
+.tour-inclusions {
+  display:    flex;
+  flex-wrap:  wrap;
+  gap:        2px;
+  margin-top: 1px;
+}
+.tour-inc-chip {
+  background:  #f0fdf4;
+  color:       #15803d;
+  font-size:   11px;
+  font-weight: 600;
+  padding:     3px 10px;
+  border-radius: 9999px;
+  border: 1px solid #bbf7d0;
+  white-space: nowrap;
+}
+.tour-inc-more {
+  background:  #fafafa;
+  color:       #94a3b8;
+  border-color: #e2e8f0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BOOK SERVICES — Super-section headings
+══════════════════════════════════════════════════════════ */
+.bs-super-section {
+  margin-bottom: 60px;
+}
+.bs-super-heading {
+  margin-bottom: 28px;
+  padding:       20px 28px;
+  background:    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 20px;
+  border-left:   5px solid #00f2fe;
+}
+.bs-super-title {
+  font-family:    'Poppins', 'Plus Jakarta Sans', sans-serif !important;
+  font-size:      26px !important;
+  font-weight:    800 !important;
+  color:          #f8fafc !important;
+  margin:         0 0 4px !important;
+  letter-spacing: -1px !important;
+}
+.bs-super-desc {
+  font-family:    'Poppins', 'Plus Jakarta Sans', sans-serif !important;
+  font-size:      13.5px !important;
+  color:          rgba(255, 255, 255, 0.65) !important;
+  margin:         0 !important;
+  font-weight:    500 !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ADDPACKAGE — Inclusions live preview
+══════════════════════════════════════════════════════════ */
+.ap-inclusions-preview {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       8px;
+  padding:   10px 0 4px;
+}
+.ap-inclusion-pill {
+  background:  rgba(16,185,129,0.12);
+  border:      1px solid rgba(16,185,129,0.3);
+  color:       #34d399;
+  font-size:   12px;
+  font-weight: 600;
+  padding:     4px 12px;
+  border-radius: 9999px;
+}

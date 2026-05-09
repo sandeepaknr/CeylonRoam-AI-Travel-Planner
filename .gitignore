@@ -1,0 +1,7 @@
+node_modules/
+venv/
+*.pth
+*.pt
+*.h5
+.env*
+__pycache__/

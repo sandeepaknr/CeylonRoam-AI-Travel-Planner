@@ -1,0 +1,242 @@
+/* ═══════════════════════════════════════════════════════════
+   REGISTER — Business Extension Styles (register-biz.css)
+   Supplements auth.css — does NOT replace it.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Password error ─────────────────────────────────────── */
+.rbiz-pw-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ── Sri Lanka gate warning ─────────────────────────────── */
+.rbiz-gate-warn {
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  color: #9a3412;
+  font-size: 0.87rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 12px;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUSINESS EXTENSION WRAPPER
+   ═══════════════════════════════════════════════════════════ */
+.rbiz-extension {
+  margin-top: 8px;
+  border: 1.5px solid #dbeafe;
+  border-radius: 20px;
+  padding: 24px;
+  background: #f8faff;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rbiz-extension-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.rbiz-badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.rbiz-extension-header p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Category buttons ───────────────────────────────────── */
+.rbiz-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.rbiz-cat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+.rbiz-cat-btn:hover  { border-color: #93c5fd; background: #eff6ff; color: #3b82f6; }
+.rbiz-cat-btn.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8;
+                        box-shadow: 0 4px 12px rgba(59,130,246,0.18); }
+.rbiz-cat-icon { font-size: 1.6rem; }
+
+.rbiz-select-hint {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 12px 0;
+}
+
+/* ── Form sections ──────────────────────────────────────── */
+.rbiz-section {
+  border: 1px solid #e8edf5;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  background: #ffffff;
+}
+.rbiz-conditional {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+.rbiz-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e40af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #dbeafe;
+}
+
+/* ── Two-column grid ────────────────────────────────────── */
+.rbiz-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Field ──────────────────────────────────────────────── */
+.rbiz-field { display: flex; flex-direction: column; gap: 5px; }
+.rbiz-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+.rbiz-field input,
+.rbiz-field select,
+.rbiz-field textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+.rbiz-field input:focus,
+.rbiz-field select:focus,
+.rbiz-field textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+.rbiz-field input[type="file"] {
+  padding: 7px;
+  background: #f9fafb;
+  cursor: pointer;
+}
+.rbiz-field textarea { resize: vertical; min-height: 80px; }
+
+/* ── Amenity checkbox pills ─────────────────────────────── */
+.rbiz-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.rbiz-check-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.15s;
+}
+.rbiz-check-pill:has(input:checked) {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.rbiz-check-pill input { accent-color: #3b82f6; cursor: pointer; }
+
+/* ── Radio pills (Service type) ─────────────────────────── */
+.rbiz-radio-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.rbiz-radio-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.2s;
+}
+.rbiz-radio-pill.active { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+.rbiz-radio-pill input  { display: none; }
+
+/* ── Leaflet map ────────────────────────────────────────── */
+.rbiz-map {
+  height: 220px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  margin-bottom: 6px;
+}
+.rbiz-coords {
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* ── Submit spinner ─────────────────────────────────────── */
+.rbiz-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: rbiz-spin 0.7s linear infinite;
+}
+@keyframes rbiz-spin { to { transform: rotate(360deg); } }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .rbiz-two-col    { grid-template-columns: 1fr; }
+  .rbiz-cat-grid   { grid-template-columns: 1fr; }
+  .rbiz-checkbox-grid { grid-template-columns: 1fr 1fr; }
+  .rbiz-radio-row  { flex-direction: column; }
+}
