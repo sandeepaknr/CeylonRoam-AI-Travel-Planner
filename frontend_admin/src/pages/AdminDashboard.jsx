@@ -55,7 +55,17 @@ export default function AdminDashboard() {
 
   if (error) return <div className="an-error">⚠️ {error}</div>;
 
-  const { systemStats, monthlyRevenue, revenueByCategory, topPackages } = analytics;
+  const { systemStats, monthlyRevenue, revenueByCategory, topPackages, bookingsByCountry, tripsByCountry } = analytics;
+
+  // Merge country data for a combined chart
+  const combinedCountryData = Array.from(new Set([
+    ...(bookingsByCountry?.map(b => b.country) || []),
+    ...(tripsByCountry?.map(t => t.country) || [])
+  ])).map(country => ({
+    name: country || "Unknown",
+    bookings: bookingsByCountry?.find(b => b.country === country)?.bookings || 0,
+    trips: tripsByCountry?.find(t => t.country === country)?.trips || 0
+  })).sort((a, b) => (b.bookings + b.trips) - (a.bookings + a.trips)).slice(0, 8);
 
   return (
     <div className="an-dashboard">
@@ -149,6 +159,30 @@ export default function AdminDashboard() {
                 <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Bar dataKey="bookings" fill="#22d3ee" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      )}
+
+      {/* ── Geographic Distribution: Bookings vs Trips ── */}
+      {combinedCountryData.length > 0 && (
+        <section className="an-bar-section">
+          <div className="an-chart-card an-chart-full">
+            <h3>🌍 Geographic Distribution (Bookings vs Planned Trips)</h3>
+            <p className="an-chart-subtitle">Top countries by platform engagement</p>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={combinedCountryData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  cursor={{ fill: '#f8fafc' }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+                <Legend verticalAlign="top" height={36}/>
+                <Bar name="Bookings" dataKey="bookings" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30} />
+                <Bar name="Planned Trips" dataKey="trips" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30} />
               </BarChart>
             </ResponsiveContainer>
           </div>

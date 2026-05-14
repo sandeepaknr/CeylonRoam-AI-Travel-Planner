@@ -13,7 +13,7 @@ export default function AdminLogin() {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/admin/login", { email, password });
 
-      // Token එක Save කිරීම
+      // Save the token to localStorage
       localStorage.setItem("adminToken", res.data.token);
       localStorage.setItem("adminData", JSON.stringify(res.data.user));
 
