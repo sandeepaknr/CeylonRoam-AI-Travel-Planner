@@ -5,6 +5,7 @@ import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import "./styles/profile.css";
 
+
 /* ── Calculate age from a Date or ISO string ───────────────── */
 function calcAge(dob) {
   if (!dob) return null;
@@ -52,8 +53,30 @@ export default function UserProfile() {
     }
   };
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    const toastId = toast.loading("🖼️ Uploading profile picture…");
+    try {
+      const res = await API.post(`/user/upload-picture/${user._id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setUser(res.data);
+      toast.success("✅ Profile picture updated!", { id: toastId });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "❌ Upload failed!", { id: toastId });
+    }
+  };
+
   const initials = user?.username?.charAt(0).toUpperCase() || "U";
   const age      = calcAge(user?.dateOfBirth);
+  const avatarUrl = user?.profilePicture 
+    ? `http://localhost:5000${user.profilePicture}` 
+    : null;
 
   return (
     <div className="profile-page">
@@ -72,10 +95,28 @@ export default function UserProfile() {
 
           <div className="pf-identity">
             <div className="pf-avatar-wrap">
-              <div className="pf-avatar">{initials}</div>
-              <div className="pf-avatar-edit-overlay" title="Change photo" aria-label="Edit avatar">
-                📸
+              <div className="pf-avatar">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" className="pf-avatar-img" />
+                ) : (
+                  initials
+                )}
               </div>
+              <label 
+                className="pf-avatar-edit-overlay" 
+                title="Change photo" 
+                aria-label="Edit avatar"
+                htmlFor="avatar-upload"
+              >
+                📸
+                <input 
+                  id="avatar-upload"
+                  type="file" 
+                  accept="image/*" 
+                  style={{ display: 'none' }} 
+                  onChange={handleFileChange}
+                />
+              </label>
             </div>
 
             <div className="pf-identity-text">

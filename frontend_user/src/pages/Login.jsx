@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import "./styles/auth.css";
+import { LuMapPin, LuBot, LuStar,LuMail, LuLock, LuShieldCheck, LuLeaf } from "react-icons/lu";
 
 export default function Login() {
   /* ── ALL ORIGINAL LOGIC — UNTOUCHED ─────────────────────── */
@@ -36,7 +37,7 @@ export default function Login() {
       <div className="auth-visual">
         <img
           className="auth-visual-img"
-          src="https://images.unsplash.com/photo-1583001931096-959e9a1a6223?w=1400&auto=format&fit=crop&q=85"
+          src="./images/travel3.jpg"
           alt="Ella, Sri Lanka"
         />
         <div className="auth-visual-overlay" />
@@ -54,10 +55,16 @@ export default function Login() {
               <em>island adventure.</em>
             </p>
             <div className="auth-visual-chips">
-              <div className="auth-chip">🌴 200+ Destinations</div>
-              <div className="auth-chip">🤖 AI Trip Planner</div>
-              <div className="auth-chip">⭐ 4.9 / 5 Rating</div>
-            </div>
+  <div className="auth-chip">
+    <LuMapPin size={16} /> 200+ Destinations
+  </div>
+  <div className="auth-chip">
+    <LuBot size={16} /> AI Trip Planner
+  </div>
+  <div className="auth-chip">
+    <LuStar size={16} /> 4.9 / 5 Rating
+  </div>
+</div>
           </div>
 
           {/* Social proof strip */}
@@ -105,7 +112,7 @@ export default function Login() {
             <div className="auth-field">
               <label className="auth-label">Email address</label>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">✉️</span>
+                <span className="auth-input-icon"><LuMail size={18} /></span>
                 <input
                   className="auth-input"
                   name="email"
@@ -125,7 +132,7 @@ export default function Login() {
                 </Link>
               </div>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">🔒</span>
+                <span className="auth-input-icon"><LuLock size={18} /></span>
                 <input
                   className="auth-input"
                   name="password"
@@ -154,9 +161,9 @@ export default function Login() {
 
           {/* Trust strip */}
           <div className="auth-trust">
-            <div className="auth-trust-item">🔒 Secure login</div>
-            <div className="auth-trust-item">🛡️ Data protected</div>
-            <div className="auth-trust-item">🌿 No spam, ever</div>
+           <div className="auth-trust-item"><LuLock size={16} /> Secure login</div>
+           <div className="auth-trust-item"><LuShieldCheck size={16} /> Data protected</div>
+           <div className="auth-trust-item"><LuLeaf size={16} /> No spam, ever</div>
           </div>
 
         </div>

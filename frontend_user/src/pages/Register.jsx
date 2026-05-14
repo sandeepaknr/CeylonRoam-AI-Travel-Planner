@@ -7,7 +7,15 @@ import "leaflet/dist/leaflet.css";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import "./styles/auth.css";
-import "./styles/register-biz.css";   // new extension styles
+import "./styles/register-biz.css";  
+
+import { 
+  LuTriangleAlert, LuKey, LuTag, LuGlobe, 
+  LuUser, LuMail, LuCalendar, LuBriefcase, LuLock, 
+  LuHotel, LuCompass, LuCar, LuImage, LuClipboardCheck, 
+  LuGraduationCap, LuFileText, LuMapPin, LuSparkles, 
+  LuBinoculars, LuWaves, LuShieldCheck, LuLeaf, LuSend, LuWrench, LuMap,LuHandshake 
+} from "react-icons/lu";
 
 import icon       from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
@@ -120,15 +128,21 @@ export default function Register() {
   const handleSubmit = async e => {
     e.preventDefault();
     if (passwordError || !form.password) {
-      toast.error("⚠️ Please ensure your password meets all requirements.");
+      toast.error("Please ensure your password meets all requirements.", {
+      icon: <LuTriangleAlert size={18} style={{ color: "#ef4444" }} />
+   });
       return;
     }
     if (form.password !== form.confirmPassword) {
-      toast.error("🔑 Passwords do not match. Please re-enter.");
+      toast.error("Passwords do not match. Please re-enter.", {
+      icon: <LuKey size={18} style={{ color: "#ef4444" }} />
+      });
       return;
     }
     if (form.accountType === "business" && !category) {
-      toast.error("🏷️ Please select a partner category.");
+      toast.error("Please select a partner category.", {
+      icon: <LuTag size={18} style={{ color: "#ef4444" }} />
+     });
       return;
     }
 
@@ -144,7 +158,10 @@ export default function Register() {
       } else {
         /* Business — FormData with files (Multer on server handles uploads) */
         if (form.country !== "Sri Lanka") {
-          toast.error("🌏 Business registration is only available for Sri Lanka-based users.", { id: toastId });
+          toast.error("Business registration is only available for Sri Lanka-based users.", { 
+          id: toastId,
+           icon: <LuGlobe size={18} style={{ color: "#ef4444" }} />
+          });
           setSubmitting(false);
           return;
         }
@@ -171,8 +188,8 @@ export default function Register() {
 
       toast.success(
         form.accountType === "business"
-          ? "🤝 Partner registration submitted! Our team will review your application."
-          : "🌴 Account created successfully! Welcome to CeylonRoam.",
+          ? "Partner registration submitted! Our team will review your application."
+          : "Account created successfully! Welcome to CeylonRoam.",
         { id: toastId, duration: 5000 }
       );
       login(data);
@@ -192,7 +209,7 @@ export default function Register() {
   /* ═══════════ HOTEL FORM ════════════════════════════════════ */
   const renderHotel = () => (
     <>
-      <BizSection title="🏨 Basic Information">
+      <BizSection title="Basic Information" icon={<LuHotel size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Hotel Name *"><input name="hotelName" value={biz.hotelName} onChange={handleBizChange} required /></BizField>
           <BizField label="Owner Name *"><input name="ownerName" value={biz.ownerName} onChange={handleBizChange} required /></BizField>
@@ -206,7 +223,7 @@ export default function Register() {
         <BizField label="Description *"><textarea name="description" value={biz.description} onChange={handleBizChange} rows={3} required /></BizField>
       </BizSection>
 
-      <BizSection title="📍 Location & Contact">
+      <BizSection title="Location & Contact" icon={<LuMapPin size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Full Address *"><input name="address" value={biz.address} onChange={handleBizChange} required /></BizField>
           <BizField label="City *"><input name="city" value={biz.city} onChange={handleBizChange} required /></BizField>
@@ -222,7 +239,7 @@ export default function Register() {
         </BizField>
       </BizSection>
 
-      <BizSection title="✨ Amenities">
+      <BizSection title="Amenities" icon={<LuSparkles size={20}/>}>
         <div className="rbiz-checkbox-grid">
           {AMENITIES.map(a => (
             <label key={a} className="rbiz-check-pill">
@@ -232,14 +249,14 @@ export default function Register() {
         </div>
       </BizSection>
 
-      <BizSection title="📸 Media Uploads">
+      <BizSection title="Media Uploads" icon={<LuImage size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Cover Image *"><input type="file" accept="image/*" onChange={e => handleFile("coverImage", e.target.files[0])} required /></BizField>
           <BizField label="Gallery (max 5)"><input type="file" accept="image/*" multiple onChange={e => handleFile("gallery", Array.from(e.target.files).slice(0,5))} /></BizField>
         </div>
       </BizSection>
 
-      <BizSection title="📋 Legal & Payouts">
+      <BizSection title="Legal & Payouts" icon={<LuClipboardCheck size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Business Reg. No. (BRN) *"><input name="brn" value={biz.brn} onChange={handleBizChange} required /></BizField>
           <BizField label="Account Holder Name *"><input name="bankAccountName" value={biz.bankAccountName} onChange={handleBizChange} required /></BizField>
@@ -254,21 +271,21 @@ export default function Register() {
   /* ═══════════ GUIDE FORM ════════════════════════════════════ */
   const renderGuide = () => (
     <>
-      <BizSection title="👤 Basic Info">
+      <BizSection title="Basic Info" icon={<LuUser size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Full Name *"><input name="fullName" value={biz.fullName} onChange={handleBizChange} required /></BizField>
           <BizField label="Profile Picture *"><input type="file" accept="image/*" onChange={e => handleFile("profilePicture", e.target.files[0])} required /></BizField>
         </div>
       </BizSection>
 
-      <BizSection title="📍 Location & Coverage">
+      <BizSection title="Location & Coverage" icon={<LuMapPin size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Base City *"><input name="baseCity" value={biz.baseCity} onChange={handleBizChange} required /></BizField>
           <BizField label="Operating Regions"><input name="operatingRegions" value={biz.operatingRegions} onChange={handleBizChange} placeholder="e.g. Cultural Triangle, South Coast" /></BizField>
         </div>
       </BizSection>
 
-      <BizSection title="🎓 Skills & Experience">
+      <BizSection title="Skills & Experience" icon={<LuGraduationCap size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Languages *"><input name="languages" value={biz.languages} onChange={handleBizChange} placeholder="e.g. English, Sinhala" required /></BizField>
           <BizField label="Guide Type *">
@@ -282,7 +299,7 @@ export default function Register() {
       </BizSection>
 
       {biz.guideType === "Chauffeur Guide" && (
-        <BizSection title="🚗 Vehicle (Chauffeur)" conditional>
+        <BizSection title="Vehicle (Chauffeur)" icon={<LuCar size={20}/>} conditional>
           <div className="rbiz-two-col">
             <BizField label="Vehicle Type *"><input name="vehicleType" value={biz.vehicleType} onChange={handleBizChange} placeholder="e.g. Sedan, SUV" required /></BizField>
             <BizField label="Model & Year *"><input name="vehicleModel" value={biz.vehicleModel} onChange={handleBizChange} placeholder="e.g. Toyota Corolla 2020" required /></BizField>
@@ -296,7 +313,7 @@ export default function Register() {
         </BizSection>
       )}
 
-      <BizSection title="📋 Legal Documents">
+      <BizSection title="Legal Documents" icon={<LuFileText size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="NIC Number *"><input name="nicNumber" value={biz.nicNumber} onChange={handleBizChange} required /></BizField>
           <BizField label="Tourism Board Reg. *"><input name="tourismBoardReg" value={biz.tourismBoardReg} onChange={handleBizChange} required /></BizField>
@@ -309,18 +326,18 @@ export default function Register() {
   /* ═══════════ TRANSPORT FORM ════════════════════════════════ */
   const renderTransport = () => (
     <>
-      <BizSection title="🚕 Service Type">
+      <BizSection title="Service Type" icon={<LuCar size={20}/>}>
         <div className="rbiz-radio-row">
           {["Hire","Rent"].map(v => (
             <label key={v} className={`rbiz-radio-pill ${biz.serviceType === v ? "active" : ""}`}>
               <input type="radio" name="serviceType" value={v} checked={biz.serviceType === v} onChange={handleBizChange} />
-              {v === "Hire" ? "🚕 Hire (Driver Included)" : "🔑 Rent (Self-Drive)"}
+              {v === "Hire" ? " Hire (Driver Included)" : " Rent (Self-Drive)"}
             </label>
           ))}
         </div>
       </BizSection>
 
-      <BizSection title="👤 Owner & Driver Info">
+      <BizSection title="Owner & Driver Info" icon={<LuUser size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Owner Name *"><input name="ownerName" value={biz.ownerName} onChange={handleBizChange} required /></BizField>
           <BizField label="Driver Name *"><input name="driverName" value={biz.driverName} onChange={handleBizChange} required /></BizField>
@@ -329,7 +346,7 @@ export default function Register() {
         </div>
       </BizSection>
 
-      <BizSection title="🔧 Vehicle Specs">
+      <BizSection title="Vehicle Specs" icon={<LuWrench size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Vehicle Type *">
             <select name="vehicleType" value={biz.vehicleType} onChange={handleBizChange} required>
@@ -361,7 +378,7 @@ export default function Register() {
         </div>
       </BizSection>
 
-      <BizSection title="🗺️ Service Area">
+      <BizSection title="Service Area" icon={<LuMap size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Base City *"><input name="baseCity" value={biz.baseCity} onChange={handleBizChange} required /></BizField>
           <BizField label="Airport Drops / Pickups?">
@@ -372,7 +389,7 @@ export default function Register() {
         </div>
       </BizSection>
 
-      <BizSection title="📋 Legal Documents">
+      <BizSection title="Legal Documents" icon={<LuFileText size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Driver NIC Number *"><input name="driverNIC" value={biz.driverNIC} onChange={handleBizChange} required /></BizField>
           <BizField label="License Plate Photo *"><input type="file" accept="image/*" onChange={e => handleFile("licensePlatePhoto", e.target.files[0])} required /></BizField>
@@ -383,7 +400,7 @@ export default function Register() {
         </div>
       </BizSection>
 
-      <BizSection title="📸 Vehicle Photos">
+      <BizSection title="Vehicle Photos" icon={<LuImage size={20}/>}>
         <div className="rbiz-two-col">
           <BizField label="Exterior Photos (max 5) *"><input type="file" accept="image/*" multiple onChange={e => handleFile("exteriorPhotos", Array.from(e.target.files).slice(0,5))} required /></BizField>
           <BizField label="Interior Photos (max 5)"><input type="file" accept="image/*" multiple onChange={e => handleFile("interiorPhotos", Array.from(e.target.files).slice(0,5))} /></BizField>
@@ -399,7 +416,7 @@ export default function Register() {
       {/* ══ LEFT — Visual Panel (unchanged) ══ */}
       <div className="auth-visual">
         <img className="auth-visual-img"
-          src="https://images.unsplash.com/photo-1578510713340-cd23d0f44ae9?w=1400&auto=format&fit=crop&q=85"
+          src="./images/register3.jpg"
           alt="Sigiriya, Sri Lanka" />
         <div className="auth-visual-overlay" />
         <div className="auth-visual-content">
@@ -407,9 +424,9 @@ export default function Register() {
           <div>
             <p className="auth-visual-quote">Start your<br /><em>Sri Lankan journey</em><br />today.</p>
             <div className="auth-visual-chips">
-              <div className="auth-chip">✨ AI-Powered Plans</div>
-              <div className="auth-chip">🐘 Wildlife Safaris</div>
-              <div className="auth-chip">🌊 Beach Escapes</div>
+              <div className="auth-chip"><LuSparkles size={16} /> AI-Powered Plans</div>
+              <div className="auth-chip"><LuBinoculars size={16} /> Wildlife Safaris</div>
+              <div className="auth-chip"><LuWaves size={16} /> Beach Escapes</div>
             </div>
           </div>
           <div className="auth-visual-footer">
@@ -445,7 +462,7 @@ export default function Register() {
             <div className="auth-field">
               <label className="auth-label">Username</label>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">👤</span>
+                <span className="auth-input-icon"><LuUser size={18} /></span>
                 <input className="auth-input" name="username" placeholder="e.g. amal_roams" onChange={handleChange} required />
               </div>
             </div>
@@ -453,7 +470,7 @@ export default function Register() {
             <div className="auth-field">
               <label className="auth-label">Email address</label>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">✉️</span>
+                <span className="auth-input-icon"><LuMail size={18} /></span>
                 <input className="auth-input" name="email" type="email" placeholder="you@example.com" onChange={handleChange} required />
               </div>
             </div>
@@ -461,7 +478,7 @@ export default function Register() {
             <div className="auth-field">
               <label className="auth-label">Country</label>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">🌍</span>
+                <span className="auth-input-icon"><LuGlobe size={18} /></span>
                 <select className="auth-input" name="country" value={form.country} onChange={handleChange} required>
                   <option value="" disabled>Select your country</option>
                   {Object.keys(COUNTRY_CURRENCIES).map(c => (
@@ -476,7 +493,7 @@ export default function Register() {
               <div className="auth-field">
                 <label className="auth-label">Date of Birth</label>
                 <div className="auth-input-wrap">
-                  <span className="auth-input-icon">📅</span>
+                  <span className="auth-input-icon"><LuCalendar size={18} /></span>
                   <input className="auth-input" name="dateOfBirth" type="date"
                     max={new Date().toISOString().split("T")[0]}
                     min="1900-01-01"
@@ -486,7 +503,7 @@ export default function Register() {
               <div className="auth-field">
                 <label className="auth-label">Job Role</label>
                 <div className="auth-input-wrap">
-                  <span className="auth-input-icon">💼</span>
+                  <span className="auth-input-icon"><LuBriefcase size={18} /></span>
                   <input className="auth-input" name="jobRole" placeholder="e.g. Engineer (Optional)" onChange={handleChange} />
                 </div>
               </div>
@@ -495,16 +512,16 @@ export default function Register() {
             <div className="auth-field">
               <label className="auth-label">Password</label>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">🔒</span>
+                <span className="auth-input-icon"><LuLock size={18} /></span>
                 <input className="auth-input" name="password" type="password" placeholder="Create a strong password" onChange={handleChange} required />
               </div>
-              {passwordError && <p className="rbiz-pw-error">⚠️ {passwordError}</p>}
+              {passwordError && <p className="rbiz-pw-error"><LuTriangleAlert size={14} style={{ marginRight: '4px' }}/> {passwordError}</p>}
             </div>
 
             <div className="auth-field">
               <label className="auth-label">Confirm password</label>
               <div className="auth-input-wrap">
-                <span className="auth-input-icon">🔑</span>
+                <span className="auth-input-icon"><LuKey size={18} /></span>
                 <input className="auth-input" name="confirmPassword" type="password" placeholder="Re-enter your password" onChange={handleChange} />
               </div>
             </div>
@@ -513,18 +530,21 @@ export default function Register() {
             <div className="auth-field">
               <label className="auth-label">Account type</label>
               <select className="auth-select" name="accountType" value={form.accountType} onChange={handleChange}>
-                <option value="user">🧳 Traveller (Personal)</option>
+                <option value="user">Traveller (Personal)</option>
                 <option value="business" disabled={!!form.country && form.country !== "Sri Lanka"}>
-                  🏢 Business / Operator{form.country && form.country !== "Sri Lanka" ? " (Sri Lanka only)" : ""}
+                  Business / Operator{form.country && form.country !== "Sri Lanka" ? " (Sri Lanka only)" : ""}
                 </option>
               </select>
             </div>
 
             {/* ── Sri Lanka gate warning ── */}
             {isNonSLBiz && (
-              <div className="rbiz-gate-warn">
-                🌏 Business registration is only available for users based in <strong>Sri Lanka</strong>.
-                Please select "Traveller (Personal)" or change your country.
+              <div className="rbiz-gate-warn" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LuGlobe size={18} />
+                <div>
+                  Business registration is only available for users based in <strong>Sri Lanka</strong>.
+                  Please select "Traveller (Personal)" or change your country.
+                </div>
               </div>
             )}
 
@@ -532,16 +552,18 @@ export default function Register() {
             {isBusiness && (
               <div className="rbiz-extension">
                 <div className="rbiz-extension-header">
-                  <span className="rbiz-badge">🤝 Partner Programme</span>
+                  <span className="rbiz-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <LuHandshake size={14} /> Partner Programme
+                  </span>
                   <p>Your account will be set to <strong>Pending</strong> while our team reviews your application.</p>
                 </div>
 
                 {/* Category selector */}
                 <div className="rbiz-cat-grid">
                   {[
-                    { id:"Hotel",     icon:"🏨", label:"Hotel / Accommodation" },
-                    { id:"Guide",     icon:"🧭", label:"Tour Guide"            },
-                    { id:"Transport", icon:"🚗", label:"Transport Service"     },
+                    { id:"Hotel",     icon: <LuHotel size={24} />, label:"Hotel / Accommodation" },
+                    { id:"Guide",     icon: <LuCompass size={24} />, label:"Tour Guide"            },
+                    { id:"Transport", icon: <LuCar size={24} />, label:"Transport Service"     },
                   ].map(c => (
                     <button key={c.id} type="button"
                       className={`rbiz-cat-btn ${category === c.id ? "active" : ""}`}
@@ -563,11 +585,11 @@ export default function Register() {
             )}
 
             {/* ── SUBMIT ── */}
-            <button type="submit" className="auth-submit" disabled={submitting}>
+            <button type="submit" className="auth-submit" disabled={submitting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               {submitting
                 ? <><span className="rbiz-spinner" /> Submitting…</>
                 : form.accountType === "business"
-                  ? `🚀 Submit ${category || "Business"} Partner Registration`
+                  ? <><LuSend size={18} /> Submit {category || "Business"} Partner Registration</>
                   : "Create My Account →"}
             </button>
 
@@ -578,9 +600,9 @@ export default function Register() {
             Already have an account? <Link to="/login">Sign in</Link>
           </p>
           <div className="auth-trust">
-            <div className="auth-trust-item">🔒 Secure &amp; encrypted</div>
-            <div className="auth-trust-item">🛡️ Privacy first</div>
-            <div className="auth-trust-item">🌿 No spam</div>
+            <div className="auth-trust-item"><LuLock size={16} /> Secure &amp; encrypted</div>
+            <div className="auth-trust-item"><LuShieldCheck size={16} /> Privacy first</div>
+            <div className="auth-trust-item"><LuLeaf size={16} /> No spam</div>
           </div>
 
         </div>
@@ -590,14 +612,18 @@ export default function Register() {
 }
 
 /* ── Layout micro-components ─────────────────────────────── */
-function BizSection({ title, children, conditional }) {
+function BizSection({ title, icon, children, conditional }) {
   return (
     <div className={`rbiz-section ${conditional ? "rbiz-conditional" : ""}`}>
-      <h4 className="rbiz-section-title">{title}</h4>
+      <h4 className="rbiz-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {icon && <span style={{ color: 'var(--ink-60)', display: 'flex', alignItems: 'center' }}>{icon}</span>}
+        {title}
+      </h4>
       {children}
     </div>
   );
 }
+
 function BizField({ label, children }) {
   return (
     <div className="rbiz-field">

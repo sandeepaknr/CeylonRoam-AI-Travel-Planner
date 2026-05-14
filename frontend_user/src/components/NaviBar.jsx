@@ -86,7 +86,15 @@ export default function Navbar() {
               title="Open profile menu"
             >
               <div className="avatar-circle-navibar">
-                {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                {user?.profilePicture ? (
+                  <img 
+                    src={`http://localhost:5000${user.profilePicture}`} 
+                    alt="P" 
+                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                  />
+                ) : (
+                  user?.username ? user.username.charAt(0).toUpperCase() : "U"
+                )}
               </div>
             </div>
           ) : (
@@ -112,7 +120,15 @@ export default function Navbar() {
           {/* User Profile Header */}
           <div className="user-profile-info">
             <div className="large-avatar">
-              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+              {user?.profilePicture ? (
+                <img 
+                  src={`http://localhost:5000${user.profilePicture}`} 
+                  alt="Profile" 
+                  style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                />
+              ) : (
+                user?.username ? user.username.charAt(0).toUpperCase() : "U"
+              )}
             </div>
             <h3>{user?.name || user?.username || "Traveller"}</h3>
             <p>{user?.email || ""}</p>

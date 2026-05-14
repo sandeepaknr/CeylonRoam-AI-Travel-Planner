@@ -137,7 +137,7 @@ export default function Home() {
 
           <div className="hero-video-wrapper">
             <video className="hero-bg-video" autoPlay loop muted playsInline>
-              <source src="/videos/srilanka.mp4" type="video/mp4" />
+              <source src="/videos/interface.mp4" type="video/mp4" />
             </video>
             <div className="hero-video-overlay"></div>
             <div className="hero-headline-row">
