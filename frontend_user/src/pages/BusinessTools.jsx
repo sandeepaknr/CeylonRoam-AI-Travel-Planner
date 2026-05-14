@@ -2,6 +2,19 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/axios";
+import { 
+  LuLayoutDashboard, 
+  LuTrendingUp, 
+  LuListOrdered, 
+  LuWallet,
+  LuPlus,
+  LuMap,
+  LuLayoutList,
+  LuStore,
+  LuPackageOpen,
+  LuInbox,
+  LuLock
+} from "react-icons/lu";
 import "./styles/BusinessTools.css";
 
 export default function BusinessTools() {
@@ -25,129 +38,150 @@ export default function BusinessTools() {
       return;
     }
 
-    // Fetch Business category mapping
     API.get(`/partner-request/by-user/${user._id}`)
       .then(r => setBizCategory(r.data?.category || null))
       .catch(() => setBizCategory(null))
       .finally(() => setLoadingBiz(false));
 
-    // Fetch Business Dynamic Statistics
     API.get(`/business/stats/${user._id}`)
       .then(r => setStats(r.data))
       .catch(err => console.error("Could not fetch metrics", err));
 
   }, [user, navigate]);
 
-  /* Guides (Tour / Chauffeur) may NOT post Packages */
   const isGuide       = bizCategory === "Guide";
   const canPostPackage = !isGuide;
 
-  return (
-    <div className="business-wrapper">
-      <div className="dashboard-container animate-fade-in">
+  if (loadingBiz) {
+    return (
+      <div className="biz-dashboard-container biz-loading">
+        <div className="biz-spinner"></div>
+      </div>
+    );
+  }
 
-        <header className="dashboard-header">
-          <h1>Business Dashboard <span className="badge">Pro</span></h1>
-          <p>
-            Welcome back, <strong>{user?.username || "Partner"}</strong>!
-            {bizCategory && <span className="biz-cat-tag">📂 {bizCategory}</span>}
+  return (
+    <div className="biz-dashboard-container">
+      <div className="biz-dashboard-inner">
+
+        {/* ── HEADER ── */}
+        <header className="biz-header">
+          <div className="biz-eyebrow">
+            <LuLayoutDashboard /> Partner Portal
+          </div>
+          <div className="biz-title-row">
+            <h1>Business Dashboard</h1>
+            <span className="biz-badge-pro">PRO</span>
+          </div>
+          <p className="biz-subtitle">
+            Welcome back, <strong>{user?.username || "Partner"}</strong>. 
+            {bizCategory && <span className="biz-cat-tag">{bizCategory}</span>}
           </p>
         </header>
 
-        {/* ── Analytics Stat Cards ── */}
-        <div className="analytics-grid">
-          <div className="stat-card">
-            <h3>Total Bookings</h3>
-            <p className="stat-number">{stats.totalBookings}</p>
-            <span className="stat-label">All-time</span>
+        {/* ── METRICS BENTO ── */}
+        <div className="biz-metrics-grid">
+          <div className="biz-metric-card">
+            <div className="biz-metric-icon"><LuListOrdered /></div>
+            <div className="biz-metric-content">
+              <h3>Total Bookings</h3>
+              <div className="biz-metric-value">{stats.totalBookings}</div>
+              <p className="biz-metric-label">All-time bookings</p>
+            </div>
           </div>
-          <div className="stat-card">
-            <h3>Revenue</h3>
-            <p className="stat-number">Rs {stats.totalRevenue.toLocaleString()}</p>
-            <span className="stat-label">LKR collected</span>
+          <div className="biz-metric-card biz-metric-highlight">
+            <div className="biz-metric-icon"><LuWallet /></div>
+            <div className="biz-metric-content">
+              <h3>Revenue</h3>
+              <div className="biz-metric-value">
+                <span className="biz-currency">Rs</span> {stats.totalRevenue.toLocaleString()}
+              </div>
+              <p className="biz-metric-label">LKR collected</p>
+            </div>
           </div>
-          <div className="stat-card">
-            <h3>Active Listings</h3>
-            <p className="stat-number">{stats.activeListings < 10 && stats.activeListings > 0 ? `0${stats.activeListings}` : stats.activeListings}</p>
-            <span className="stat-label">Running now</span>
+          <div className="biz-metric-card">
+            <div className="biz-metric-icon"><LuTrendingUp /></div>
+            <div className="biz-metric-content">
+              <h3>Active Listings</h3>
+              <div className="biz-metric-value">
+                {stats.activeListings < 10 && stats.activeListings > 0 ? `0${stats.activeListings}` : stats.activeListings}
+              </div>
+              <p className="biz-metric-label">Currently running</p>
+            </div>
           </div>
         </div>
 
-        {/* ── Post Actions: two distinct buttons ── */}
-        {!loadingBiz && (
-          <div className="bt-post-actions">
-            <div className="bt-post-label">➕ Create New Listing</div>
-            <div className="bt-post-row">
-
-              {/* Post a Service — always available */}
-              <button
-                className="bt-post-card bt-service"
-                onClick={() => navigate("/addservice")}
-              >
-                <span className="bt-post-icon">⚙️</span>
-                <span className="bt-post-title">Post a Service</span>
-                <span className="bt-post-desc">
+        {/* ── CREATION ACTIONS ── */}
+        <div className="biz-section">
+          <div className="biz-section-header">
+            <h2>Create New Listing</h2>
+            <p>Publish new offerings to the CeylonRoam marketplace.</p>
+          </div>
+          <div className="biz-actions-grid">
+            <button className="biz-action-card" onClick={() => navigate(bizCategory === "Hotel" ? "/add-hotel-room" : "/addservice")}>
+              <div className="biz-action-icon"><LuPlus /></div>
+              <div className="biz-action-text">
+                <h3>Post a Service</h3>
+                <p>
                   {bizCategory === "Hotel"
-                    ? "Add a hotel room, villa, resort or cabana"
+                    ? "Add a hotel room, villa, resort or cabana."
                     : bizCategory === "Guide"
-                    ? "Publish your guide or chauffeur profile"
-                    : "List a vehicle for rent or hire"}
-                </span>
-              </button>
+                    ? "Publish your guide or chauffeur profile."
+                    : "List a vehicle for rent or hire."}
+                </p>
+              </div>
+            </button>
 
-              {/* Post a Package — hidden for Guides */}
-              {canPostPackage ? (
-                <button
-                  className="bt-post-card bt-package"
-                  onClick={() => navigate("/addpackage")}
-                >
-                  <span className="bt-post-icon">🗺️</span>
-                  <span className="bt-post-title">Post a Package</span>
-                  <span className="bt-post-desc">
-                    Create a curated tour or multi-day itinerary
-                  </span>
-                </button>
-              ) : (
-                <div className="bt-post-card bt-package bt-disabled" title="Guides can only post services">
-                  <span className="bt-post-icon">🗺️</span>
-                  <span className="bt-post-title">Post a Package</span>
-                  <span className="bt-post-desc bt-disabled-msg">
-                    🔒 Not available for Guide accounts
-                  </span>
+            {canPostPackage ? (
+              <button className="biz-action-card biz-action-primary" onClick={() => navigate("/addpackage")}>
+                <div className="biz-action-icon"><LuMap /></div>
+                <div className="biz-action-text">
+                  <h3>Post a Package</h3>
+                  <p>Create a curated tour or multi-day itinerary.</p>
                 </div>
-              )}
+              </button>
+            ) : (
+              <div className="biz-action-card biz-action-disabled">
+                <div className="biz-action-icon"><LuLock /></div>
+                <div className="biz-action-text">
+                  <h3>Post a Package</h3>
+                  <p className="biz-disabled-text">Not available for Guide accounts.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── MANAGEMENT TOOLS ── */}
+        <div className="biz-section">
+          <div className="biz-section-header">
+            <h2>Management Tools</h2>
+            <p>Control your business profile, listings, and customer bookings.</p>
+          </div>
+          <div className="biz-tools-grid">
+            <div className="biz-tool-card" onClick={() => navigate("/managepackages")}>
+              <div className="biz-tool-icon"><LuLayoutList /></div>
+              <h3>Manage Listings</h3>
+              <p>Update details and information for your services & packages.</p>
             </div>
-          </div>
-        )}
 
-        {/* ── Tool Cards Grid ── */}
-        <div className="tools-grid">
-          <div className="tool-card" onClick={() => navigate("/managepackages")}>
-            <div className="icon">📋</div>
-            <h3>Manage Listings</h3>
-            <p>Update details and information for your services & packages.</p>
-            <button className="tool-btn">View All</button>
-          </div>
+            <div className="biz-tool-card" onClick={() => navigate("/businessplace")}>
+              <div className="biz-tool-icon"><LuStore /></div>
+              <h3>Business Place</h3>
+              <p>View and manage your public business profile.</p>
+            </div>
 
-          <div className="tool-card" onClick={() => navigate("/businessplace")}>
-            <div className="icon">🏢</div>
-            <h3>Business Place</h3>
-            <p>View and manage your business profile.</p>
-            <button className="tool-btn">View</button>
-          </div>
+            <div className="biz-tool-card" onClick={() => navigate("/seller-bookings")}>
+              <div className="biz-tool-icon"><LuPackageOpen /></div>
+              <h3>All Bookings</h3>
+              <p>View and manage all historical bookings for your listings.</p>
+            </div>
 
-          <div className="tool-card" onClick={() => navigate("/seller-bookings")}>
-            <div className="icon">📦</div>
-            <h3>All Bookings</h3>
-            <p>View and manage all bookings for your listings.</p>
-            <button className="tool-btn">View</button>
-          </div>
-
-          <div className="tool-card" onClick={() => navigate("/business-bookings")}>
-            <div className="icon">📬</div>
-            <h3>Incoming Bookings</h3>
-            <p>See customer bookings for your published services.</p>
-            <button className="tool-btn">View</button>
+            <div className="biz-tool-card" onClick={() => navigate("/business-bookings")}>
+              <div className="biz-tool-icon"><LuInbox /></div>
+              <h3>Incoming Bookings</h3>
+              <p>See new customer bookings for your published services.</p>
+            </div>
           </div>
         </div>
 

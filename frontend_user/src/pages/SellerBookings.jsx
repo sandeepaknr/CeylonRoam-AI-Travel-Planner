@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
-import "./styles/sellerBookings.css";
+import "./styles/addpackage-ext.css";
+import "./styles/sellerBookings.css"; // Kept for the invoice receipt styling
 
 export default function SellerBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlip, setSelectedSlip] = useState(null);
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBookings();
@@ -47,7 +50,7 @@ export default function SellerBookings() {
           >Confirm</button>
           <button
             onClick={() => toast.dismiss(t.id)}
-            style={{ background: "rgba(255,255,255,0.1)", color: "#f1f5f9", border: "none", borderRadius: 8, padding: "4px 12px", cursor: "pointer", fontSize: 13 }}
+            style={{ background: "rgba(15, 23, 42, 0.1)", color: "#0f172a", border: "none", borderRadius: 8, padding: "4px 12px", cursor: "pointer", fontSize: 13 }}
           >Cancel</button>
         </span>
       ),
@@ -65,112 +68,134 @@ export default function SellerBookings() {
   };
 
   if (loading) return (
-    <div className="loader-container">
-      <div className="custom-loader"></div>
-      <p>Syncing your business data...</p>
+    <div className="ap-page">
+      <div className="ap-card" style={{ textAlign: "center", maxWidth: 500 }}>
+        <div style={{ fontSize:32, marginBottom:16 }}>⏳</div>
+        <p className="ap-page-sub" style={{ margin: 0 }}>Syncing your business data...</p>
+      </div>
     </div>
   );
 
   return (
-    <div className="seller-dashboard">
-      <div className="dashboard-hero">
-        <div className="hero-content">
-          <h1>Welcome, {user?.username || "Business Partner"}! 👋</h1>
-          <p>You have <strong>{bookings.filter(b => b.status === "Pending").length}</strong> pending requests to handle.</p>
+    <div className="ap-page" style={{ alignItems: "stretch", padding: "60px 24px" }}>
+      <div className="ap-card" style={{ maxWidth: 1200, margin: "0 auto" }}>
+        
+        {/* ── Header ── */}
+        <div className="ap-page-header">
+          <button type="button" className="ap-back-btn" onClick={() => navigate("/businesstools")}>
+            ← Back to Dashboard
+          </button>
+          <div className="ap-eyebrow">📦 All Bookings</div>
+          <h1 className="ap-page-title">Welcome, {user?.username || "Business Partner"}! 👋</h1>
+          <p className="ap-page-sub">
+            You have <strong>{bookings.filter(b => b.status === "Pending").length}</strong> pending requests to handle.
+          </p>
         </div>
-      </div>
 
-      <div className="stats-bar">
-        <div className="stat-item">
-          <span className="stat-val">{bookings.length}</span>
-          <span className="stat-label">Total Orders</span>
+        {/* ── Stats ── */}
+        <div className="ap-stats-row">
+          <div className="ap-stat-card">
+            <span className="ap-stat-val">{bookings.length}</span>
+            <span className="ap-stat-label">Total Orders</span>
+          </div>
+          <div className="ap-stat-card">
+            <span className="ap-stat-val" style={{ color: "var(--green)" }}>
+              {bookings.filter(b => b.status === "Confirmed").length}
+            </span>
+            <span className="ap-stat-label">Confirmed</span>
+          </div>
+          <div className="ap-stat-card">
+            <span className="ap-stat-val" style={{ color: "var(--primary)" }}>
+              Rs. {(bookings.filter(b => b.paymentStatus === "Completed").reduce((acc, curr) => acc + curr.totalCharge, 0)).toLocaleString()}
+            </span>
+            <span className="ap-stat-label">Total Revenue</span>
+          </div>
         </div>
-        <div className="stat-item">
-          <span className="stat-val text-green">
-            {bookings.filter(b => b.status === "Confirmed").length}
-          </span>
-          <span className="stat-label">Confirmed</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-val text-blue">
-            LKR {(bookings.filter(b => b.paymentStatus === "Completed").reduce((acc, curr) => acc + curr.totalCharge, 0)).toLocaleString()}
-          </span>
-          <span className="stat-label">Total Revenue</span>
-        </div>
-      </div>
 
-      <div className="glass-table-container">
-        <table className="modern-table">
-          <thead>
-            <tr>
-              <th>Customer</th>
-              <th>Package</th>
-              <th>Date Range</th>
-              <th>Amount</th>
-              <th>Payment</th>
-              <th>Booking Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.length > 0 ? (
-              bookings.map((b) => (
-                <tr key={b._id} className="hover-row">
-                  <td className="user-info-cell">
-                    <div className="avatar-sm">{b.customerId?.username?.charAt(0).toUpperCase()}</div>
-                    <div>
-                      <span className="name-txt">{b.customerId?.username}</span>
-                      <span className="email-txt">{b.customerId?.email}</span>
-                    </div>
-                  </td>
-                  <td><span className="pkg-badge">{b.packageId?.name}</span></td>
-                  <td>
-                    <div className="date-stack">
-                      <span>{new Date(b.startDate).toLocaleDateString()}</span>
-                      <small>to {new Date(b.endDate).toLocaleDateString()}</small>
-                    </div>
-                  </td>
-                  <td className="price-bold">Rs. {b.totalCharge.toLocaleString()}</td>
-                  
-                  <td>
-                    <span className={`pay-status-tag ${b.paymentStatus?.toLowerCase()}`}>
-                      {b.paymentStatus === "Completed" ? "Paid ✅" : "Pending ⏳"}
-                    </span>
-                  </td>
-
-                  <td>
-                    <div className={`status-indicator ${b.status.toLowerCase()}`}>
-                      {b.status}
-                    </div>
-                  </td>
-                  
-                  <td>
-                    <div className="action-group">
-                      {b.status === "Pending" ? (
-                        <>
-                          <button className="icon-btn check" onClick={() => handleStatusUpdate(b._id, "Confirmed")}>✔</button>
-                          <button className="icon-btn cross" onClick={() => handleStatusUpdate(b._id, "Cancelled")}>✖</button>
-                        </>
-                      ) : b.status === "Confirmed" ? (
-                        <button className="slip-btn-modern" onClick={() => viewSlip(b._id)}>View Invoice</button>
-                      ) : (
-                        <span className="disabled-txt">N/A</span>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
+        {/* ── Table ── */}
+        <div className="ap-table-wrapper">
+          <table className="ap-table">
+            <thead>
               <tr>
-                <td colSpan="7" style={{ textAlign: "center", padding: "40px" }}>No bookings found.</td>
+                <th>Customer</th>
+                <th>Package</th>
+                <th>Date Range</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Booking Status</th>
+                <th style={{ textAlign: "center" }}>Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bookings.length > 0 ? (
+                bookings.map((b) => (
+                  <tr key={b._id}>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--primary-l)", color: "var(--primary-d)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14 }}>
+                          {b.customerId?.username?.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: 14 }}>{b.customerId?.username}</div>
+                          <div style={{ fontSize: 12, color: "var(--ink-60)" }}>{b.customerId?.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span style={{ fontWeight: 600 }}>{b.packageId?.name}</span></td>
+                    <td>
+                      <div style={{ fontSize: 13, color: "var(--ink)" }}>{new Date(b.startDate).toLocaleDateString()}</div>
+                      <div style={{ fontSize: 11, color: "var(--ink-60)" }}>to {new Date(b.endDate).toLocaleDateString()}</div>
+                    </td>
+                    <td style={{ fontWeight: 700 }}>Rs. {b.totalCharge.toLocaleString()}</td>
+                    
+                    <td>
+                      <span style={{ 
+                        fontSize: 12, fontWeight: 700, padding: "4px 8px", borderRadius: 6,
+                        background: b.paymentStatus === "Completed" ? "var(--green-l)" : "#fffaf0",
+                        color: b.paymentStatus === "Completed" ? "var(--green)" : "#9a3412"
+                      }}>
+                        {b.paymentStatus === "Completed" ? "Paid ✅" : "Pending ⏳"}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className={`ap-status-pill ap-status-${b.status.toLowerCase()}`}>
+                        {b.status === "Pending" && "⏳"}
+                        {b.status === "Confirmed" && "✅"}
+                        {b.status === "Cancelled" && "❌"}
+                        {" "}{b.status}
+                      </span>
+                    </td>
+                    
+                    <td style={{ textAlign: "center" }}>
+                      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+                        {b.status === "Pending" ? (
+                          <>
+                            <button className="ap-table-btn" style={{ borderColor: "var(--green)", color: "var(--green)" }} onClick={() => handleStatusUpdate(b._id, "Confirmed")}>✔</button>
+                            <button className="ap-table-btn danger" onClick={() => handleStatusUpdate(b._id, "Cancelled")}>✖</button>
+                          </>
+                        ) : b.status === "Confirmed" ? (
+                          <button className="ap-table-btn" onClick={() => viewSlip(b._id)}>View Invoice</button>
+                        ) : (
+                          <span style={{ color: "var(--ink-40)", fontSize: 12, fontWeight: 600 }}>N/A</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: "center", padding: "40px", color: "var(--ink-40)" }}>No bookings found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {selectedSlip && (
-        <div className="modal-overlay blur" onClick={() => setSelectedSlip(null)}>
+        <div className="ap-modal-overlay" onClick={() => setSelectedSlip(null)}>
+          {/* Using the legacy invoice-card for the receipt style */}
           <div className="invoice-card" onClick={(e) => e.stopPropagation()}>
             <div className="invoice-header">
               <div className="brand">TRAVEL<span>SYSTEM</span></div>

@@ -1,20 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
-import "./styles/sellerBookings.css";
-import "./styles/businessBookings.css";
-
-const STATUS_STYLE = {
-  Pending:   { bg:"#fffaf0", color:"#7b341e", emoji:"⏳" },
-  Confirmed: { bg:"#e6fffa", color:"#234e52", emoji:"✅" },
-  Cancelled: { bg:"#fff5f5", color:"#742a2a", emoji:"❌" },
-};
+import "./styles/addpackage-ext.css";
 
 const fmt = d => new Date(d).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
 
 export default function BusinessBookings() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [filter,   setFilter]   = useState("All");
@@ -50,7 +45,7 @@ export default function BusinessBookings() {
           >Confirm</button>
           <button
             onClick={() => toast.dismiss(t.id)}
-            style={{ background: "rgba(255,255,255,0.1)", color: "#f1f5f9", border: "none", borderRadius: 8, padding: "4px 12px", cursor: "pointer", fontSize: 13 }}
+            style={{ background: "rgba(15, 23, 42, 0.1)", color: "#0f172a", border: "none", borderRadius: 8, padding: "4px 12px", cursor: "pointer", fontSize: 13 }}
           >Cancel</button>
         </span>
       ),
@@ -77,156 +72,165 @@ export default function BusinessBookings() {
   });
 
   if (loading) return (
-    <div className="loader-container">
-      <div className="custom-loader" />
-      <p>Loading bookings…</p>
+    <div className="ap-page">
+      <div className="ap-card" style={{ textAlign: "center", maxWidth: 500 }}>
+        <div style={{ fontSize:32, marginBottom:16 }}>⏳</div>
+        <p className="ap-page-sub" style={{ margin: 0 }}>Loading bookings…</p>
+      </div>
     </div>
   );
 
   return (
-    <div className="seller-dashboard">
+    <div className="ap-page" style={{ alignItems: "stretch", padding: "60px 24px" }}>
+      <div className="ap-card" style={{ maxWidth: 1200, margin: "0 auto" }}>
 
-      {/* ── Hero ── */}
-      <div className="dashboard-hero">
-        <div className="hero-content">
-          <h1>Incoming Bookings 📬</h1>
-          <p>All customer bookings for your published services.</p>
+        {/* ── Header ── */}
+        <div className="ap-page-header">
+          <button type="button" className="ap-back-btn" onClick={() => navigate("/businesstools")}>
+            ← Back to Dashboard
+          </button>
+          <div className="ap-eyebrow">📬 Incoming Bookings</div>
+          <h1 className="ap-page-title">Service Bookings</h1>
+          <p className="ap-page-sub">Manage all incoming customer bookings for your published services.</p>
         </div>
-      </div>
 
-      {/* ── Stats bar ── */}
-      <div className="stats-bar bb-stats-bar">
-        <div className="stat-item">
-          <span className="stat-val">{bookings.length}</span>
-          <span className="stat-label">Total Bookings</span>
+        {/* ── Stats bar ── */}
+        <div className="ap-stats-row">
+          <div className="ap-stat-card">
+            <span className="ap-stat-val">{bookings.length}</span>
+            <span className="ap-stat-label">Total Bookings</span>
+          </div>
+          <div className="ap-stat-card">
+            <span className="ap-stat-val" style={{ color: "#d97706" }}>{pending}</span>
+            <span className="ap-stat-label">Pending</span>
+          </div>
+          <div className="ap-stat-card">
+            <span className="ap-stat-val" style={{ color: "var(--green)" }}>{confirmed}</span>
+            <span className="ap-stat-label">Confirmed</span>
+          </div>
+          <div className="ap-stat-card">
+            <span className="ap-stat-val" style={{ color: "var(--primary)" }}>Rs {totalRevenue.toLocaleString()}</span>
+            <span className="ap-stat-label">Revenue (Confirmed)</span>
+          </div>
         </div>
-        <div className="stat-item">
-          <span className="stat-val" style={{ color:"#f59e0b" }}>{pending}</span>
-          <span className="stat-label">Pending</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-val" style={{ color:"#10b981" }}>{confirmed}</span>
-          <span className="stat-label">Confirmed</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-val text-blue">Rs {totalRevenue.toLocaleString()}</span>
-          <span className="stat-label">Revenue (Confirmed)</span>
-        </div>
-      </div>
 
-      {/* ── Filters ── */}
-      <div className="bb-controls">
-        <div className="bb-filter-pills">
-          {["All","Pending","Confirmed","Cancelled"].map(s => (
-            <button key={s}
-              className={`bb-pill ${filter === s ? "active" : ""}`}
-              onClick={() => setFilter(s)}>
-              {s}
-            </button>
-          ))}
+        {/* ── Filters ── */}
+        <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 8, background: "var(--surface)", padding: 6, borderRadius: 12, border: "1px solid var(--border)" }}>
+            {["All","Pending","Confirmed","Cancelled"].map(s => (
+              <button key={s}
+                style={{
+                  background: filter === s ? "var(--white)" : "transparent",
+                  color: filter === s ? "var(--ink)" : "var(--ink-60)",
+                  boxShadow: filter === s ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+                  border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s"
+                }}
+                onClick={() => setFilter(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
+          <input
+            className="ap-input"
+            style={{ width: "100%", maxWidth: 300, padding: "10px 16px" }}
+            placeholder="🔍 Search by customer or service…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
-        <input
-          className="bb-search"
-          placeholder="🔍  Search by customer or service…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-      </div>
 
-      {/* ── Table ── */}
-      <div className="glass-table-container">
-        <table className="modern-table">
-          <thead>
-            <tr>
-              <th>Customer</th>
-              <th>Service</th>
-              <th>Dates</th>
-              <th>Days</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayed.length > 0 ? displayed.map(b => {
-              const style = STATUS_STYLE[b.status] || STATUS_STYLE.Pending;
-              return (
-                <tr key={b._id} className="hover-row">
-
+        {/* ── Table ── */}
+        <div className="ap-table-wrapper">
+          <table className="ap-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Dates</th>
+                <th style={{ textAlign: "center" }}>Days</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th style={{ textAlign: "center" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayed.length > 0 ? displayed.map(b => (
+                <tr key={b._id}>
                   {/* Customer */}
-                  <td className="user-info-cell">
-                    <div className="avatar-sm">
-                      {b.customerId?.username?.charAt(0).toUpperCase() || "?"}
-                    </div>
-                    <div>
-                      <span className="name-txt">{b.customerId?.username || "—"}</span>
-                      <span className="email-txt">{b.customerId?.email || ""}</span>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--primary-l)", color: "var(--primary-d)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14 }}>
+                        {b.customerId?.username?.charAt(0).toUpperCase() || "?"}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 600, color: "var(--ink)", fontSize: 14 }}>{b.customerId?.username || "—"}</div>
+                        <div style={{ fontSize: 12, color: "var(--ink-60)" }}>{b.customerId?.email || ""}</div>
+                      </div>
                     </div>
                   </td>
 
                   {/* Service */}
                   <td>
-                    <span className="pkg-badge">{b.packageId?.name || "—"}</span>
+                    <div style={{ fontWeight: 600, color: "var(--ink)" }}>{b.packageId?.name || "—"}</div>
                     {b.packageId?.serviceCategory && (
-                      <span className="bb-svc-tag">{b.packageId.serviceCategory}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: "var(--primary)", background: "var(--primary-l)", padding: "2px 6px", borderRadius: 4, marginTop: 4, display: "inline-block" }}>
+                        {b.packageId.serviceCategory}
+                      </span>
                     )}
                   </td>
 
                   {/* Dates */}
                   <td>
-                    <div className="date-stack">
-                      <span>{fmt(b.startDate)}</span>
-                      <small>to {fmt(b.endDate)}</small>
-                    </div>
+                    <div style={{ fontSize: 13, color: "var(--ink)" }}>{fmt(b.startDate)}</div>
+                    <div style={{ fontSize: 11, color: "var(--ink-60)" }}>to {fmt(b.endDate)}</div>
                   </td>
 
                   {/* Days */}
-                  <td style={{ textAlign:"center", fontWeight:700 }}>
+                  <td style={{ textAlign: "center", fontWeight: 700 }}>
                     {b.numberOfDays ?? "—"}
                   </td>
 
                   {/* Total */}
-                  <td className="price-bold">Rs {b.totalCharge?.toLocaleString() || "—"}</td>
+                  <td style={{ fontWeight: 700 }}>Rs {b.totalCharge?.toLocaleString() || "—"}</td>
 
                   {/* Status */}
                   <td>
-                    <span className="bb-status-pill"
-                      style={{ background: style.bg, color: style.color }}>
-                      {style.emoji} {b.status}
+                    <span className={`ap-status-pill ap-status-${b.status.toLowerCase()}`}>
+                      {b.status === "Pending" && "⏳"}
+                      {b.status === "Confirmed" && "✅"}
+                      {b.status === "Cancelled" && "❌"}
+                      {" "}{b.status}
                     </span>
                   </td>
 
                   {/* Actions */}
-                  <td>
-                    <div className="action-group">
+                  <td style={{ textAlign: "center" }}>
+                    <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
                       {b.status === "Pending" ? (
                         <>
-                          <button className="icon-btn check" title="Confirm"
-                            onClick={() => updateStatus(b._id, "Confirmed")}>✔</button>
-                          <button className="icon-btn cross" title="Cancel"
-                            onClick={() => updateStatus(b._id, "Cancelled")}>✖</button>
+                          <button className="ap-table-btn" style={{ borderColor: "var(--green)", color: "var(--green)" }} title="Confirm" onClick={() => updateStatus(b._id, "Confirmed")}>✔ Confirm</button>
+                          <button className="ap-table-btn danger" title="Cancel" onClick={() => updateStatus(b._id, "Cancelled")}>✖</button>
                         </>
                       ) : (
-                        <span className="disabled-txt">—</span>
+                        <span style={{ color: "var(--ink-40)", fontSize: 12, fontWeight: 600 }}>—</span>
                       )}
                     </div>
                   </td>
-
                 </tr>
-              );
-            }) : (
-              <tr>
-                <td colSpan="7" style={{ textAlign:"center", padding:40, color:"#94a3b8" }}>
-                  {search || filter !== "All"
-                    ? "No bookings match your filters."
-                    : "No bookings yet — your services are visible to travellers!"}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              )) : (
+                <tr>
+                  <td colSpan="7" style={{ textAlign:"center", padding:40, color:"var(--ink-40)" }}>
+                    {search || filter !== "All"
+                      ? "No bookings match your filters."
+                      : "No bookings yet — your services are visible to travellers!"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
+      </div>
     </div>
   );
 }

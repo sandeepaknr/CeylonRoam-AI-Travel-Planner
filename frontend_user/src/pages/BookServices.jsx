@@ -18,35 +18,35 @@ function groupBy(arr, fn) {
 /* ── High-level section definitions ── */
 const SUPER_SECTIONS = [
   {
-    id:       "accommodation",
-    label:    "🏨 Accommodations",
-    desc:     "Hotels, Villas, Resorts & more",
-    keys:     ["Hotel Package"],
-    badge:    { bg:"#e8f4fd", color:"#1e40af" },
+    id: "accommodation",
+    label: "🏨 Accommodations",
+    desc: "Hotels, Villas, Resorts & more",
+    keys: ["Hotel Package"],
+    badge: { bg: "#e8f4fd", color: "#1e40af" },
   },
   {
-    id:       "transport",
-    label:    "🚗 Transport",
-    desc:     "Self-drive rentals & chauffeur hire",
-    keys:     ["Rent Vehicle", "Hire Vehicle"],
-    badge:    { bg:"#f3e8ff", color:"#6b21a8" },
+    id: "transport",
+    label: "🚗 Transport",
+    desc: "Self-drive rentals & chauffeur hire",
+    keys: ["Rent Vehicle", "Hire Vehicle"],
+    badge: { bg: "#f3e8ff", color: "#6b21a8" },
   },
   {
-    id:       "guide",
-    label:    "🧭 Guides",
-    desc:     "Tour guides & chauffeur guides",
-    keys:     ["Guide", "Chauffeur Guide"],
-    badge:    { bg:"#d1fae5", color:"#065f46" },
+    id: "guide",
+    label: "🧭 Guides",
+    desc: "Tour guides & chauffeur guides",
+    keys: ["Guide", "Chauffeur Guide"],
+    badge: { bg: "#d1fae5", color: "#065f46" },
   },
 ];
 
 /* ── Sub-category meta within sections ── */
 const SUBCAT_META = {
-  "Hotel Package":   { icon:"🏨", label:"Hotels & Accommodations" },
-  "Rent Vehicle":    { icon:"🔑", label:"Rent a Vehicle"          },
-  "Hire Vehicle":    { icon:"🚕", label:"Hire a Vehicle"          },
-  "Guide":           { icon:"🧭", label:"Tour Guides"              },
-  "Chauffeur Guide": { icon:"🚗", label:"Chauffeur Guides"         },
+  "Hotel Package": { icon: "🏨", label: "Hotels & Accommodations" },
+  "Rent Vehicle": { icon: "🔑", label: "Rent a Vehicle" },
+  "Hire Vehicle": { icon: "🚕", label: "Hire a Vehicle" },
+  "Guide": { icon: "🧭", label: "Tour Guides" },
+  "Chauffeur Guide": { icon: "🚗", label: "Chauffeur Guides" },
 };
 
 /* ── Pricing meta per card ── */
@@ -74,6 +74,17 @@ function PricingDetail({ svc }) {
           {svc.specialization && <span>🎯 {svc.specialization}</span>}
         </div>
       );
+    case "Hotel Package":
+      if (svc.description && svc.description.includes("Room Size")) {
+        const parts = svc.description.split('|');
+        return (
+          <div className="bs-meta-row" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span>🛏️ {parts[2]?.trim() || "Accommodation"}</span>
+            <span>📏 {parts[0]?.replace('Room Size:', '').trim() || ""}</span>
+          </div>
+        );
+      }
+      return null;
     default:
       return null;
   }
@@ -81,20 +92,20 @@ function PricingDetail({ svc }) {
 
 const DISTRICTS = [
   "All Locations",
-  "Ampara","Anuradhapura","Badulla","Batticaloa","Colombo",
-  "Galle","Gampaha","Hambantota","Jaffna","Kalutara",
-  "Kandy","Kegalle","Kilinochchi","Kurunegala","Mannar",
-  "Matale","Matara","Moneragala","Mullaitivu","Nuwara Eliya",
-  "Polonnaruwa","Puttalam","Ratnapura","Trincomalee","Vavuniya",
+  "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo",
+  "Galle", "Gampaha", "Hambantota", "Jaffna", "Kalutara",
+  "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar",
+  "Matale", "Matara", "Moneragala", "Mullaitivu", "Nuwara Eliya",
+  "Polonnaruwa", "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya",
 ];
 
 const CATEGORY_FILTERS = [
-  { value:"",               label:"All Services"       },
-  { value:"Hotel Package",  label:"🏨 Accommodation"   },
-  { value:"Guide",          label:"🧭 Tour Guide"      },
-  { value:"Chauffeur Guide",label:"🚗 Chauffeur Guide" },
-  { value:"Rent Vehicle",   label:"🔑 Rent Vehicle"    },
-  { value:"Hire Vehicle",   label:"🚕 Hire Vehicle"    },
+  { value: "", label: "All Services" },
+  { value: "Hotel Package", label: "🏨 Accommodation" },
+  { value: "Guide", label: "🧭 Tour Guide" },
+  { value: "Chauffeur Guide", label: "🚗 Chauffeur Guide" },
+  { value: "Rent Vehicle", label: "🔑 Rent Vehicle" },
+  { value: "Hire Vehicle", label: "🚕 Hire Vehicle" },
 ];
 
 /* ══════════════════════════════════════════════════════════
@@ -103,9 +114,9 @@ const CATEGORY_FILTERS = [
    Offline-first: shows rate-source badge (live / cached / offline).
 ══════════════════════════════════════════════════════════ */
 const SOURCE_BADGE = {
-  live:   { label: "Live rates",   color: "#16a34a", bg: "#f0fdf4", dot: "#22c55e" },
+  live: { label: "Live rates", color: "#16a34a", bg: "#f0fdf4", dot: "#22c55e" },
   cached: { label: "Cached rates", color: "#0369a1", bg: "#eff6ff", dot: "#60a5fa" },
-  static: { label: "Offline rates",color: "#b45309", bg: "#fffbeb", dot: "#f59e0b" },
+  static: { label: "Offline rates", color: "#b45309", bg: "#fffbeb", dot: "#f59e0b" },
 };
 
 function CurrencySelectorGroup() {
@@ -183,16 +194,16 @@ export default function BookServices() {
   const navigate = useNavigate();
   const { selectedCurrency, formatPrice, loadingRates } = useContext(CurrencyContext);
 
-  const [services,    setServices]    = useState([]);
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState(false);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [selCategory, setSelCategory] = useState("");
   const [selLocation, setSelLocation] = useState("All Locations");
-  const [maxPrice,    setMaxPrice]    = useState(50000);
+  const [maxPrice, setMaxPrice] = useState(50000);
 
   useEffect(() => {
     let isMounted = true;
-    
+
     // Failsafe timer: force loading false after 8s if something hangs
     const fallbackTimer = setTimeout(() => {
       if (isMounted) {
@@ -229,8 +240,8 @@ export default function BookServices() {
 
   /* Apply sidebar filters */
   const filtered = services.filter(s => {
-    const matchCat   = !selCategory || s.serviceCategory === selCategory;
-    const matchLoc   = selLocation === "All Locations" || s.location === selLocation;
+    const matchCat = !selCategory || s.serviceCategory === selCategory;
+    const matchLoc = selLocation === "All Locations" || s.location === selLocation;
     const matchPrice = s.price <= maxPrice;
     return matchCat && matchLoc && matchPrice;
   });
@@ -255,15 +266,26 @@ export default function BookServices() {
 
       <div className="card-info">
         <h4>{svc.name}</h4>
-        <p className="loc">📍 {svc.location}</p>
+
+
         <PricingDetail svc={svc} />
+
+        {svc.creator && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', fontSize: '12px', color: '#64748b' }}>
+            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#e0e7ff', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+              {svc.creator.username?.charAt(0).toUpperCase() || "P"}
+            </div>
+            <span>Posted by <strong>{svc.creator.username || "Partner"}</strong> in {svc.location}</span>
+          </div>
+        )}
+
         <div className="card-info-divider" />
-        <div className="price-box" style={{ alignItems:"flex-end" }}>
+        <div className="price-box" style={{ alignItems: "flex-end" }}>
           <div>
             <div className="price-label">From</div>
-            <div className="amt" style={{ lineHeight:1.2 }}>
-              {loadingRates ? <span style={{fontSize:13,color:"#999"}}>…</span> : formatPrice(svc.price)}
-              <span className="amt-per" style={{ fontSize:12 }}>
+            <div className="amt" style={{ lineHeight: 1.2 }}>
+              {loadingRates ? <span style={{ fontSize: 13, color: "#999" }}>…</span> : formatPrice(svc.price)}
+              <span className="amt-per" style={{ fontSize: 12 }}>
                 {svc.pricingType === "Per KM" ? " /km" : " /day"}
               </span>
             </div>
@@ -303,7 +325,7 @@ export default function BookServices() {
         <div className="filter-group">
           <label>
             Max Budget
-            <span className="price-range-val" style={{ display:"block", fontSize:12, marginTop:4 }}>
+            <span className="price-range-val" style={{ display: "block", fontSize: 12, marginTop: 4 }}>
               {loadingRates ? "…" : formatPrice(maxPrice)}
             </span>
           </label>
@@ -332,8 +354,8 @@ export default function BookServices() {
             <div className="no-results-icon" style={{ filter: 'grayscale(100%)' }}>⚠️</div>
             <div className="no-results-title">Offline data not available</div>
             <p>Please check your connection and try again.</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               style={{ marginTop: '20px', padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#0a3d62', color: '#fff', cursor: 'pointer' }}
             >
               Retry
@@ -357,9 +379,9 @@ export default function BookServices() {
 
                 {/* Sub-category groups within this super-section */}
                 {subKeys.map(subKey => {
-                  const { icon, label } = SUBCAT_META[subKey] || { icon:"📦", label: subKey };
+                  const { icon, label } = SUBCAT_META[subKey] || { icon: "📦", label: subKey };
                   return (
-                    <div key={subKey} className="ep-category-section" style={{ marginLeft:0 }}>
+                    <div key={subKey} className="ep-category-section" style={{ marginLeft: 0 }}>
                       <div className="ep-section-heading">
                         <span className="ep-section-icon">{icon}</span>
                         <h3>{label}</h3>
