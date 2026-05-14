@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
-import "./styles/managepackages.css";
-import "./styles/addpackage-ext.css";
+import "./styles/addpackage-ext.css"; // The unified premium styling
 
 /* ── Business category → allowed service sub-categories ───── */
 const BIZ_CATEGORY_MAP = {
@@ -30,7 +30,8 @@ const SRI_LANKA_DISTRICTS = [
 
 export default function AddService() {
   const { user } = useContext(AuthContext);
-  const [image,            setImage]            = useState(null);
+  const navigate = useNavigate();
+  const [images,            setImages]            = useState([]);
   const [submitting,       setSubmitting]       = useState(false);
   const [bizCategory,      setBizCategory]      = useState(null);
   const [guideType,        setGuideType]        = useState(null); // raw registered guideType
@@ -58,7 +59,6 @@ export default function AddService() {
 
         if (cat === "Guide" && rawGuideType) {
           // Map registered guideType → serviceCategory, bypassing selection entirely
-          // 'Chauffeur Guide' → 'Chauffeur Guide'; everything else → 'Guide'
           const mappedSC = rawGuideType === "Chauffeur Guide" ? "Chauffeur Guide" : "Guide";
           setAllowedCats([]);                              // no selector needed
           setForm(p => ({ ...p, serviceCategory: mappedSC }));
@@ -78,6 +78,19 @@ export default function AddService() {
   }, [user]);
 
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (images.length + files.length > 5) {
+      toast.error("You can only upload up to 5 images.");
+      return;
+    }
+    setImages(prev => [...prev, ...files]);
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,7 +120,9 @@ export default function AddService() {
     if (sc === "Hire Vehicle") {
       fd.append("pricingType", "Per KM");
     }
-    if (image) fd.append("image", image);
+    if (images.length > 0) {
+      images.forEach(img => fd.append("images", img));
+    }
 
     const toastId = toast.loading("🚀 Publishing your service…");
     try {
@@ -118,7 +133,7 @@ export default function AddService() {
         serviceCategory: allowedCats.length === 1 ? allowedCats[0].value : "",
         languages:"", specialization:"", pricingType:"", includedKM:"", extraKMCharge:"",
       });
-      setImage(null);
+      setImages([]);
       e.target.reset();
     } catch {
       toast.error("❌ Failed to publish service. Please try again.", { id: toastId });
@@ -133,39 +148,57 @@ export default function AddService() {
   const isHire  = sc === "Hire Vehicle";
 
   if (bizLoading) return (
-    <div className="business-wrapper">
-      <div className="glass-container animate-slide-up" style={{ maxWidth:560, textAlign:"center", padding:60 }}>
-        <div style={{ fontSize:32, marginBottom:12 }}>⏳</div>
-        <p style={{ color:"#94a3b8" }}>Loading your business profile…</p>
+    <div className="ap-page">
+      <div className="ap-card" style={{ textAlign: "center", maxWidth: 500 }}>
+        <div style={{ fontSize:32, marginBottom:16 }}>⏳</div>
+        <p className="ap-page-sub" style={{ margin: 0 }}>Loading your business profile…</p>
       </div>
     </div>
   );
 
   return (
-    <div className="business-wrapper">
-      <div className="glass-container animate-slide-up" style={{ maxWidth:660 }}>
-        <h2 className="page-title">⚙️ Post a Service</h2>
-        <p style={{ color:"#94a3b8", marginBottom:24, fontSize:"0.9rem" }}>
-          Publish a bookable resource that travellers can reserve directly.
-          {bizCategory && <> · Locked to <strong style={{ color:"#38bdf8" }}>{bizCategory}</strong> account.</>}
-        </p>
+    <div className="ap-page">
+      <div className="ap-card">
+        
+        {/* ── Header ── */}
+        <div className="ap-page-header">
+          <button type="button" className="ap-back-btn" onClick={() => navigate("/businesstools")}>
+            ← Back to Dashboard
+          </button>
+          <div className="ap-eyebrow">⚙️ Partner Portal</div>
+          <h1 className="ap-page-title">Post a Service</h1>
+          <p className="ap-page-sub">
+            Publish a bookable resource that travellers can reserve directly.
+            {bizCategory && <> Locked to <strong style={{ color:"var(--primary)" }}>{bizCategory}</strong> account.</>}
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="ap-form">
 
           {/* ── Service type selector — hidden for Guides (auto-resolved from guideType) ── */}
           {bizCategory !== "Guide" && (
             <div className="ap-field-group">
               <label className="ap-label">Service Type *</label>
               {allowedCats.length === 1 ? (
-                <div className="ap-single-cat">
-                  <span className="ap-single-cat-pill">{allowedCats[0].label}</span>
-                  <span className="ap-single-cat-hint">Auto-selected for your account</span>
+                <div style={{ padding: "12px 16px", background: "var(--surface-b)", border: "1px solid #bae6fd", borderRadius: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: "var(--primary)" }}>{allowedCats[0].label}</span>
+                  <span style={{ fontSize: 13, color: "var(--ink-40)" }}>Auto-selected for your account</span>
                 </div>
               ) : (
-                <div className="ap-cat-grid">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {allowedCats.map(c => (
                     <button key={c.value} type="button"
-                      className={`ap-cat-btn ${form.serviceCategory === c.value ? "active" : ""}`}
+                      style={{
+                        padding: 16,
+                        background: form.serviceCategory === c.value ? "var(--primary-l)" : "var(--surface)",
+                        border: `1.5px solid ${form.serviceCategory === c.value ? "var(--primary)" : "var(--border)"}`,
+                        borderRadius: 14,
+                        textAlign: "left",
+                        cursor: "pointer",
+                        color: form.serviceCategory === c.value ? "var(--primary-d)" : "var(--ink)",
+                        fontWeight: form.serviceCategory === c.value ? 700 : 500,
+                        transition: "all 0.2s ease"
+                      }}
                       onClick={() => setForm(p => ({ ...p, serviceCategory: c.value }))}>
                       {c.label}
                     </button>
@@ -179,11 +212,11 @@ export default function AddService() {
           {bizCategory === "Guide" && form.serviceCategory && (
             <div className="ap-field-group">
               <label className="ap-label">Service Type</label>
-              <div className="ap-single-cat">
-                <span className="ap-single-cat-pill">
+              <div style={{ padding: "12px 16px", background: "var(--surface-b)", border: "1px solid #bae6fd", borderRadius: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "var(--primary)" }}>
                   {form.serviceCategory === "Chauffeur Guide" ? "🚗 Chauffeur Guide" : "🧭 Tour Guide"}
                 </span>
-                <span className="ap-single-cat-hint">
+                <span style={{ fontSize: 13, color: "var(--ink-40)" }}>
                   Locked to your registered guide type: <strong>{guideType}</strong>
                 </span>
               </div>
@@ -191,24 +224,37 @@ export default function AddService() {
           )}
 
           {sc && (<>
-            <input className="input-field" name="name" required
-              placeholder={isGuide ? "Guide Name / Profile Title *" : isRent || isHire ? "Vehicle Name *" : "Listing Name *"}
-              value={form.name} onChange={handleChange} />
+            <div className="ap-section-divider">Basic Information</div>
 
-            <textarea className="input-field" name="description" rows={3} required
-              placeholder="Description *" value={form.description} onChange={handleChange} />
+            <div className="ap-field-group">
+              <label className="ap-label">
+                {isGuide ? "Guide Name / Profile Title *" : isRent || isHire ? "Vehicle Name *" : "Listing Name *"}
+              </label>
+              <input className="ap-input" name="name" required
+                placeholder={isGuide ? "e.g. Supun — Professional Tour Guide" : "e.g. Toyota Prius Hybrid"}
+                value={form.name} onChange={handleChange} />
+            </div>
+
+            <div className="ap-field-group">
+              <label className="ap-label">Description *</label>
+              <textarea className="ap-input" name="description" rows={4} required
+                placeholder="Give travellers a compelling overview of this service…" value={form.description} onChange={handleChange} />
+            </div>
+
+            <div className="ap-section-divider">Pricing & Location</div>
 
             <div className="ap-two-col">
-              <div>
+              <div className="ap-field-group">
                 <label className="ap-label">
                   {isHire ? "Price per KM (LKR) *" : "Price per Day (LKR) *"}
                 </label>
-                <input className="input-field" type="number" name="price"
+                <input className="ap-input" type="number" name="price"
                   placeholder="e.g. 5000" value={form.price} onChange={handleChange} required />
+                {isHire && <p className="ap-hint">🚕 Hire pricing is strictly per KM</p>}
               </div>
-              <div>
+              <div className="ap-field-group">
                 <label className="ap-label">District / Location *</label>
-                <select className="input-field" name="location" value={form.location} onChange={handleChange} required>
+                <select className="ap-input" name="location" value={form.location} onChange={handleChange} required>
                   <option value="">Select District</option>
                   {SRI_LANKA_DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -217,65 +263,75 @@ export default function AddService() {
 
             {/* Guide fields */}
             {isGuide && (
-              <div className="ap-ext-section">
-                <div className="ap-ext-label">🧭 Guide Details</div>
+              <>
+                <div className="ap-section-divider">Guide Details</div>
                 <div className="ap-two-col">
-                  <div>
+                  <div className="ap-field-group">
                     <label className="ap-label">Languages Spoken *</label>
-                    <input className="input-field" name="languages" required
+                    <input className="ap-input" name="languages" required
                       placeholder="e.g. English, German" value={form.languages} onChange={handleChange} />
                     <p className="ap-hint">Comma-separated</p>
                   </div>
-                  <div>
+                  <div className="ap-field-group">
                     <label className="ap-label">Specialization *</label>
-                    <input className="input-field" name="specialization"
+                    <input className="ap-input" name="specialization"
                       placeholder="e.g. Wildlife & Nature" value={form.specialization} onChange={handleChange} required />
                   </div>
                 </div>
-              </div>
+              </>
             )}
 
             {/* Rent fields */}
             {isRent && (
-              <div className="ap-ext-section">
-                <div className="ap-ext-label">🔑 Rent Vehicle Details</div>
+              <>
+                <div className="ap-section-divider">Vehicle Rental Details</div>
                 <div className="ap-two-col">
-                  <div>
+                  <div className="ap-field-group">
                     <label className="ap-label">Included KM per Day *</label>
-                    <input className="input-field" type="number" name="includedKM"
+                    <input className="ap-input" type="number" name="includedKM"
                       placeholder="e.g. 150" value={form.includedKM} onChange={handleChange} required />
                   </div>
-                  <div>
+                  <div className="ap-field-group">
                     <label className="ap-label">Extra KM Charge (LKR) *</label>
-                    <input className="input-field" type="number" name="extraKMCharge"
+                    <input className="ap-input" type="number" name="extraKMCharge"
                       placeholder="e.g. 80" value={form.extraKMCharge} onChange={handleChange} required />
                   </div>
                 </div>
-              </div>
+              </>
             )}
 
-            {isHire && (
-              <div className="ap-info-banner">
-                🚕 <strong>Hire pricing is per KM</strong> — the price above is charged per kilometre.
-              </div>
-            )}
+            <div className="ap-section-divider">Service Images (Up to 5)</div>
 
-            <div className="file-input-wrapper">
-              <label className="ap-label" style={{ color:"#fff", marginBottom:5, display:"block" }}>
-                Cover Image *
-              </label>
-              <input type="file" accept="image/*" className="input-field" required
-                onChange={e => setImage(e.target.files[0])} />
+            <div className="ap-field-group">
+              <div className="ap-file-zone" style={{ padding: "40px 20px" }}>
+                <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="ap-file-input" />
+                <div className="ap-file-zone-icon">📸</div>
+                <div className="ap-file-zone-label">Drag & Drop or Click to Upload Photos</div>
+                <div className="ap-file-zone-hint">Upload 1-5 high quality photos of your service.</div>
+              </div>
+              
+              {images.length > 0 && (
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16 }}>
+                  {images.map((file, i) => (
+                    <div key={i} style={{ position: "relative", width: 80, height: 80, borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
+                      <img src={URL.createObjectURL(file)} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <button type="button" onClick={() => removeImage(i)}
+                        style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: 20, height: 20, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        ✖
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <button type="submit" className="btn-explore" style={{ width:"100%", marginTop:10 }}
-              disabled={submitting}>
-              {submitting ? "Publishing…" : `🚀 Publish Service`}
+            <button type="submit" className="ap-submit-btn" disabled={submitting}>
+              {submitting ? <><span className="ap-spinner"/> Publishing…</> : `🚀 Publish Service`}
             </button>
           </>)}
 
           {!sc && (
-            <p style={{ textAlign:"center", color:"#94a3b8", padding:"20px 0" }}>
+            <p style={{ textAlign:"center", color:"var(--ink-40)", padding:"32px 0", fontSize: 14 }}>
               👆 Select a service type above to continue.
             </p>
           )}

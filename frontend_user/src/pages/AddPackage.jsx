@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
@@ -18,8 +19,9 @@ const SRI_LANKA_DISTRICTS = [
 ────────────────────────────────────────────────────────── */
 export default function AddPackage() {
   const { user }    = useContext(AuthContext);
+  const navigate    = useNavigate();
   const [categories, setCategories] = useState([]);
-  const [image,      setImage]      = useState(null);
+  const [images,     setImages]     = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
@@ -43,6 +45,19 @@ export default function AddPackage() {
   const handleChange = e =>
     setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (images.length + files.length > 5) {
+      toast.error("You can only upload up to 5 images.");
+      return;
+    }
+    setImages(prev => [...prev, ...files]);
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   /* ── Submit — untouched ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,14 +74,16 @@ export default function AddPackage() {
     fd.append("category",    form.category);
     fd.append("creator",     user?._id);
     fd.append("listingType", "Package");         // ← KEY differentiator
-    if (image) fd.append("image", image);
+    if (images.length > 0) {
+      images.forEach(img => fd.append("images", img));
+    }
 
     const toastId = toast.loading("🚀 Publishing your package…");
     try {
       await API.post("/packages", fd, { headers: { "Content-Type": "multipart/form-data" } });
       toast.success("✅ Package / Tour Published!", { id: toastId });
       setForm({ name:"", description:"", itinerary:"", inclusions:"", duration:"", price:"", location:"", category:"" });
-      setImage(null);
+      setImages([]);
       e.target.reset();
     } catch {
       toast.error("❌ Failed to publish package. Please try again.", { id: toastId });
@@ -87,6 +104,9 @@ export default function AddPackage() {
 
         {/* ── Header ── */}
         <div className="ap-page-header">
+          <button type="button" className="ap-back-btn" onClick={() => navigate("/businesstools")}>
+            ← Back to Dashboard
+          </button>
           <div className="ap-eyebrow">🗺️ Partner Portal</div>
           <h1 className="ap-page-title">Post a Tour Package</h1>
           <p className="ap-page-sub">
@@ -226,29 +246,28 @@ export default function AddPackage() {
             </div>
           </div>
 
-          <div className="ap-section-divider">Cover Image</div>
+          <div className="ap-section-divider">Tour Images (Up to 5)</div>
 
-          {/* File upload zone */}
           <div className="ap-field-group">
-            <label className="ap-label">Hero / Cover Image *</label>
-            <div className="ap-file-zone">
-              <input
-                type="file"
-                accept="image/*"
-                required
-                className="ap-file-input"
-                onChange={e => setImage(e.target.files[0])}
-              />
-              <div className="ap-file-zone-icon">🖼️</div>
-              <div className="ap-file-zone-label">
-                {image ? image.name : "Click or drag an image here"}
-              </div>
-              <div className="ap-file-zone-hint">
-                {image ? "Click to change" : "JPG, PNG, WebP — max 10 MB"}
-              </div>
+            <div className="ap-file-zone" style={{ padding: "40px 20px" }}>
+              <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="ap-file-input" />
+              <div className="ap-file-zone-icon">📸</div>
+              <div className="ap-file-zone-label">Drag & Drop or Click to Upload Photos</div>
+              <div className="ap-file-zone-hint">Upload 1-5 high quality photos of this tour.</div>
             </div>
-            {image && (
-              <span className="ap-file-name">📎 {image.name}</span>
+            
+            {images.length > 0 && (
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16 }}>
+                {images.map((file, i) => (
+                  <div key={i} style={{ position: "relative", width: 80, height: 80, borderRadius: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
+                    <img src={URL.createObjectURL(file)} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <button type="button" onClick={() => removeImage(i)}
+                      style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: 20, height: 20, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      ✖
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 

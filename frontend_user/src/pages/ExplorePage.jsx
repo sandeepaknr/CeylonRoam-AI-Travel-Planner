@@ -197,10 +197,16 @@ export default function ExplorePage() {
               <LuMapPin size={14} className="loc-icon" />
               <span>{pkg.location} - View on map</span>
             </p>
-            <p className="loc-distance">
-              781 m from Galle Central Bus Station • 74 m from Galle Lighthouse
-            </p>
           </div>
+
+          {pkg.creator && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0 12px', fontSize: '12px', color: '#64748b' }}>
+              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#ffedd5', color: '#c2410c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                {pkg.creator.username?.charAt(0).toUpperCase() || "P"}
+              </div>
+              <span>Hosted by <strong>{pkg.creator.username || "Partner"}</strong> in {pkg.location}</span>
+            </div>
+          )}
 
           {/* 3. Badges & Perks */}
           <div className="card-perks-area">
