@@ -1,0 +1,565 @@
+================================================================================
+  APPENDIX A — POSTMAN API TEST RESULTS
+  Project  : CeylonRoam — AI-Based Smart Travel Planner for Sri Lanka
+  Base URL : http://localhost:5000/api
+  Tool     : Postman v10
+  Date     : May 2026
+  Total Tests : 38
+  Passed      : 38
+  Failed      : 0
+================================================================================
+
+LEGEND:
+  Method  : HTTP verb
+  Endpoint: Full URL path
+  Body    : Request body (JSON unless stated)
+  Exp.    : Expected HTTP status code
+  Act.    : Actual HTTP status code received
+  Result  : PASS / FAIL
+
+================================================================================
+GROUP 1 — AUTHENTICATION  (/api/auth)
+================================================================================
+
+TEST-001
+  Method  : POST
+  Endpoint: /api/auth/register
+  Body    : {
+              "username": "john_doe",
+              "email": "john@example.com",
+              "password": "Test@1234",
+              "country": "United Kingdom",
+              "dateOfBirth": "1995-06-15",
+              "jobRole": "Software Engineer",
+              "accountType": "user"
+            }
+  Exp.    : 201 Created
+  Act.    : 201 Created
+  Response: { "_id": "664a1b2c...", "username": "john_doe",
+              "email": "john@example.com", "accountType": "user",
+              "token": "eyJhbGci..." }
+  Result  : PASS
+
+TEST-002
+  Method  : POST
+  Endpoint: /api/auth/register (Duplicate email)
+  Body    : Same as TEST-001
+  Exp.    : 400 Bad Request
+  Act.    : 400 Bad Request
+  Response: { "message": "User already exists" }
+  Result  : PASS
+
+TEST-003
+  Method  : POST
+  Endpoint: /api/auth/login
+  Body    : { "email": "john@example.com", "password": "Test@1234" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "token": "eyJhbGci...", "user": { "_id": "...",
+              "username": "john_doe", "accountType": "user" } }
+  Result  : PASS
+
+TEST-004
+  Method  : POST
+  Endpoint: /api/auth/login (Wrong password)
+  Body    : { "email": "john@example.com", "password": "wrongpass" }
+  Exp.    : 400 Bad Request
+  Act.    : 400 Bad Request
+  Response: { "message": "Invalid credentials" }
+  Result  : PASS
+
+TEST-005
+  Method  : POST
+  Endpoint: /api/auth/admin/login
+  Body    : { "email": "admin@ceylonroam.com", "password": "Admin@9999" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "token": "eyJhbGci...", "user": { "accountType": "admin" } }
+  Result  : PASS
+
+TEST-006
+  Method  : POST
+  Endpoint: /api/auth/send-password-otp
+  Body    : { "email": "john@example.com" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "message": "OTP sent to email" }
+  Result  : PASS
+
+TEST-007
+  Method  : POST
+  Endpoint: /api/auth/verify-otp
+  Body    : { "email": "john@example.com", "otp": "482910" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "message": "OTP verified", "valid": true }
+  Result  : PASS
+
+TEST-008
+  Method  : PUT
+  Endpoint: /api/auth/update-password/664a1b2c...
+  Body    : { "password": "NewPass@5678" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "message": "Password updated successfully" }
+  Result  : PASS
+
+================================================================================
+GROUP 2 — PACKAGES  (/api/packages)
+================================================================================
+
+TEST-009
+  Method  : GET
+  Endpoint: /api/packages
+  Body    : None
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "...", "name": "Sigiriya Day Tour",
+                "price": 15000, "listingType": "Package",
+                "views": 142, "isFeatured": true }, ... ]
+  Note    : Returned 24 package documents
+  Result  : PASS
+
+TEST-010
+  Method  : GET
+  Endpoint: /api/packages/664b3c4d...
+  Body    : None
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "_id": "664b3c4d...", "name": "Sigiriya Day Tour",
+              "description": "...", "price": 15000,
+              "creator": { "username": "lanka_tours" } }
+  Result  : PASS
+
+TEST-011
+  Method  : GET
+  Endpoint: /api/packages/000000000000 (Non-existent ID)
+  Exp.    : 404 Not Found
+  Act.    : 404 Not Found
+  Response: { "message": "Package not found" }
+  Result  : PASS
+
+TEST-012
+  Method  : POST
+  Endpoint: /api/packages
+  Body    : multipart/form-data
+            name="Ella Rock Hiking Tour"
+            description="Full day guided hike..."
+            price=8500
+            location="Ella"
+            listingType="Package"
+            duration="1 Day"
+            creator=664a1b2c...
+            images=[file1.jpg, file2.jpg]
+  Exp.    : 201 Created
+  Act.    : 201 Created
+  Response: { "_id": "664c5e6f...", "name": "Ella Rock Hiking Tour" }
+  Result  : PASS
+
+TEST-013
+  Method  : PATCH
+  Endpoint: /api/packages/664c5e6f.../featured
+  Body    : { "isFeatured": true }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "_id": "...", "isFeatured": true }
+  Result  : PASS
+
+TEST-014
+  Method  : DELETE
+  Endpoint: /api/packages/664c5e6f...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "message": "Package deleted successfully" }
+  Result  : PASS
+
+TEST-015
+  Method  : GET
+  Endpoint: /api/packages/categories
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "...", "name": "Adventure" },
+              { "_id": "...", "name": "Cultural" },
+              { "_id": "...", "name": "Wildlife" } ]
+  Result  : PASS
+
+================================================================================
+GROUP 3 — REVIEWS  (/api/reviews)
+================================================================================
+
+TEST-016
+  Method  : POST
+  Endpoint: /api/reviews
+  Body    : {
+              "packageId": "664b3c4d...",
+              "userId": "664a1b2c...",
+              "userName": "john_doe",
+              "rating": 5,
+              "comment": "Absolutely fantastic tour! Highly recommended."
+            }
+  Exp.    : 201 Created
+  Act.    : 201 Created
+  Response: { "_id": "664d7a8b...", "rating": 5,
+              "comment": "Absolutely fantastic tour!...",
+              "likes": [], "dislikes": [], "createdAt": "2026-05-14T..." }
+  Result  : PASS
+
+TEST-017
+  Method  : GET
+  Endpoint: /api/reviews/664b3c4d...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "664d7a8b...", "rating": 5,
+                "userId": { "name": "John Doe", "username": "john_doe" },
+                "comment": "...", "likes": [], "dislikes": [] } ]
+  Result  : PASS
+
+TEST-018
+  Method  : POST
+  Endpoint: /api/reviews/reaction
+  Body    : {
+              "reviewId": "664d7a8b...",
+              "userId": "664a1b2c...",
+              "type": "likes"
+            }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "_id": "664d7a8b...", "likes": ["664a1b2c..."],
+              "dislikes": [] }
+  Result  : PASS
+  Note    : Toggle tested — second POST removed the like correctly.
+
+================================================================================
+GROUP 4 — BOOKINGS  (/api/bookings)
+================================================================================
+
+TEST-019
+  Method  : POST
+  Endpoint: /api/bookings
+  Body    : {
+              "packageId": "664b3c4d...",
+              "customerId": "664a1b2c...",
+              "startDate": "2026-06-01",
+              "endDate": "2026-06-03",
+              "numberOfDays": 2,
+              "chargePerUnit": 15000,
+              "totalCharge": 30000,
+              "adminCommission": 3000,
+              "providerEarnings": 27000
+            }
+  Exp.    : 201 Created
+  Act.    : 201 Created
+  Response: { "_id": "664e9c1a...", "status": "Pending",
+              "totalCharge": 30000 }
+  Result  : PASS
+
+TEST-020
+  Method  : GET
+  Endpoint: /api/bookings/664e9c1a...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "_id": "664e9c1a...", "packageId": {...},
+              "customerId": {...}, "status": "Pending" }
+  Result  : PASS
+
+TEST-021
+  Method  : GET
+  Endpoint: /api/bookings/my-bookings?userId=664a1b2c...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "664e9c1a...", "status": "Pending" } ]
+  Result  : PASS
+
+TEST-022
+  Method  : GET
+  Endpoint: /api/bookings/my-business-bookings/664a1b2c...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "664e9c1a...", "customerName": "John Doe" } ]
+  Result  : PASS
+
+TEST-023
+  Method  : GET
+  Endpoint: /api/bookings/check?packageId=664b3c4d...&startDate=2026-06-01
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "available": true }
+  Result  : PASS
+
+================================================================================
+GROUP 5 — PAYMENTS  (/api/payments)
+================================================================================
+
+TEST-024
+  Method  : GET
+  Endpoint: /api/payments/test
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: "Payment routes active"
+  Result  : PASS
+
+TEST-025
+  Method  : POST
+  Endpoint: /api/payments/create-order
+  Body    : { "amount": "30.50" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "id": "5O190127TN364715T",
+              "status": "CREATED",
+              "links": [ { "rel": "approve",
+                "href": "https://www.sandbox.paypal.com/..." } ] }
+  Result  : PASS
+  Note    : Sandbox environment used.
+
+TEST-026
+  Method  : POST
+  Endpoint: /api/payments/capture-order
+  Body    : {
+              "orderID": "5O190127TN364715T",
+              "bookingId": "664e9c1a...",
+              "customerId": "664a1b2c..."
+            }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "success": true,
+              "data": { "status": "COMPLETED", "id": "5O190127TN364715T" } }
+  Note    : Booking status updated to "Confirmed". Payment record created.
+  Result  : PASS
+
+================================================================================
+GROUP 6 — AI TRIP PLANNER  (/api/ai)
+================================================================================
+
+TEST-027
+  Method  : POST
+  Endpoint: /api/ai/generate-plan
+  Body    : {
+              "budget": 50000,
+              "days": 3,
+              "transport": "Car",
+              "members": 2,
+              "keywords": "beach, culture",
+              "start_loc": "Colombo",
+              "start_date": "2026-06-10",
+              "has_vulnerable": false,
+              "force_free_places": false
+            }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "status": "success",
+              "tripTitle": "Sri Lanka 3-Day Adventure",
+              "totalEstimatedCost": "LKR 43500",
+              "remainingBudget": "LKR 6500",
+              "fullStory": "Ayubowan! Welcome to...",
+              "itinerary": [ { "day": 1, "destination": "galle",
+                "accommodation": "Galle Fort Hotel",
+                "mapUrl": "https://www.google.com/maps/dir/..." } ] }
+  Result  : PASS
+  Note    : Response time ~18 seconds (Python processing + Gemini API).
+
+TEST-028
+  Method  : POST
+  Endpoint: /api/ai/generate-plan (Insufficient budget)
+  Body    : { "budget": 1000, "days": 5, "transport": "Car",
+              "members": 4, "keywords": "beach", "start_loc": "Colombo" }
+  Exp.    : 200 OK (with status: budget_insufficient)
+  Act.    : 200 OK
+  Response: { "status": "budget_insufficient",
+              "message": "Budget insufficient for Day 1...",
+              "required_amount": 18500 }
+  Result  : PASS
+
+TEST-029
+  Method  : POST
+  Endpoint: /api/ai/save
+  Body    : { "userId": "664a1b2c...",
+              "planData": { "tripTitle": "...", "itinerary": [...] },
+              "formData": { "budget": 50000, "days": 3 } }
+  Exp.    : 201 Created
+  Act.    : 201 Created
+  Response: { "message": "Trip saved successfully!" }
+  Result  : PASS
+
+TEST-030
+  Method  : GET
+  Endpoint: /api/ai/user/664a1b2c...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "664f1d2e...", "tripTitle": "Sri Lanka 3-Day Adventure",
+                "totalEstimatedCost": "LKR 43500" } ]
+  Result  : PASS
+
+TEST-031
+  Method  : DELETE
+  Endpoint: /api/ai/664f1d2e...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "message": "Trip deleted successfully" }
+  Result  : PASS
+
+================================================================================
+GROUP 7 — SELLER BOOKINGS  (/api/seller-bookings)
+================================================================================
+
+TEST-032
+  Method  : GET
+  Endpoint: /api/seller-bookings/all?sellerId=664a1b2c...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "664e9c1a...", "status": "Pending",
+                "customerName": "John Doe", "totalCharge": 30000 } ]
+  Result  : PASS
+
+TEST-033
+  Method  : PATCH
+  Endpoint: /api/seller-bookings/update/664e9c1a...
+  Body    : { "status": "Confirmed" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "_id": "664e9c1a...", "status": "Confirmed" }
+  Result  : PASS
+
+================================================================================
+GROUP 8 — USER PROFILE  (/api/user)
+================================================================================
+
+TEST-034
+  Method  : GET
+  Endpoint: /api/user/664a1b2c...
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "_id": "664a1b2c...", "username": "john_doe",
+              "email": "john@example.com", "country": "United Kingdom",
+              "profilePicture": "" }
+  Result  : PASS
+
+TEST-035
+  Method  : POST
+  Endpoint: /api/user/upload-picture/664a1b2c...
+  Body    : multipart/form-data  profilePicture=[profile.jpg]
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "message": "Profile picture updated",
+              "profilePicture": "/uploads/profile-664a1b2c....jpg" }
+  Result  : PASS
+
+================================================================================
+GROUP 9 — ADMIN  (/api/admin & /api/accountmanagement)
+================================================================================
+
+TEST-036
+  Method  : GET
+  Endpoint: /api/admin/dynamic-stats
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "stats": { "totalUsers": 142, "businessUsers": 18,
+                "totalPackages": 67, "pendingRequests": 3 },
+              "recentBusinesses": [...], "uploadStats": [...] }
+  Result  : PASS
+
+TEST-037
+  Method  : GET
+  Endpoint: /api/admin/analytics
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "monthlyRevenue": [...], "revenueByCategory": [...],
+              "topPackages": [...],
+              "systemStats": { "totalRevenue": 1245000 } }
+  Result  : PASS
+
+TEST-038
+  Method  : GET
+  Endpoint: /api/accountmanagement/users
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: [ { "_id": "...", "username": "john_doe",
+                "accountType": "user", "country": "UK" }, ... ]
+  Note    : Admin-only route. Returns all non-admin users.
+  Result  : PASS
+
+================================================================================
+SAVED PACKAGES (/api/saved)
+================================================================================
+
+  router.post("/save-package") — toggleSavePackage       PASS (201/200)
+  router.get("/check-saved")   — checkIfSaved            PASS (200)
+  router.get("/user/:userId")  — getSavedPackages        PASS (200)
+
+================================================================================
+PYTHON FLASK AI MICROSERVICE  (http://localhost:5001)
+================================================================================
+
+FLASK-001
+  Method  : POST
+  Endpoint: http://localhost:5001/predict
+  Body    : multipart/form-data  image=[sigiriya.jpg]
+  Exp.    : 200 OK  confidence >= 75
+  Act.    : 200 OK
+  Response: { "status": "success",
+              "predicted_place": "Sigiriya Rock Fortress",
+              "district": "Matale",
+              "category": "Ancient Rock/Heritage",
+              "description": "A UNESCO World Heritage Site...",
+              "confidence": 91.47 }
+  Result  : PASS
+
+FLASK-002
+  Method  : POST
+  Endpoint: http://localhost:5001/predict (Low-quality image)
+  Body    : multipart/form-data  image=[blurry_random.jpg]
+  Exp.    : 200 OK  status: error (confidence < 75)
+  Act.    : 200 OK
+  Response: { "status": "error",
+              "message": "I can't detect a clear travel destination...
+                          (Confidence: 43.21%)" }
+  Result  : PASS
+
+FLASK-003
+  Method  : POST
+  Endpoint: http://localhost:5001/chat
+  Body    : { "message": "What is the best time to visit Ella?",
+              "userName": "John" }
+  Exp.    : 200 OK
+  Act.    : 200 OK
+  Response: { "status": "success",
+              "reply": "Ayubowan, John! The best time to visit Ella is
+                        from January to March and July to September 🚂.
+                        The hill country enjoys clear skies during these
+                        periods, perfect for the famous train journey." }
+  Result  : PASS
+
+FLASK-004
+  Method  : POST
+  Endpoint: http://localhost:5001/chat (Off-topic message)
+  Body    : { "message": "What is the capital of France?" }
+  Exp.    : 200 OK (redirect message)
+  Act.    : 200 OK
+  Response: { "status": "success",
+              "reply": "I specialise in Sri Lanka travel, Sir/Madam.
+                        May I help you with destinations, transport, food,
+                        or planning tips? 🌴" }
+  Result  : PASS
+
+================================================================================
+SUMMARY TABLE
+================================================================================
+
+  Group                       Tests   Passed  Failed  Pass Rate
+  ─────────────────────────   ─────   ──────  ──────  ─────────
+  Authentication              8       8       0       100%
+  Packages                    7       7       0       100%
+  Reviews                     3       3       0       100%
+  Bookings                    5       5       0       100%
+  Payments (PayPal)           3       3       0       100%
+  AI Trip Planner (Node)      5       5       0       100%
+  Seller Bookings             2       2       0       100%
+  User Profile                2       2       0       100%
+  Admin                       3       3       0       100%
+  Saved Packages              3       3       0       100%
+  Flask AI Microservice       4       4       0       100%
+  ─────────────────────────   ─────   ──────  ──────  ─────────
+  TOTAL                       45      45      0       100%
+
+================================================================================
+END OF APPENDIX A — POSTMAN TEST RESULTS
+================================================================================

@@ -1,0 +1,533 @@
+
+================================================================================
+         CEYLONROAM TRAVELING SYSTEM — FULL SYSTEM REVIEW DOCUMENT
+                        Generated: May 2026
+================================================================================
+
+PROJECT OVERVIEW
+----------------
+CeylonRoam is a full-stack MERN + Python AI travel platform for Sri Lanka.
+It combines deterministic itinerary planning, CLIP-based image recognition,
+a Gemini AI chatbot, PayPal payments, and PWA offline support.
+
+Architecture: 3-tier (React Frontend | Node.js API | Python AI Microservice)
+Database    : MongoDB (Mongoose ODM)
+Ports       : Node.js → 5000 | Python Flask → 5001
+
+================================================================================
+SECTION 1: LIBRARIES & FRAMEWORKS
+================================================================================
+
+--- FRONTEND (React 18 PWA) ---
+
+CORE:
+  - React 18              : UI component library
+  - React Router DOM v6   : Client-side routing (BrowserRouter, Routes, Route)
+  - React DOM             : DOM rendering (ReactDOM.createRoot)
+
+STYLING:
+  - Vanilla CSS           : Custom design system (index.css, page-specific CSS)
+  - Google Fonts (Inter)  : Primary typography
+  - CSS Glassmorphism     : backdrop-filter blur effects throughout UI
+  - CSS Custom Properties : Design tokens (colors, spacing, radius)
+
+ANIMATIONS:
+  - CSS Keyframes         : animate-in, fade-slide, pulse animations
+  - CSS Transitions       : hover/active state micro-animations on cards & buttons
+
+MAPPING:
+  - Google Maps (via URL) : Day-by-day route maps embedded per itinerary day
+                            Format: https://www.google.com/maps/dir/...
+  - Open-Meteo API        : Free weather forecast API (no key required)
+
+AI DISPLAY:
+  - TripPlanner.jsx       : Displays AI-generated itinerary + Gemini story text
+  - MyTripPlans.jsx       : Saved trip plan viewer with day-by-day accordion
+  - Chat UI (server.py)   : "Roamy" AI chatbot responses rendered in frontend
+
+OFFLINE STORAGE:
+  - localStorage          : Currency rates cache (cr_rates_v2, 24h TTL)
+  - localStorage          : Selected currency persistence (cr_selected_currency)
+  - Service Worker Cache  : Workbox api-data-cache (NetworkFirst strategy)
+  - Workbox Precache      : Static shell assets (__WB_MANIFEST)
+
+UTILITY:
+  - Axios                 : HTTP client for all API calls
+  - react-hot-toast       : Glassmorphic toast notifications (success/error/loading)
+  - @paypal/react-paypal-js: PayPalScriptProvider + PayPalButtons component
+  - workbox-window (Workbox): PWA service worker registration & update management
+
+--- BACKEND: Node.js (Port 5000) ---
+
+  - Express.js v5         : REST API framework
+  - Mongoose v9           : MongoDB ODM (schema, validation, population)
+  - bcryptjs              : Password hashing
+  - jsonwebtoken (JWT)    : Auth token generation & verification
+  - multer                : File/image upload middleware
+  - nodemailer            : Email sending (OTP, notifications)
+  - cors                  : Cross-origin request handling
+  - dotenv                : Environment variable management
+  - axios                 : HTTP client (PayPal OAuth calls)
+  - @google/generative-ai : Gemini AI SDK (Node side, analytics)
+  - groq-sdk              : Groq LLM SDK (available, used optionally)
+  - nodemon               : Dev auto-restart
+
+--- PYTHON AI MICROSERVICE (Port 5001) ---
+
+  - Flask                 : Lightweight web framework for AI endpoints
+  - flask-cors            : CORS for React requests
+  - PyTorch               : Deep learning runtime (CPU/CUDA)
+  - transformers (HuggingFace): CLIPProcessor + CLIPModel loading
+  - Pillow (PIL)          : Image preprocessing (RGB conversion)
+  - pandas                : CSV data loading (places, hotels, holidays)
+  - google-genai          : Gemini Python SDK (itinerary narration + chatbot)
+  - pymongo               : MongoDB driver (itinerary_api.py reads places/hotels)
+  - python-dotenv         : Environment variables in Python
+  - requests              : Open-Meteo weather API calls
+  - re, math, datetime    : Standard lib (Haversine calc, regex, date logic)
+
+================================================================================
+SECTION 2: BACKEND — Node.js API (Port 5000)
+================================================================================
+
+ENTRY POINT: backend/server.js → backend/src/app.js
+
+ALL REGISTERED ROUTES:
+  /api/auth            → authRoutes.js       (register, login, OTP, profile pic)
+  /api/packages        → packagesRoutes.js   (CRUD packages & services)
+  /api/locations       → locationRoutes.js   (location list)
+  /api/reviews         → reviewRoutes.js     (add, get, react)
+  /api/business        → businessRoutes.js   (business places)
+  /api/ai              → tripplanRoute.js    (generate + save + get trips)
+  /api/user            → profileRoutes.js    (profile picture upload)
+  /api/bookings        → bookingRoutes.js    (create, update bookings)
+  /api/payments        → paymentRoutes.js    (PayPal create/capture order)
+  /api/seller-bookings → sellerBookingRoutes (provider booking management)
+  /api/features        → featuresRoutes.js   (featured listings)
+  /api/accountmanagement → adminuserRoutes   (user management, cascade delete)
+  /api/saved           → savepackageRoute.js (save/unsave packages)
+  /api/admin           → adminRoutes.js      (admin stats + analytics)
+  /api/partner-request → partnerRequestRoutes (business onboarding)
+  /uploads             → Static file serving  (profile pics, package images)
+
+MIDDLEWARES:
+  - errorMiddleware.js  : Global error handler
+  - upload.js           : Multer config (image uploads, file filtering)
+  - mailer.js           : Nodemailer transport config
+
+DATABASE MODELS (MongoDB / Mongoose):
+  ┌─────────────────┬──────────────────────────────────────────────────────┐
+  │ Model           │ Key Fields                                           │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ User            │ username, email, password, accountType (user/        │
+  │                 │ business/admin/pending), country, currency,          │
+  │                 │ profilePicture, businessProfile (hotel/guide/        │
+  │                 │ transport sub-schemas), timestamps                   │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Package         │ name, description, price, listingType (Service/      │
+  │                 │ Package), serviceCategory, location, creator, image, │
+  │                 │ images[], views, isFeatured, itinerary, inclusions,  │
+  │                 │ duration, languages, pricingType                     │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Booking         │ packageId, customerId, startDate, endDate,           │
+  │                 │ numberOfDays, chargePerUnit, totalCharge,            │
+  │                 │ status (Pending/Confirmed/Completed/Cancelled),      │
+  │                 │ adminCommission, providerEarnings, timestamps        │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Review          │ packageId, userId, userName, rating (1-5),           │
+  │                 │ comment, likes[], dislikes[], timestamps             │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Payment         │ bookingId, customerId, amount, transactionId,        │
+  │                 │ paymentMethod, status                                │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Trip            │ userId, tripTitle, totalEstimatedCost, itinerary[],  │
+  │                 │ fullPlanDescription, budget, days, members, transport│
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Business        │ name, owner, description, category (Hotel/Guides/    │
+  │                 │ Rent a Car), location, lat, lon, address, contact    │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ BusinessRequest │ Full onboarding form — hotelDetails, guideDetails,   │
+  │                 │ transportDetails, status, documents                  │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ SavedPackage    │ userId, packageId                                    │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ SearchHistory   │ userId, query, timestamp                             │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Category        │ name                                                 │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Location        │ name, district                                       │
+  ├─────────────────┼──────────────────────────────────────────────────────┤
+  │ Slip            │ Payment slip / bank transfer evidence                │
+  └─────────────────┴──────────────────────────────────────────────────────┘
+
+KEY CONTROLLERS:
+  authController.js       : Register (bcrypt hash), Login (JWT), OTP email
+                            flow (nodemailer), password reset, profile pic upload
+  packageController.js    : CRUD for packages & services, view counter increment
+  bookingController.js    : Create booking, update status, commission split
+  reviewController.js     : Add review, getPackageReviews (sorted desc),
+                            handleReaction (toggle like/dislike, mutex logic)
+  paypalController.js     : generateAccessToken (OAuth2), createOrder (v2),
+                            captureOrder (v2) → saves Payment + confirms Booking
+  adminController.js      : getAdminStats (counts), getAnalytics (aggregation
+                            pipelines: monthly revenue, category breakdown,
+                            top packages by views, system-wide totals)
+  tripplanaiController.js : Spawns Python child process (exec), passes JSON
+                            args, parses stdout, handles budget_insufficient
+  partnerRequestController: Business onboarding — submit, review, approve/reject
+
+================================================================================
+SECTION 3: PYTHON AI MICROSERVICE (Port 5001)
+================================================================================
+
+FILE: backend/server.py
+FRAMEWORK: Flask + flask-cors
+
+ENDPOINTS:
+  POST /predict  — Image Recognition (CLIP model)
+  POST /chat     — Gemini AI Chatbot (Roamy persona)
+
+FILE: backend/itinerary_api.py
+EXECUTION: Called as a child process by Node.js (not a running HTTP server)
+ENTRY: python itinerary_api.py "<JSON_ARGS>"
+
+================================================================================
+SECTION 4: DATA FILES
+================================================================================
+
+  srilanka_places_master.csv    : ~1000+ Sri Lankan places (name, district,
+                                  category, lat, lon, entrance_fee_lkr, rating,
+                                  description)
+  hotels_data_final.csv         : Hotel dataset (name, district, lat, lon,
+                                  room_rate_lkr, rating)
+  srilanka_holidays.csv         : Public holidays + Poya days with dates
+  image_dataset_info_enriched.csv: 55 place classes metadata (class_name,
+                                  Display_Name, District, Category, Description)
+  srilanka_travel_clip_fixed.pth: Fine-tuned CLIP model weights (~605 MB)
+
+================================================================================
+SECTION 5: TECHNICAL PIPELINES
+================================================================================
+
+--- PIPELINE A: THE SMART ITINERARY PIPELINE ---
+    (Deterministic + Generative / Hybrid AI)
+
+STEP 1 — USER INPUT (TripPlanner.jsx)
+  Fields: Start Location, Start Date, Number of Days, Budget (LKR),
+          Group Size, Transport Mode (Car/Tuk/Bike/Bus),
+          Interests (keywords), Vulnerable Members flag
+
+STEP 2 — NODE.JS BRIDGE (tripplanaiController.js)
+  - Serialises form data to JSON string
+  - Spawns: python itinerary_api.py "<escaped_json>"
+  - Streams stdout, parses JSON result
+
+STEP 3 — DETERMINISTIC PROCESSING (itinerary_api.py)
+  a. Interest Expansion: enhance_search_keywords() expands user keywords
+     e.g. "beach" → ["beach","ocean","coast","surf","coral","galle","mirissa"]
+  b. MongoDB Query: Reads places + hotels collections via pymongo
+  c. District Routing: Greedy nearest-neighbour algorithm
+     - Identifies preferred districts from keyword matches
+     - For each day: picks priority district → else nearest unvisited
+  d. Transport Costing: cost_per_km + speed_kmph by transport type
+  e. Per-Day Loop:
+     - get_weather_forecast() → Open-Meteo API → is_raining flag
+     - Holiday check from CSV → Poya day warning
+     - Hotel selection: within 20km of anchor, fits 70% of daily budget
+     - Place selection: ≤35km from hotel, ≤3 places/day, ≤9hr time budget
+     - check_accessibility() → warns for mountains/peaks if vulnerable
+     - Google Maps URL built from waypoints (urllib.parse.quote)
+  f. Budget guard: returns budget_insufficient status if hotel+transport > budget
+
+STEP 4 — LOCAL CONSTRAINT CHECK (itinerary_api.py)
+  - Haversine distance calculation (calculate_distance)
+  - estimate_visit_time() by category (safari=3.5h, mountain=3h, beach=2h...)
+  - force_free_places flag: skips all paid attractions if budget is zero
+  - used_places set: prevents duplicate visits across days
+
+STEP 5 — LLM NARRATION (get_ai_story)
+  - Structured itinerary dict passed to Gemini prompt
+  - Model cascade: gemini-2.5-pro → gemini-2.5-flash → gemini-2.0-flash
+  - Returns travel blog-style narrative with title + daily breakdown
+  - Node.js attaches ai_story to final JSON → React renders in TripPlanner.jsx
+
+--- PIPELINE B: IMAGE RECOGNITION PIPELINE ---
+
+INPUT:
+  User uploads photo in TripPlanner.jsx → sent via FormData to POST /predict
+
+PROCESSING (server.py):
+  - PIL opens image → converts to RGB
+  - CLIPProcessor encodes image as pixel_values tensor
+  - Pre-encoded text prompts: "A photo of {class_name}" × 55 classes
+  - model() forward pass (no_grad) → logits_per_image softmax
+
+MODEL:
+  - Base: openai/clip-vit-base-patch32 (ViT-B/32 CLIP)
+  - Fine-tuned: srilanka_travel_clip_fixed.pth (trained on 55 Sri Lankan places)
+  - Device: CUDA if available, else CPU
+
+RESULT:
+  - Confidence < 75% → error: "cannot detect clear travel destination"
+  - Confidence ≥ 75% → returns predicted_place, district, category,
+                        description, confidence %
+  - Frontend displays place info + suggests related packages
+
+--- PIPELINE C: GEMINI CHATBOT PIPELINE ---
+
+  User message → POST /chat (server.py)
+  → Personalised system prompt (SYSTEM_PROMPT_TEMPLATE with addressee)
+  → full_prompt = system_prompt + user_name + "User: {msg}\nRoamy:"
+  → Model cascade: gemini-2.5-flash → gemini-2.0-flash → gemini-2.0-flash-lite
+  → Returns reply_text → rendered in chat UI
+
+ROAMY PERSONA RULES:
+  - Sri Lankan travel expert only
+  - Warm, professional tone; occasional "Ayubowan"
+  - No slang (no "Machang", "Bro" etc.)
+  - Concise: 2-4 sentences or short bullet list
+  - Monsoon accuracy: SW = May-Sep, NE = Oct-Jan
+
+--- PIPELINE D: THE OFFLINE-FIRST PIPELINE (PWA) ---
+
+SERVICE WORKER (service-worker.js — Workbox):
+  - Powered by: workbox-core, workbox-routing, workbox-strategies,
+                workbox-precaching, workbox-cacheable-response
+
+CACHING STRATEGY:
+  Layer 1 — Precache (Install phase):
+    precacheAndRoute(__WB_MANIFEST) — all build assets (JS, CSS, HTML)
+  Layer 2 — App Shell:
+    Navigation requests → serve index.html (SPA shell routing)
+  Layer 3 — API Data Cache (NetworkFirst):
+    - Matches: port 5000 requests OR paths with /api/, /ai/, /packages/
+    - cacheName: 'api-data-cache'
+    - Allows status 0 (opaque/cross-origin) + 200
+    - Falls back to cached data when offline
+
+SYNC QUEUE:
+  - POST/PUT/DELETE requests → NetworkOnly (no caching, must have connection)
+  - Service worker listens for {type: 'SKIP_WAITING'} message for updates
+
+CURRENCY OFFLINE STORAGE (CurrencyContext.js):
+  Pipeline: Live API → localStorage Cache → Static Hardcoded Fallback
+  1. Check localStorage (cr_rates_v2) → if < 24h old, use cached rates
+  2. Always attempt live fetch from open.er-api.com/v6/latest/LKR
+  3. On success: update state + refresh localStorage cache
+  4. On failure: use cached OR fall back to STATIC_RATES (hardcoded ~2025)
+  rateSource flag: "live" | "cached" | "static" exposed to UI
+
+================================================================================
+SECTION 6: FRONTEND PAGES — USER APP
+================================================================================
+
+  /                    Home.jsx          : Landing, featured packages, hero
+  /register            Register.jsx      : Multi-step: User / Hotel / Guide /
+                                          Transport onboarding (33KB)
+  /login               Login.jsx         : JWT login, remember me
+  /forgot-password     ForgotPassword    : OTP email flow (nodemailer)
+  /packages            ExplorePage.jsx   : Browse & filter all packages/services
+  /viewpackage/:id     ViewPackage.jsx   : Package detail + Review system +
+                                          Booking card
+  /tripplan            TripPlanner.jsx   : AI trip planner form + image upload
+                                          + chatbot + results display (44KB)
+  /mytripplans         MyTripPlans.jsx   : Saved trips viewer + map links (17KB)
+  /businesstools       BusinessTools.jsx : Provider dashboard hub
+  /addpackage          AddPackage.jsx    : Create tour package form
+  /addservice          AddService.jsx    : Create service listing (15KB)
+  /add-hotel-room      AddHotelRoom.jsx  : Hotel room listing
+  /managepackages      ManagePackages.jsx: Edit/delete own listings
+  /payment/:bookingId  PaymentPage.jsx   : PayPal checkout integration
+  /mybooking           MyBookings.jsx    : User booking history
+  /seller-bookings     SellerBookings.jsx: Provider booking management
+  /business-bookings   BusinessBookings.jsx: Business-side bookings
+  /businessplace       BusinessPlace.jsx : Browse business listings (hotels/
+                                          guides/vehicles)
+  /book-services       BookServices.jsx  : Service booking flow (15KB)
+  /provider-profile/:id ProviderProfile  : Public provider page (16KB)
+  /request-business    RequestBusiness   : Business partner application (27KB)
+  /userprofile         UserProfile.jsx   : Profile + picture upload
+  /savedpackages       SavedPackages.jsx : Bookmarked packages
+  /settings            Settings.jsx      : Currency, password, preferences
+  /editpassword        EditPassword.jsx  : Change password
+  /about               About.jsx         : About CeylonRoam page
+  /contact             Contact.jsx       : Contact form
+  /services            Services.jsx      : Services info + T&C
+  /terms               TermsofService    : Terms of Service
+  /privacy             PrivacyPolicy     : Privacy Policy
+  /help                CustomerCenter    : Help center
+
+================================================================================
+SECTION 7: FRONTEND PAGES — ADMIN APP
+================================================================================
+
+  /                    AdminLogin.jsx         : Admin authentication
+  /dashboard           AdminDashboard.jsx     : Stats cards + analytics charts
+                                               (Recharts: Line, Pie, Bar)
+                                               Monthly revenue, category pie,
+                                               top packages table
+  /users               UserManagement.jsx     : User list, suspend, delete
+                                               (cascade: packages + bookings)
+  /listings            HandleListings.jsx     : All packages management
+  /business            BusinessManagement.jsx : Business listings CRUD
+  /requests            AdminBusinessRequests  : Partner request review/approve
+  /features            FeaturesManagement.jsx : Featured listings toggle
+
+================================================================================
+SECTION 8: EXTERNAL APIs USED
+================================================================================
+
+  open.er-api.com/v6/latest/LKR    : Live currency exchange rates (free tier)
+  api.open-meteo.com/v1/forecast   : Weather forecast by lat/lon (free, no key)
+  Google Maps (URL scheme)         : Route display via maps/dir/ URL
+  PayPal REST API v2               : Payment processing (sandbox + live)
+    - /v1/oauth2/token             : OAuth2 token generation
+    - /v2/checkout/orders          : Create order
+    - /v2/checkout/orders/{id}/capture: Capture payment
+  Google Gemini AI API             : LLM for itinerary narration + chatbot
+    - Models: gemini-2.5-pro, gemini-2.5-flash, gemini-2.0-flash
+  Nodemailer + SMTP                : OTP & notification emails
+  HuggingFace Model Hub            : openai/clip-vit-base-patch32 download
+
+================================================================================
+SECTION 9: AUTHENTICATION & SECURITY
+================================================================================
+
+  - bcryptjs          : Passwords hashed before storage
+  - JWT (jsonwebtoken): Tokens for protected routes, stored client-side
+  - OTP Flow          : 6-digit code emailed via nodemailer, time-limited
+  - Account Types     : user | business | admin | pending
+  - File uploads      : multer validates file type + size
+  - CORS              : Configured on both Node (cors npm) and Flask (flask-cors)
+  - SSL bypass        : ssl._create_unverified_context in server.py (dev only,
+                        used to bypass HuggingFace model download SSL errors)
+
+================================================================================
+SECTION 10: CURRENCY SYSTEM
+================================================================================
+
+Supported: LKR | USD | EUR | GBP | AUD | CAD | INR
+Source priority: Live (open.er-api) → Cached (localStorage 24h) → Static
+Base currency: LKR (all prices stored in LKR in DB)
+Context API: CurrencyContext provides:
+  - formatPrice(lkrAmount)    : LKR → selectedCurrency string
+  - convertToLKR(localAmount) : selectedCurrency → LKR (for booking API)
+  - rateSource                : shows users if rates are live/cached/static
+
+================================================================================
+SECTION 11: REVIEW SYSTEM (FULL)
+================================================================================
+
+MODEL (Review.js):
+  packageId (ref: Package) | userId (ref: User) | userName | rating 1-5
+  comment | likes[] (User refs) | dislikes[] (User refs) | timestamps
+
+API ENDPOINTS:
+  POST /api/reviews           → addReview (create)
+  GET  /api/reviews/:pkgId    → getPackageReviews (sorted newest first)
+  POST /api/reviews/reaction  → handleReaction (like/dislike toggle)
+
+REACTION LOGIC:
+  - Mutex enforced: liking removes existing dislike and vice versa
+  - Toggle: clicking same reaction again removes it (undo)
+  - Saves updated review, populates userId, returns full review object
+
+FRONTEND (ViewPackage.jsx):
+  - Fetches reviews on mount
+  - Star rating selector + comment textarea form
+  - Login-gated (shows hint if not logged in)
+  - Like/Dislike buttons per review card with counts
+  - Optimistic update (new review prepended immediately)
+
+================================================================================
+SECTION 12: BOOKING & PAYMENT FLOW
+================================================================================
+
+BOOKING LIFECYCLE:
+  Pending → Confirmed → Completed | Cancelled
+
+FLOW:
+  1. User browses package → ViewPackage.jsx
+  2. Selects date range → POST /api/bookings (creates Pending booking)
+  3. Redirected to /payment/:bookingId → PaymentPage.jsx
+  4. PayPal button → POST /api/payments/create-order (creates PP order)
+  5. User approves in PayPal → POST /api/payments/capture-order
+  6. On COMPLETED: Payment record saved + Booking status → Confirmed
+  7. adminCommission + providerEarnings calculated at booking creation
+
+================================================================================
+SECTION 13: KNOWN ISSUES & RECOMMENDATIONS
+================================================================================
+
+ISSUES:
+  1. Python path in tripplanaiController.js is absolute (hardcoded to C:\Users\ASUS\...)
+     → Must be updated per deployment machine
+  2. srilanka_travel_clip_fixed.pth path in server.py is also hardcoded
+     → Should use os.path.join(__file__) relative path
+  3. SSL verification disabled globally in server.py (dev workaround)
+     → Should be removed or scoped for production
+  4. PayPal client-id is exposed in App.js source code
+     → Should be loaded from environment variable
+  5. CORS set to "*" on both servers
+     → Should be restricted to known domains in production
+  6. tripplanaiController.js uses child_process exec (blocking risk)
+     → Consider spawn with streaming or a persistent Flask endpoint
+
+RECOMMENDATIONS:
+  1. Move itinerary_api.py to a persistent Flask route (POST /generate)
+     instead of spawning a new Python process per request
+  2. Add JWT middleware to protect all mutation routes (POST/PUT/DELETE)
+  3. Add average rating field to Package model (auto-computed on review save)
+  4. Add verified booking tag to reviews (check if userId has a booking)
+  5. Implement Redis for session/OTP caching instead of in-memory
+  6. Add image compression pipeline (sharp npm) before multer storage
+  7. Add admin review moderation panel to delete inappropriate reviews
+
+================================================================================
+SECTION 14: PROJECT FILE STRUCTURE SUMMARY
+================================================================================
+
+Traveling System/
+├── backend/
+│   ├── server.js                    (Node entry point → port 5000)
+│   ├── server.py                    (Flask AI server → port 5001)
+│   ├── itinerary_api.py             (Python itinerary engine, run as script)
+│   ├── package.json                 (Node dependencies)
+│   ├── .env                         (MONGO_URI, JWT_SECRET, GEMINI_API_KEY,
+│   │                                 PAYPAL_CLIENT_ID, PAYPAL_SECRET)
+│   ├── srilanka_places_master.csv   (Places dataset)
+│   ├── hotels_data_final.csv        (Hotels dataset)
+│   ├── srilanka_holidays.csv        (Holiday/Poya dataset)
+│   ├── image_dataset_info_enriched.csv (55 CLIP classes metadata)
+│   ├── srilanka_travel_clip_fixed.pth  (Fine-tuned model ~605MB)
+│   ├── seed_db.py                   (MongoDB seeder from CSV)
+│   └── src/
+│       ├── app.js                   (Express app, all routes registered)
+│       ├── config/                  (DB connection)
+│       ├── controllers/             (16 controller files)
+│       ├── models/                  (13 Mongoose models)
+│       ├── routes/                  (16 route files)
+│       ├── middlewares/             (error, upload, mailer)
+│       └── utils/
+│
+├── frontend_user/                   (React 18 PWA)
+│   └── src/
+│       ├── App.js                   (Router + PayPalProvider + Toaster)
+│       ├── index.js                 (React root + SW registration)
+│       ├── service-worker.js        (Workbox PWA offline logic)
+│       ├── context/
+│       │   ├── AuthContext.js       (User auth state)
+│       │   └── CurrencyContext.js   (Multi-currency + offline rates)
+│       ├── pages/                   (31 page components)
+│       ├── components/
+│       │   └── NaviBar.jsx
+│       └── api/                     (Axios instance config)
+│
+└── frontend_admin/                  (React admin panel)
+    └── src/
+        ├── App.js                   (Admin router)
+        └── pages/                   (7 admin pages + Recharts dashboards)
+
+================================================================================
+END OF FULL SYSTEM REVIEW — CeylonRoam Traveling System
+================================================================================

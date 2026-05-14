@@ -1,0 +1,352 @@
+================================================================================
+  APPENDIX E — ENTITY-RELATIONSHIP (ER) DIAGRAM
+  Project  : CeylonRoam — AI-Based Smart Travel Planner for Sri Lanka
+  Database : MongoDB (Mongoose ODM)
+  Format   : Text-based ER Diagram + Relationship Descriptions
+  Collections: 13
+================================================================================
+
+NOTE: MongoDB uses document-based references (ObjectId refs) rather than
+      traditional foreign keys. Relationships below are represented as
+      logical associations using ObjectId references.
+
+================================================================================
+SECTION 1: ENTITY DEFINITIONS (ALL 13 COLLECTIONS)
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: users                                                               │
+│  Collection: users                                                           │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  Field                   │  Type            │  Constraint / Notes            │
+├──────────────────────────┼──────────────────┼────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  username                │  String          │  Required, Trimmed             │
+│  email                   │  String          │  Required, Unique              │
+│  password                │  String          │  Required, bcrypt hashed       │
+│  accountType             │  String (enum)   │  user|business|admin|pending   │
+│  country                 │  String          │  Required                      │
+│  dateOfBirth             │  Date            │  Required                      │
+│  jobRole                 │  String          │  Required                      │
+│  currency                │  String          │  Default: LKR                  │
+│  profilePicture          │  String          │  File path, Default: ""        │
+│  businessProfile         │  SubDocument     │  Optional (for business accts) │
+│    .category             │  String          │  Hotel|Guide|Transport         │
+│    .hotelDetails         │  Embedded Doc    │  See hotelDetailsSchema        │
+│    .guideDetails         │  Embedded Doc    │  See guideDetailsSchema        │
+│    .transportDetails     │  Embedded Doc    │  See transportDetailsSchema    │
+│  createdAt               │  Date            │  Auto (timestamps:true)        │
+│  updatedAt               │  Date            │  Auto (timestamps:true)        │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+Embedded Sub-Schemas inside users.businessProfile:
+
+  hotelDetailsSchema fields:
+    hotelName, ownerName, managerName, propertyType, description,
+    address, city, district, phone, latitude, longitude,
+    amenities[String], brn, bankDetails{accountName,bank,branch,accountNumber},
+    coverImage, gallery[String]
+
+  guideDetailsSchema fields:
+    fullName, dateOfBirth, baseCity, operatingRegions, languages,
+    guideType, experience(Number), bio, nicNumber, tourismBoardReg,
+    vehicleType, vehicleModel, vehicleYear, vehicleAC,
+    profilePicture, licenseScan, vehiclePhotos[String]
+
+  transportDetailsSchema fields:
+    serviceType, ownerName, driverName, phone, vehicleType, vehicleMake,
+    vehicleModel, yearOfManufacture, transmission, passengerCapacity,
+    luggageCapacity, airConditioned, baseCity, airportTransfer,
+    driverNIC, driverProfilePicture, licensePlatePhoto, drivingLicense,
+    revenueLicense, driverNICFront, driverNICBack,
+    exteriorPhotos[String], interiorPhotos[String]
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: packages                                                            │
+│  Collection: packages                                                        │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  name                    │  String          │  Required                      │
+│  description             │  String          │  Required                      │
+│  price                   │  Number          │  Required, in LKR              │
+│  category (FK)           │  ObjectId        │  ref: Category (optional)      │
+│  location                │  String          │  Required                      │
+│  creator (FK)            │  ObjectId        │  ref: User, Required           │
+│  image                   │  String          │  Primary image path            │
+│  images                  │  [String]        │  Gallery image paths           │
+│  listingType             │  String (enum)   │  Service|Package               │
+│  isFeatured              │  Boolean         │  Default: false                │
+│  views                   │  Number          │  Default: 0 (view counter)     │
+│  serviceCategory         │  String (enum)   │  Hotel Package|Guide|          │
+│                          │                  │  Chauffeur Guide|Rent Vehicle| │
+│                          │                  │  Hire Vehicle                  │
+│  languages               │  [String]        │  For guide services            │
+│  specialization          │  String          │  For guide services            │
+│  pricingType             │  String          │  Per Day | Per KM              │
+│  includedKM              │  Number          │  For rent vehicle              │
+│  extraKMCharge           │  Number          │  For rent vehicle              │
+│  itinerary               │  String          │  Day-by-day plan text          │
+│  inclusions              │  [String]        │  e.g. [Entry fees, Lunch]      │
+│  duration                │  String          │  e.g. 2 Days / 1 Night         │
+│  createdAt               │  Date            │  Default: Date.now             │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: bookings                                                            │
+│  Collection: bookings                                                        │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  packageId (FK)          │  ObjectId        │  ref: Package, Required        │
+│  customerId (FK)         │  ObjectId        │  ref: User, Required           │
+│  startDate               │  Date            │  Required                      │
+│  endDate                 │  Date            │  Required                      │
+│  numberOfDays            │  Number          │  Required                      │
+│  chargePerUnit           │  Number          │  Required, price/day           │
+│  totalCharge             │  Number          │  Required, in LKR              │
+│  status                  │  String (enum)   │  Pending|Confirmed|            │
+│                          │                  │  Completed|Cancelled           │
+│  adminCommission         │  Number          │  Default: 0 (10% of total)     │
+│  providerEarnings        │  Number          │  Default: 0 (90% of total)     │
+│  createdAt               │  Date            │  Auto                          │
+│  updatedAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: reviews                                                             │
+│  Collection: reviews                                                         │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  packageId (FK)          │  ObjectId        │  ref: Package, Required        │
+│  userId (FK)             │  ObjectId        │  ref: User, Required           │
+│  userName                │  String          │  Required (denormalised)       │
+│  rating                  │  Number          │  Required, min:1 max:5         │
+│  comment                 │  String          │  Required                      │
+│  likes                   │  [ObjectId]      │  Array of User refs            │
+│  dislikes                │  [ObjectId]      │  Array of User refs            │
+│  createdAt               │  Date            │  Auto                          │
+│  updatedAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: payments                                                            │
+│  Collection: payments                                                        │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  bookingId (FK)          │  ObjectId        │  ref: Booking                  │
+│  customerId (FK)         │  ObjectId        │  ref: User                     │
+│  amount                  │  Number          │  Captured amount (USD/LKR)     │
+│  transactionId           │  String          │  PayPal transaction ID         │
+│  paymentMethod           │  String          │  e.g. "PayPal"                 │
+│  status                  │  String          │  e.g. "Completed"              │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: trips                                                               │
+│  Collection: trips                                                           │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  userId (FK)             │  ObjectId        │  ref: User                     │
+│  tripTitle               │  String          │  e.g. "Sri Lanka 3-Day..."     │
+│  totalEstimatedCost      │  String          │  e.g. "LKR 43500"              │
+│  fullPlanDescription     │  String          │  AI-generated narrative        │
+│  itinerary               │  [Mixed]         │  Array of day objects          │
+│  budget                  │  Number          │  Input budget in LKR           │
+│  days                    │  Number          │  Number of trip days           │
+│  members                 │  Number          │  Group size                    │
+│  transport               │  String          │  Car|Tuk Tuk|Bus|Bike          │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: businesses                                                          │
+│  Collection: businesses                                                      │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  name                    │  String          │  Required                      │
+│  owner (FK)              │  ObjectId        │  ref: User, Required           │
+│  description             │  String          │  Required                      │
+│  category                │  String (enum)   │  Hotel|Guides|Rent a Car       │
+│  location (FK)           │  ObjectId        │  ref: Location, Required       │
+│  longitude               │  Number          │  Required                      │
+│  latitude                │  Number          │  Required                      │
+│  address                 │  String          │  Required                      │
+│  contact                 │  String          │  Required                      │
+│  email                   │  String          │  Required                      │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: businessrequests                                                    │
+│  Collection: businessrequests                                                │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  userId (FK)             │  ObjectId        │  ref: User                     │
+│  category                │  String          │  Hotel|Guide|Transport         │
+│  status                  │  String          │  Pending|Approved|Rejected     │
+│  hotelDetails            │  SubDocument     │  Hotel-specific fields         │
+│  guideDetails            │  SubDocument     │  Guide-specific fields         │
+│  transportDetails        │  SubDocument     │  Transport-specific fields     │
+│  documents               │  [String]        │  Uploaded file paths           │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: savedpackages                                                       │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  userId (FK)             │  ObjectId        │  ref: User                     │
+│  packageId (FK)          │  ObjectId        │  ref: Package                  │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: searchhistories                                                     │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  userId (FK)             │  ObjectId        │  ref: User                     │
+│  query                   │  String          │  Search term entered           │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: categories                                                          │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  name                    │  String          │  e.g. Adventure, Cultural      │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: locations                                                           │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  name                    │  String          │  e.g. Ella, Galle, Kandy       │
+│  district                │  String          │  Sri Lankan district           │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ENTITY: slips                                                               │
+├──────────────────────────┬──────────────────┬────────────────────────────────┤
+│  _id (PK)                │  ObjectId        │  Auto-generated                │
+│  bookingId (FK)          │  ObjectId        │  ref: Booking                  │
+│  customerId (FK)         │  ObjectId        │  ref: User                     │
+│  slipImagePath           │  String          │  Bank transfer slip file path  │
+│  createdAt               │  Date            │  Auto                          │
+└──────────────────────────┴──────────────────┴────────────────────────────────┘
+
+================================================================================
+SECTION 2: RELATIONSHIPS TABLE
+================================================================================
+
+  Relationship                              Type         Via Field
+  ───────────────────────────────────────   ──────────   ─────────────────────
+  User  ──< Package                         1 : Many     packages.creator
+  User  ──< Booking (as customer)           1 : Many     bookings.customerId
+  Package ──< Booking                       1 : Many     bookings.packageId
+  Booking ──< Payment                       1 : 1        payments.bookingId
+  User  ──< Payment (as customer)           1 : Many     payments.customerId
+  Package ──< Review                        1 : Many     reviews.packageId
+  User  ──< Review (as author)              1 : Many     reviews.userId
+  User  >--< Review (likes)                 M : M        reviews.likes[]
+  User  >--< Review (dislikes)              M : M        reviews.dislikes[]
+  User  ──< Trip (saved plans)              1 : Many     trips.userId
+  User  ──< Business (as owner)             1 : Many     businesses.owner
+  Location ──< Business                     1 : Many     businesses.location
+  User  ──< BusinessRequest                 1 : 1        businessrequests.userId
+  User  >--< Package (saved)               M : M        savedpackages collection
+  User  ──< SearchHistory                   1 : Many     searchhistories.userId
+  Package ──< Category                      Many : 1     packages.category
+  Booking ──< Slip                          1 : 1        slips.bookingId
+  User  ──< Slip (as customer)              1 : Many     slips.customerId
+
+================================================================================
+SECTION 3: ASCII ER DIAGRAM (SIMPLIFIED)
+================================================================================
+
+  ┌──────────┐     creates      ┌───────────┐    belongs to  ┌────────────┐
+  │  User    │─────────────────>│  Package  │<───────────────│  Category  │
+  │          │                  │           │                └────────────┘
+  │(traveller│     books        │(tour/     │
+  │ business │─────────────────>│ service)  │
+  │ admin    │                  └─────┬─────┘
+  │ pending) │                        │ has many
+  └────┬─────┘                        │
+       │saves (M:M)           ┌───────▼──────┐
+       │──────────────────────│   Booking    │
+       │                      │              │
+       │reviews               │ Pending      │
+       │──────────────────────│ Confirmed    │──────> Payment
+       │                      │ Completed    │        (PayPal record)
+       │writes                │ Cancelled    │
+       │──────────────────────└───────┬──────┘
+       │                              │
+       │generates (Trip)              └──────────> Slip
+       │──────────────────────>Trip              (bank transfer)
+       │
+       │owns                  ┌───────────────┐
+       │──────────────────────│   Business    │
+       │                      │ Hotel/Guide/  │
+       │applies               │ Transport     │<─── Location
+       │──────────────────────│               │
+                              └───────────────┘
+  BusinessRequest
+  (onboarding form)
+  ─────────────────── links to ──────────────> User (pending → business)
+
+
+  Review:
+  ┌─────────┐   reviews    ┌──────────┐   liked by   ┌─────────┐
+  │ Package │<─────────────│  Review  │─────────────>│  User   │
+  └─────────┘              │          │              └─────────┘
+                           │ rating   │  disliked by ┌─────────┐
+                           │ comment  │─────────────>│  User   │
+                           │ likes[]  │              └─────────┘
+                           │dislikes[]│
+                           └──────────┘
+
+================================================================================
+SECTION 4: DATA FLOW — USER BOOKING LIFECYCLE
+================================================================================
+
+  [User] ──> Browses /api/packages (GET)
+          ──> Views package /api/packages/:id (GET, increments views)
+          ──> Creates booking /api/bookings (POST)
+                → Booking.status = "Pending"
+          ──> Initiates payment /api/payments/create-order (POST)
+                → PayPal Order created (status: CREATED)
+          ──> Approves in PayPal UI (@paypal/react-paypal-js)
+          ──> Captures payment /api/payments/capture-order (POST)
+                → Payment document saved (status: Completed)
+                → Booking.status updated → "Confirmed"
+          ──> Seller sees booking via /api/seller-bookings/all
+          ──> Seller updates /api/seller-bookings/update/:id
+                → Booking.status → "Completed"
+          ──> User posts review /api/reviews (POST)
+
+================================================================================
+END OF APPENDIX E — ER DIAGRAM & RELATIONSHIP DOCUMENTATION
+================================================================================

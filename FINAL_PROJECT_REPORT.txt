@@ -1,0 +1,475 @@
+================================================================================
+     PUSL3190 — FINAL YEAR PROJECT REPORT
+     Title : AI-Based Personalized Smart Travel Planner for Sri Lanka
+     System: CeylonRoam
+================================================================================
+
+1. PROJECT OVERVIEW
+===================
+
+1.1 Project Title
+    AI-Based Personalized Smart Travel Planner for Sri Lanka (CeylonRoam)
+
+1.2 Project Summary
+    CeylonRoam is a full-stack, AI-powered travel planning platform developed
+    specifically for Sri Lanka. The system combines deterministic algorithmic
+    itinerary generation with Generative AI narration, a fine-tuned CLIP-based
+    image recognition engine, a real-time AI chatbot, a complete booking and
+    payment system, and Progressive Web App (PWA) offline capabilities.
+
+    The platform serves three distinct user groups:
+      - Travellers (tourists and locals planning trips)
+      - Business Partners (hotels, tour guides, vehicle rental providers)
+      - Administrators (platform management and analytics)
+
+1.3 Core Objectives
+    a. Develop a hybrid itinerary planner combining deterministic routing
+       with Gemini LLM narration.
+    b. Implement a CLIP-based image recognition module for destination
+       identification from user-uploaded photos.
+    c. Build a multi-role authentication and registration system supporting
+       users, business partners, and administrators.
+    d. Integrate a PayPal payment gateway for booking confirmation.
+    e. Deliver a multi-currency system supporting 7 international currencies.
+    f. Implement offline-first PWA capabilities via Workbox service workers.
+    g. Provide an admin analytics dashboard with Recharts visualisations.
+
+1.4 Architecture Overview
+    The system follows a three-tier architecture:
+
+    Tier 1 — Frontend
+      - User Application   : React 18 PWA (Port 3000)
+      - Admin Application  : React 18 SPA (Port 3001)
+
+    Tier 2 — Backend
+      - Node.js / Express  : REST API server (Port 5000)
+      - Python / Flask     : AI Microservice (Port 5001)
+
+    Tier 3 — Data Layer
+      - MongoDB (Mongoose) : Primary database (13 collections)
+      - LocalStorage       : Offline currency rate cache
+      - Workbox Cache      : PWA API response cache
+
+================================================================================
+2. MAIN BODY
+================================================================================
+
+2.1 Background and Problem Statement
+
+    Travel planning in Sri Lanka involves fragmented processes. Tourists must
+    consult multiple platforms to arrange accommodation, transport, and
+    sightseeing activities. No single platform existed that intelligently
+    combined personalised AI-driven itinerary generation, destination image
+    recognition, real-time weather awareness, and holiday-aware scheduling
+    for Sri Lanka specifically.
+
+    CeylonRoam was developed to bridge this gap by providing a unified,
+    intelligent, and offline-capable travel planning solution.
+
+2.2 Method of Approach
+
+2.2.1 Development Methodology
+    An Agile software development methodology was adopted. The project was
+    divided into iterative development sprints. Each sprint targeted a
+    specific system module. This approach allowed continuous testing and
+    integration of complex AI components alongside standard web features.
+
+2.2.2 Project Phases
+    Phase 1 : Requirements analysis and system design
+    Phase 2 : Database schema design and backend REST API development
+    Phase 3 : Frontend user application development
+    Phase 4 : AI microservice development (CLIP + Gemini integration)
+    Phase 5 : Itinerary pipeline development (itinerary_api.py)
+    Phase 6 : PWA implementation and offline pipeline
+    Phase 7 : Payment gateway integration (PayPal REST API v2)
+    Phase 8 : Admin dashboard and analytics implementation
+    Phase 9 : Testing, debugging, and documentation
+
+2.3 System Architecture and Workflow
+
+2.3.1 Node.js REST API (Port 5000)
+    The primary API server was built using Express.js v5 and Mongoose v9.
+    Sixteen route groups were registered, each serving a distinct domain:
+
+    Route Group              Endpoint Prefix
+    ─────────────────────    ─────────────────────────
+    Authentication           /api/auth
+    Packages & Services      /api/packages
+    Reviews                  /api/reviews
+    Bookings                 /api/bookings
+    Payments (PayPal)        /api/payments
+    Trip Planner (AI Bridge) /api/ai
+    Business Places          /api/business
+    User Profile             /api/user
+    Seller Bookings          /api/seller-bookings
+    Saved Packages           /api/saved
+    Locations                /api/locations
+    Features                 /api/features
+    Partner Requests         /api/partner-request
+    Admin Statistics         /api/admin
+    Account Management       /api/accountmanagement
+    Static Uploads           /uploads
+
+2.3.2 Python AI Microservice (Port 5001)
+    A separate Flask microservice was developed to handle computationally
+    intensive AI operations independently of the Node.js server.
+
+    Endpoint    Method  Description
+    ─────────── ─────── ─────────────────────────────────────────
+    /predict    POST    CLIP image recognition (55 Sri Lankan places)
+    /chat       POST    Gemini AI chatbot ("Roamy" persona)
+
+2.3.3 Smart Itinerary Pipeline
+    The itinerary generation system operates as a hybrid pipeline. Node.js
+    invokes itinerary_api.py as a child process via exec(). The pipeline
+    executes the following steps:
+
+    Step 1 — User Input
+      Fields: start location, start date, number of days, budget (LKR),
+      group size, transport mode, interests (keywords), vulnerable members flag.
+
+    Step 2 — Keyword Expansion
+      The enhance_search_keywords() function expands user interest keywords.
+      For example, "beach" expands to include ["ocean","coast","surf","galle",
+      "mirissa","matara"]. This increases place matching coverage.
+
+    Step 3 — Deterministic Routing
+      A greedy nearest-neighbour district routing algorithm selects the
+      optimal sequence of districts for each travel day. The Haversine formula
+      is used for geographic distance calculation. Priority is given to
+      districts matching user interests before reverting to proximity-based
+      selection.
+
+    Step 4 — Constraint Checking (Per Day)
+      For each day, the following constraints are enforced:
+        - Weather: Open-Meteo API consulted for rain forecasts
+        - Holidays: srilanka_holidays.csv checked for Poya day warnings
+        - Budget: Hotel + transport must not exceed 70% of daily budget
+        - Time: Maximum 9 hours of activity per day enforced
+        - Accessibility: Mountain/hiking places flagged for vulnerable groups
+        - Deduplication: used_places set prevents revisiting places
+        - Place limit: Maximum 3 places selected per day
+
+    Step 5 — LLM Narration
+      The structured itinerary dictionary is passed to the Gemini API.
+      The prompt requests a travel blog-style narrative with a catchy title.
+      Model cascade: gemini-2.5-pro → gemini-2.5-flash → gemini-2.0-flash.
+
+2.3.4 Image Recognition Pipeline
+    Users upload a travel photo in TripPlanner.jsx. The image is sent via
+    FormData to POST /predict on the Flask server. The CLIP model processes
+    the image against 55 text prompts ("A photo of {place_name}"). If the
+    top confidence score exceeds 75%, the predicted place name, district,
+    category, and description are returned to the frontend. Results below
+    75% confidence are rejected with an informative error message.
+
+    Model: openai/clip-vit-base-patch32 (fine-tuned)
+    Weights file: srilanka_travel_clip_fixed.pth (~605 MB)
+    Classes: 55 Sri Lankan destinations
+    Confidence threshold: 75%
+
+2.3.5 AI Chatbot Pipeline ("Roamy")
+    A personalised AI travel expert chatbot was integrated into the platform.
+    The chatbot operates via POST /chat on the Flask server. A detailed system
+    prompt defines the Roamy persona — a professional, respectful Sri Lankan
+    travel expert. The user's name is injected into the prompt for
+    personalisation. The chatbot responds exclusively to Sri Lanka travel
+    queries and redirects off-topic questions politely.
+
+2.3.6 Offline-First Pipeline (PWA)
+    The frontend was configured as a Progressive Web App using Workbox.
+    Three caching layers were implemented:
+      Layer 1: Precache — all build assets installed during service worker
+               activation (JS bundles, CSS, index.html shell).
+      Layer 2: App Shell — all navigation requests served from index.html.
+      Layer 3: API Data Cache — NetworkFirst strategy caches all GET requests
+               to port 5000 in 'api-data-cache'. Cross-origin responses
+               (status 0) and successful responses (status 200) are cached.
+    POST, PUT, and DELETE requests use NetworkOnly and are never cached.
+
+2.3.7 Multi-Currency System
+    CurrencyContext.js implements a three-tier rate resolution pipeline:
+      Tier 1 (Live)   : Fetches from open.er-api.com/v6/latest/LKR
+      Tier 2 (Cached) : Reads from localStorage key 'cr_rates_v2' (24h TTL)
+      Tier 3 (Static) : Hardcoded fallback rates (~2025 approximations)
+    All prices are stored in LKR in the database. Conversion is applied
+    only at the display layer. The rateSource flag ("live"/"cached"/"static")
+    is exposed to the UI for transparency.
+    Supported currencies: LKR, USD, EUR, GBP, AUD, CAD, INR.
+
+2.3.8 Payment System
+    PayPal REST API v2 was integrated for booking payments.
+      Step 1: POST /api/payments/create-order → PayPal OAuth2 token generated
+              → PayPal order created → order ID returned to frontend.
+      Step 2: User approves payment in PayPal UI (via @paypal/react-paypal-js).
+      Step 3: POST /api/payments/capture-order → payment captured → Payment
+              document saved to MongoDB → Booking status updated to "Confirmed".
+
+2.4 Database Design
+
+    The MongoDB database contains 13 collections managed via Mongoose schemas:
+
+    Collection        Key Purpose
+    ───────────────   ──────────────────────────────────────────────────
+    users             All users (travellers, business, admin, pending)
+    packages          Tour packages and service listings
+    bookings          Booking records with status lifecycle
+    reviews           Package reviews with likes/dislikes
+    payments          PayPal payment records
+    trips             Saved AI-generated itinerary plans
+    businesses        Physical business locations (hotels/guides/vehicles)
+    businessrequests  Business partner onboarding applications
+    savedpackages     User bookmarked packages
+    searchhistories   User search term history
+    categories        Package category labels
+    locations         Sri Lankan location reference data
+    slips             Bank transfer payment slips
+
+    The User schema employs embedded sub-schemas for business profile data:
+      - hotelDetailsSchema       (hotel-specific onboarding fields)
+      - guideDetailsSchema       (guide-specific fields, NIC, tourism board)
+      - transportDetailsSchema   (vehicle, driver details, license photos)
+
+2.5 Authentication and Security
+
+    - Passwords are hashed using bcryptjs before database storage.
+    - JSON Web Tokens (JWT) are issued upon successful login.
+    - OTP-based password reset is implemented via nodemailer email delivery.
+    - Account types: user | business | admin | pending
+    - File uploads are validated by multer middleware (type and size).
+    - CORS is configured on both Node.js and Flask servers.
+
+2.6 Requirements Summary
+
+2.6.1 Functional Requirements
+    FR1  : Users shall register as travellers, business partners, or admins.
+    FR2  : Users shall log in and receive a JWT for authenticated sessions.
+    FR3  : Business partners shall submit onboarding applications with
+           supporting documents (NIC, licenses, vehicle photos).
+    FR4  : The system shall generate personalised multi-day itineraries.
+    FR5  : The system shall identify Sri Lankan destinations from photos.
+    FR6  : Users shall interact with an AI chatbot for travel advice.
+    FR7  : Users shall browse, filter, and save packages and services.
+    FR8  : Users shall book packages and complete payment via PayPal.
+    FR9  : Business users shall manage their listings and view bookings.
+    FR10 : The system shall display itinerary routes on Google Maps.
+    FR11 : Users shall post, like, and dislike package reviews.
+    FR12 : Administrators shall manage users, listings, and view analytics.
+
+2.6.2 Non-Functional Requirements
+    NFR1 : The image classifier shall return results within 5 seconds.
+    NFR2 : Core pages shall be accessible offline via PWA caching.
+    NFR3 : Passwords shall be stored as bcrypt hashes (never plaintext).
+    NFR4 : The system shall support a minimum of 7 international currencies.
+    NFR5 : The CLIP model shall achieve ≥75% confidence for valid predictions.
+    NFR6 : The UI shall be responsive across mobile and desktop viewports.
+    NFR7 : The itinerary pipeline shall handle budget insufficiency gracefully.
+
+2.7 Testing Summary
+
+2.7.1 API Endpoint Testing
+    All 16 route groups were tested using Postman. Each endpoint was verified
+    for correct HTTP status codes, response body structure, and error handling.
+    Full test case results are documented in Appendix A.
+
+2.7.2 AI Pipeline Testing
+    The CLIP image recognition model was tested against a holdout image set.
+    Results including confidence distributions and prediction accuracy are
+    provided in Appendix B.
+
+2.7.3 Integration Testing
+    The Node.js-to-Python child process bridge (tripplanaiController.js)
+    was tested with boundary inputs: zero budget, single-day trips, maximum
+    group sizes, and invalid date ranges. The budget_insufficient status code
+    was verified. Full integration test logs are in Appendix C.
+
+2.7.4 Payment Flow Testing
+    PayPal sandbox transactions were executed to verify the full payment
+    lifecycle: order creation, approval, capture, Payment document creation,
+    and Booking status update. Test transaction IDs are in Appendix D.
+
+2.7.5 PWA Offline Testing
+    Offline capability was verified by disabling the network in Chrome
+    DevTools and confirming that cached API responses were served correctly.
+    Service worker installation and update flows were also tested.
+
+================================================================================
+3. END-PROJECT REPORT
+================================================================================
+
+3.1 Summary of Achievements
+
+    The CeylonRoam platform was successfully developed and delivered as a
+    fully functional, AI-integrated travel planning system. The following
+    key achievements were realised:
+
+    Achievement 1 — Hybrid AI Itinerary Pipeline
+      A novel hybrid pipeline was implemented combining deterministic
+      geographic routing (Haversine algorithm, greedy district selection)
+      with Gemini LLM narration. This approach produced more reliable and
+      cost-efficient itineraries than a purely LLM-based solution.
+
+    Achievement 2 — Fine-Tuned CLIP Model
+      The CLIP model was fine-tuned on 55 Sri Lankan destination classes
+      and integrated into a Flask microservice. The model produces confident
+      predictions for clear destination photographs.
+
+    Achievement 3 — Three-Role Platform
+      A complete multi-role system was delivered supporting travellers,
+      business partners (with a full onboarding workflow), and administrators,
+      each with distinct interfaces and permissions.
+
+    Achievement 4 — Offline-First PWA
+      Full PWA capabilities were implemented using Workbox, enabling
+      core functionality without internet connectivity.
+
+    Achievement 5 — Live Multi-Currency System
+      A resilient currency system was delivered with three fallback tiers
+      (live → cached → static), ensuring price display is always available.
+
+    Achievement 6 — Admin Analytics Dashboard
+      MongoDB aggregation pipelines were implemented to produce monthly
+      revenue, category revenue breakdown, and top-performing package data,
+      visualised using Recharts.
+
+3.2 Evaluation of Objectives
+
+    Objective                                         Status
+    ─────────────────────────────────────────────     ──────────────
+    Hybrid AI itinerary planner                       FULLY MET
+    CLIP image recognition (≥75% threshold)           FULLY MET
+    Multi-role authentication and registration        FULLY MET
+    PayPal payment gateway integration                FULLY MET
+    Multi-currency system (7 currencies)              FULLY MET
+    Offline-first PWA via Workbox                     FULLY MET
+    Admin analytics dashboard (Recharts)              FULLY MET
+    Real-time weather integration (Open-Meteo)        FULLY MET
+    Holiday and Poya day awareness                    FULLY MET
+    Review system with reactions                      FULLY MET
+
+3.3 Changes Made During the Project
+
+    Change 1 — Architectural Split (Single → Dual Backend)
+      Originally, a single Node.js server was planned to handle all backend
+      operations. Due to the computational intensity of PyTorch model
+      inference, a separate Python Flask microservice was introduced. This
+      prevented AI workloads from blocking the main API server.
+
+    Change 2 — Itinerary Engine Approach
+      An initial approach of sending all itinerary generation directly to
+      the Gemini LLM was reconsidered. LLM hallucination risks for specific
+      cost and distance data were identified. A deterministic algorithm was
+      developed to handle all numeric calculations, with the LLM restricted
+      to narrative generation only.
+
+    Change 3 — PWA Implementation (Added Mid-Project)
+      Offline capability was not part of the original specification. The
+      requirement was identified during development when the importance of
+      offline access for tourists in areas with poor connectivity was
+      recognised. Workbox service workers were integrated as an enhancement.
+
+================================================================================
+4. PROJECT POST-MORTEM
+================================================================================
+
+4.1 Critical Appraisal of Development Process
+
+    The Agile methodology was well-suited for this project. The iterative
+    sprint structure allowed complex AI components to be developed and tested
+    independently before integration. However, for a solo developer, sprint
+    planning overhead was sometimes disproportionate to the work output.
+    A Kanban-style approach might have been more practical for single-developer
+    projects of this nature.
+
+4.2 Appraisal of Technology Choices
+
+    Technology         Verdict    Rationale
+    ────────────────   ─────────  ──────────────────────────────────────────
+    React 18 PWA       Correct    Component reusability and PWA support
+    Node.js/Express    Correct    Well-suited for REST APIs and async I/O
+    MongoDB            Correct    Flexible schema ideal for varied user types
+    Flask (Python)     Correct    Lightweight and fast for AI endpoint serving
+    PyTorch + CLIP     Correct    State-of-the-art zero-shot image-text model
+    Gemini AI          Correct    Free tier accessible; superior for local content
+    PayPal REST v2     Correct    Industry-standard, well-documented sandbox
+    Workbox            Correct    Robust, production-grade PWA tooling
+    child_process exec Risk       Spawning a new Python process per request is
+                                  inefficient under load; a persistent Flask
+                                  endpoint for itinerary generation would scale
+                                  significantly better.
+
+4.3 Known Issues and Technical Debt
+
+    Issue 1: Absolute file paths are hardcoded in tripplanaiController.js
+             and server.py, making cross-machine deployment impossible without
+             manual edits.
+    Issue 2: CORS is set to wildcard "*" on both servers, which is insecure
+             in a production environment.
+    Issue 3: The PayPal client-id is exposed in the React App.js source code
+             and should be moved to an environment variable.
+    Issue 4: JWT middleware is not consistently applied to all mutation routes.
+    Issue 5: The itinerary pipeline blocks the Node.js process during
+             Python script execution due to the exec() approach.
+
+4.4 Personal Performance and Lessons Learned
+
+    This project represented the most technically complex undertaking of my
+    academic career. Managing three separate frontend/backend codebases
+    simultaneously required strong discipline and systematic planning.
+
+    The steepest learning curve was encountered during the fine-tuning of
+    the CLIP model and integrating its output into the Flask microservice.
+    Understanding PyTorch tensor operations, model state loading, and the
+    CLIP processor pipeline required significant independent research.
+
+    Time management was challenging during the AI pipeline development phase,
+    as debugging the Node.js-to-Python process bridge consumed more time than
+    estimated. In retrospect, allocating dedicated buffer weeks for AI
+    integration would have reduced pressure during the final development phase.
+
+    Lessons for the future:
+      Lesson 1: Use relative paths and environment variables from Day 1.
+                Hardcoded paths create deployment problems that are
+                time-consuming to diagnose and fix.
+      Lesson 2: Separate AI microservices should expose persistent HTTP
+                endpoints, not be spawned as child processes. This is more
+                robust, scalable, and easier to debug.
+      Lesson 3: Define non-functional requirements (performance, security,
+                deployment) with the same rigour as functional requirements
+                from the beginning. Security issues are far harder to retrofit.
+
+4.5 Recommendations for Future Development
+
+    Priority 1: Replace exec(python) with a persistent POST /generate
+                endpoint in the Flask server for itinerary generation.
+    Priority 2: Move all environment-specific values to .env files and
+                use relative paths throughout the codebase.
+    Priority 3: Add JWT authentication middleware to all mutation routes.
+    Priority 4: Restrict CORS to known production domain origins.
+    Priority 5: Add average rating aggregation to the Package model,
+                automatically updated on each new review submission.
+    Priority 6: Implement verified review badges for users with confirmed
+                bookings on the reviewed package.
+    Priority 7: Build an admin moderation panel for review management.
+
+================================================================================
+5. APPENDIX PLACEHOLDERS
+================================================================================
+
+    Appendix A — Full API Endpoint Test Results (Postman)
+    Appendix B — CLIP Model Performance: Accuracy, Confusion Matrix,
+                 Training Parameters, Sample Predictions
+    Appendix C — Integration Test Logs: Itinerary Pipeline Boundary Tests
+    Appendix D — PayPal Sandbox Payment Transaction Records
+    Appendix E — Entity-Relationship Diagram (13 MongoDB Collections)
+    Appendix F — System Architecture Diagram (3-tier)
+    Appendix G — Itinerary Pipeline Data Flow Diagram
+    Appendix H — Use Case Diagrams (Traveller / Business / Admin)
+    Appendix I — CLIP Model Training: 55 Place Classes List
+    Appendix J — srilanka_places_master.csv Dataset Statistics
+    Appendix K — Original Project Specification Extract
+    Appendix L — UAT Feedback Results and User Survey Data
+
+================================================================================
+END OF REPORT — CeylonRoam | PUSL3190 Final Year Project
+================================================================================
