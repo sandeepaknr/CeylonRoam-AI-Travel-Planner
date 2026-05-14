@@ -1,5 +1,5 @@
-import React, { useState, useContext, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom"; // 🔴 navigate කරන්න මේක import කළා
+﻿import React, { useState, useContext, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; // 🔴 Imported for navigation between pages
 import toast from "react-hot-toast";
 import API from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
@@ -49,7 +49,7 @@ async function fetchAIReply(message, userName = "") {
 export default function TripPlanner() {
   const { user } = useContext(AuthContext);
   const { userCurrency, formatPrice, convertToLKR, currencySymbol } = useContext(CurrencyContext);
-  const navigate = useNavigate(); // 🔴 Login page එකට යවන්න
+  const navigate = useNavigate(); // 🔴 Used to redirect to Login page
 
   /* ── Wizard step (0=Landing, 1-4=Wizard, 5=Loading, 6=Itinerary) ── */
   const [step,        setStep]        = useState(0);
@@ -195,7 +195,7 @@ export default function TripPlanner() {
     setFormData({
       ...formData,
       keywords:         autoKeywords,
-      // start_loc intentionally NOT overwritten – user confirms their city in Step 1
+      // Otherwise, render as a standard link
       preferred_region: detectionData.district,
     });
     setShowDetectionPopup(false);
@@ -441,7 +441,7 @@ export default function TripPlanner() {
       </p>
 
       <div className="hero-choices">
-        {/* 🔴 යාවත්කාලීන කළ බොත්තම 1 */}
+        {/* 🔴 Updated Button 1 */}
         <button className="choice-card" onClick={handleManualPlanningClick}>
           <div className="choice-icon">📝</div>
           <div className="choice-text">
@@ -458,7 +458,7 @@ export default function TripPlanner() {
             style={{ display: "none" }}
             onChange={handleImageUpload}
           />
-          {/* 🔴 යාවත්කාලීන කළ බොත්තම 2 */}
+          {/* 🔴 Updated Button 2 */}
           <button
             className="choice-card photo-card"
             onClick={handlePhotoUploadClick}
@@ -715,6 +715,45 @@ export default function TripPlanner() {
               <div className="expert-label">Travel Expert's Note</div>
               <div className="expert-name">CeylonRoam AI · Your Personal Guide</div>
               <div className="expert-text markdown-body">
+                <ReactMarkdown 
+  remarkPlugins={[remarkGfm]}
+  components={{
+    // Intercept <a> tags (links) from AI output and render them as custom elements
+    a: ({ node, ...props }) => {
+      // Otherwise, render as a standard link
+      if (props.href && props.href.includes("google.com/maps")) {
+        return (
+          <a 
+            href={props.href} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="map-btn"
+            style={{ 
+              display: "inline-flex", 
+              marginTop: "8px", 
+              marginBottom: "8px",
+              textDecoration: "none" 
+            }}
+          >
+            🗺️ View Route Map
+          </a>
+        );
+      }
+      // Otherwise, render as a standard link
+      return (
+        <a 
+          {...props} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          style={{ color: "var(--ocean-mid)", textDecoration: "underline" }} 
+        />
+      );
+    }
+  }}
+>
+  {/* Strip 'Map Link:' text from AI output and show only the Button */}
+  {plan.fullStory?.replace(/Map Link:\s*/gi, '')}
+</ReactMarkdown>
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{plan.fullStory}</ReactMarkdown>
               </div>
             </div>
