@@ -9,6 +9,7 @@ const PackageSchema = new mongoose.Schema({
   location:    { type: String, required: true },
   creator:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   image:       { type: String },
+  images:      { type: [String], default: [] },
   createdAt:   { type: Date, default: Date.now },
 
   // ── NEW: Listing type ──────────────────────────────────

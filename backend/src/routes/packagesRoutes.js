@@ -18,8 +18,8 @@ router.get('/categories', getCategories);
 router.patch('/:id/featured', toggleFeatured);
 
 router.get('/:id',  getPackageById);
-router.post('/',    upload.single('image'), createPackage);
-router.put('/:id',  upload.single('image'), updatePackage);
+router.post('/',    upload.array('images', 5), createPackage);
+router.put('/:id',  upload.array('images', 5), updatePackage);
 router.delete('/:id', deletePackage);
 
 module.exports = router;

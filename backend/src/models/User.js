@@ -100,19 +100,27 @@ const userSchema = new mongoose.Schema(
     },
     country: {
       type: String,
+      required: true,
       default: ""
+      
     },
     dateOfBirth: {
       type: Date,
+      required: true,
       default: null
     },
     jobRole: {
       type: String,
+      required: true,
       default: ""
     },
     currency: {
       type: String,
       default: "LKR"
+    },
+    profilePicture: {
+      type: String,
+      default: ""
     },
     // Optional business profile — populated for pending/business accounts
     businessProfile: {

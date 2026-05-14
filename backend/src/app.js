@@ -39,6 +39,7 @@ app.use("/api/ai", tripplanRoute);
 app.use("/api/user", profileRoute);
 app.use("/api/bookings", bookingRoute);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/paypal", paymentRoutes); // Fallback for paypal direct prefix
 app.use("/api/seller-bookings", salerbookingRoute);
 app.use("/api/features", featuresRoutes);
 app.use("/api/accountmanagement", accountManagementRoutes);
