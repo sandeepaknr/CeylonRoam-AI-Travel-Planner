@@ -1,7 +1,7 @@
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    CEYLON ROAM — Trip Planner CSS
    Sri Lanka Theme: Ocean Blues · Tea Greens · Sunset Golds
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
@@ -55,9 +55,9 @@
   padding: 0;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    HERO / PAGE WRAPPER
-   ════════════════════════════════════════ */
+   ======================================== */
 .planner-hero {
   min-height: 100vh;
   width: 100%;
@@ -104,9 +104,9 @@
   z-index: 0;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    LANDING PAGE HERO (STEP 0)
-   ════════════════════════════════════════ */
+   ======================================== */
 .hero-landing-content {
   position: relative;
   z-index: 1;
@@ -216,9 +216,9 @@
 .hero-stat-num { font-family: var(--font-body); font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--gold-light); }
 .hero-stat-label { font-size: 12px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; }
 
-/* ════════════════════════════════════════
+/* ========================================
    DASHBOARD WRAPPER (Steps 1-5)
-   ════════════════════════════════════════ */
+   ======================================== */
 .dashboard-header {
   width: 100%;
   max-width: 680px;
@@ -284,9 +284,9 @@
 .step-dot.active  { background: var(--ocean-mid); width: 24px; border-radius: 4px; }
 .step-dot.done    { background: var(--tea-mid); }
 
-/* ════════════════════════════════════════
+/* ========================================
    MAIN WIZARD CARD
-   ════════════════════════════════════════ */
+   ======================================== */
 .wizard-card {
   width: 100%;
   max-width: 680px;
@@ -336,9 +336,9 @@
   line-height: 1.6;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    FORM INPUTS
-   ════════════════════════════════════════ */
+   ======================================== */
 .input-group {
   position: relative;
   margin-bottom: 20px;
@@ -420,9 +420,9 @@
 }
 .tag-pill:hover { background: var(--ocean-mid); color: white; border-color: var(--ocean-mid); }
 
-/* ════════════════════════════════════════
+/* ========================================
    TOGGLE SWITCH (Vulnerable Members)
-   ════════════════════════════════════════ */
+   ======================================== */
 .toggle-card {
   background: var(--neutral-100);
   border: 2px solid var(--neutral-300);
@@ -467,9 +467,9 @@
 .toggle-card.active .toggle-pill { background: var(--tea-mid); }
 .toggle-card.active .toggle-pill::after { left: 27px; }
 
-/* ════════════════════════════════════════
+/* ========================================
    TRANSPORT CARDS (Step 4)
-   ════════════════════════════════════════ */
+   ======================================== */
 .transport-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -491,9 +491,9 @@
 .transport-card .t-name { font-size: 14px; font-weight: 700; color: var(--neutral-700); }
 .transport-card .t-note { font-size: 11px; color: var(--neutral-500); margin-top: 3px; }
 
-/* ════════════════════════════════════════
+/* ========================================
    BUTTONS
-   ════════════════════════════════════════ */
+   ======================================== */
 .btn-row {
   display: flex;
   gap: 12px;
@@ -600,9 +600,9 @@
   flex-shrink: 0;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    LOADING OVERLAY (Generating)
-   ════════════════════════════════════════ */
+   ======================================== */
 .generating-overlay {
   text-align: center;
   padding: 20px 0;
@@ -647,9 +647,9 @@
 .gen-dot:nth-child(2) { animation-delay: 0.2s; background: var(--tea-mid); }
 .gen-dot:nth-child(3) { animation-delay: 0.4s; background: var(--gold-mid); }
 
-/* ════════════════════════════════════════
+/* ========================================
    ITINERARY VIEW (Step 6)
-   ════════════════════════════════════════ */
+   ======================================== */
 .itinerary-wrapper {
   width: 100%;
   max-width: 780px;
@@ -723,7 +723,11 @@
   font-size: 26px;
   flex-shrink: 0;
 }
-.expert-body { flex: 1; }
+.expert-body { 
+  flex: 1; 
+  overflow: hidden; /* Added: Ensures parent container doesn't stretch */
+  max-width: 100%;  /* Added */
+}
 .expert-label {
   font-size: 11px;
   text-transform: uppercase;
@@ -738,11 +742,15 @@
   color: var(--neutral-900);
   margin-bottom: 12px;
 }
-.expert-text {
+.expert-text, 
+.expert-text p {
   font-size: 14.5px;
   color: var(--neutral-700);
   line-height: 1.8;
-  white-space: pre-line;
+  white-space: pre-wrap !important; /* Force line breaks */
+  word-wrap: break-word !important; /* Force word breaks */
+  overflow-wrap: break-word !important; /* Force word breaks */
+  max-width: 100%;
 }
 
 /* ── Day Timeline ── */
@@ -898,9 +906,9 @@
   margin-top: 8px;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    FLOATING CHATBOT WIDGET
-   ════════════════════════════════════════ */
+   ======================================== */
 .chat-fab {
   position: fixed;
   bottom: 32px;
@@ -1091,9 +1099,9 @@
 .chat-send-btn:hover { transform: scale(1.1); }
 .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* ════════════════════════════════════════
+/* ========================================
    ANIMATIONS
-   ════════════════════════════════════════ */
+   ======================================== */
 @keyframes fadeInDown {
   from { opacity:0; transform: translateY(-30px); }
   to   { opacity:1; transform: translateY(0); }
@@ -1142,9 +1150,9 @@
   to   { opacity:1; transform: scale(1); }
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    RESPONSIVE
-   ════════════════════════════════════════ */
+   ======================================== */
 @media (max-width: 768px) {
   .wizard-card { padding: 32px 24px; border-radius: var(--radius-md); }
   .input-row-2 { grid-template-columns: 1fr; }
@@ -1166,9 +1174,9 @@
   .hero-title { font-size: 32px; }
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    OPTIONAL LABEL
-   ════════════════════════════════════════ */
+   ======================================== */
 .opt-label {
   font-size: 11px;
   font-weight: 500;
@@ -1178,9 +1186,9 @@
   margin-left: 4px;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    BUDGET HINT CHIP
-   ════════════════════════════════════════ */
+   ======================================== */
 .budget-hint-chip {
   background: var(--tea-pale);
   border: 1.5px solid var(--tea-light);
@@ -1192,9 +1200,9 @@
   margin-bottom: 8px;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    DATE INPUT STYLING
-   ════════════════════════════════════════ */
+   ======================================== */
 input[type="date"].field-input {
   cursor: pointer;
   color-scheme: light;
@@ -1208,9 +1216,9 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   height: 100%;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    POPUP OVERLAY & CARD
-   ════════════════════════════════════════ */
+   ======================================== */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -1322,9 +1330,9 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   .popup-actions { flex-direction: column; }
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    DETECTION POPUP SPECIFICS
-   ════════════════════════════════════════ */
+   ======================================== */
 .detection-popup {
   max-width: 560px;
 }
@@ -1394,9 +1402,9 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   padding: 0 4px;
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    BUDGET POPUP SPECIFICS
-   ════════════════════════════════════════ */
+   ======================================== */
 .budget-popup {
   max-width: 480px;
 }
@@ -1456,9 +1464,9 @@ input[type="date"].field-input::-webkit-calendar-picker-indicator {
   color: var(--neutral-500);
 }
 
-/* ════════════════════════════════════════
+/* ========================================
    REACT MARKDOWN STYLES (AI Output Blocks)
-   ════════════════════════════════════════ */
+   ======================================== */
 .markdown-body {
   font-family: inherit;
   line-height: 1.6;

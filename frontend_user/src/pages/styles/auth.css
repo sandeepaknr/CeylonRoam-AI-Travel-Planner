@@ -36,22 +36,36 @@
 
 /* ── Left: Visual Panel ────────────────────────────────── */
 .auth-visual {
-  position: relative;
+  /* 1. left side (Width) and (Height)  (Locking) */
+  flex: 1;
+  max-width: 100%; 
+  height: 100vh; /* limite in scrren size */
+  
+  /*  Form  Scroll down sticky the image (Sticky) */
+  position: sticky;
+  top: 0;
   overflow: hidden;
+  background-color: var(--ink); 
 }
 
+/* 🔴 3. Premium Vertical Pan Animation  */
 .auth-visual-img {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 108%; 
   object-fit: cover;
-  object-position: center 35%;
-  /* Slight initial zoom for the parallax feel */
-  transform: scale(1.04);
-  transition: transform 12s ease;
+  object-position: center;
+  
+  /* Scale (Zoom) instend of scroll in  Y axis */
+  transform: translateY(-4%);
+  transition: transform 12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.auth-page:hover .auth-visual-img { transform: scale(1.00); }
+
+.auth-page:hover .auth-visual-img { 
+  transform: translateY(0); 
+}
 
 /* Gradient overlay */
 .auth-visual-overlay {
