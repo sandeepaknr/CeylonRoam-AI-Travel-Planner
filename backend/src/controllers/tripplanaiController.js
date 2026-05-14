@@ -2,7 +2,7 @@ const Trip = require("../models/Trip");
 const { exec } = require("child_process");
 
 exports.generateTripPlan = async (req, res) => {
-    console.log("📥 React එකෙන් ආපු Request එක:", req.body); 
+    console.log("📥 Incoming Request from React:", req.body); 
 
     const { budget, days, transport, members, keywords, start_loc, start_date, has_vulnerable, force_free_places } = req.body;
 
@@ -16,14 +16,14 @@ exports.generateTripPlan = async (req, res) => {
             start_loc: start_loc || "Colombo",
             start_date: start_date || new Date().toISOString().split('T')[0],
             has_vulnerable: has_vulnerable || false,
-            force_free_places: force_free_places || false // 🔴 අලුත් පරාමිතිය
+            force_free_places: force_free_places || false // 🔴 New parameter
         });
 
         const pythonScriptPath = "C:\\Users\\ASUS\\Downloads\\Traveling System (2)\\Traveling System\\Traveling System\\backend\\itinerary_api.py"; 
 
         const escapedArgs = pythonArgs.replace(/"/g, '\\"');
         const command = `python "${pythonScriptPath}" "${escapedArgs}"`;
-        console.log("🚀 Python කේතය Run වෙනවා... Command එක:", command);
+        console.log("🚀 Running Python script... Command:", command);
 
         exec(command, (error, stdout, stderr) => {
             if (error) {
@@ -31,12 +31,12 @@ exports.generateTripPlan = async (req, res) => {
                 return res.status(500).json({ status: "error", message: "Trip generation failed in Python script" });
             }
 
-            console.log("✅ Python Output එක:", stdout); 
+            console.log("✅ Python Output:", stdout); 
 
             try {
                 const aiData = JSON.parse(stdout);
 
-                // 🔴 බජට් එක මදි වුණොත්, 200 දීලම Special Status එකක් යවනවා
+                // 🔴 If budget is insufficient, send a Special Status with HTTP 200
                 if (aiData.status === "budget_insufficient") {
                     console.log("⚠️ Budget Insufficient Error Caught!");
                     return res.status(200).json({ 
@@ -47,7 +47,7 @@ exports.generateTripPlan = async (req, res) => {
                 }
 
                 if (aiData.status === "error") {
-                    console.error("❌ Python එකෙන් Error Status එකක් ආවා:", aiData.message);
+                    console.error("❌ Python returned an Error Status:", aiData.message);
                     return res.status(400).json({ status: "error", message: aiData.message });
                 }
 
@@ -72,7 +72,7 @@ exports.generateTripPlan = async (req, res) => {
                 res.status(200).json(formattedResponse);
 
             } catch (parseError) {
-                console.error("❌ JSON Parse Error! ආපු දේ:", stdout);
+                console.error("❌ JSON Parse Error! Raw output:", stdout);
                 res.status(500).json({ status: "error", message: "Invalid output from Python script" });
             }
         });

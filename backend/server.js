@@ -10,23 +10,23 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
-// මේක තාවකාලික Route එකක් (Admin කෙනෙක්ව හදන්න විතරයි)
+// This is a temporary Route (used only to create an Admin account)
 const bcrypt = require("bcryptjs");
-const User = require("./src/models/User"); // User model එකට path එක හරියටම දුන්නා
+const User = require("./src/models/User"); // Providing the correct path to the User model
 
 app.get("/create-admin", async (req, res) => {
   try {
-    // මේ ඊමේල් එකෙන් කලින් කෙනෙක් ඉන්නවද බලනවා
+    // Check if a user with this email already exists
     const existingUser = await User.findOne({ email: "admin@travel.com" });
     if (existingUser) return res.send("Admin already exists!");
 
-    // Password එක Encrypt කරනවා
+    // Encrypt the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash("admin123", salt);
 
-    // අලුත් Admin කෙනෙක්ව User Database එකට දානවා
+    // Insert the new Admin into the User Database
     const newAdmin = new User({
-      username: "MainAdmin", // <--- මෙන්න මේ පේළිය තමයි අලුතින් එකතු කළේ
+      username: "MainAdmin", // <--- This is the newly added field
       email: "admin@travel.com",
       password: hashedPassword,
       role: "admin",
