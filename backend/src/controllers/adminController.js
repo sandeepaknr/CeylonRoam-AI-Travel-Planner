@@ -1,6 +1,7 @@
 const User    = require("../models/User");
 const Package = require("../models/Package");
 const Booking = require("../models/Booking");
+const Trip    = require("../models/Trip");
 
 /* ─────────────────────────────────────────────────────────────
    GET /api/admin/dynamic-stats  (keep existing endpoint intact)
@@ -93,7 +94,27 @@ exports.getAnalytics = async (req, res) => {
       .populate("creator", "username email")
       .select("name price views serviceCategory listingType creator");
 
-    /* ── 4. System-wide Counts ── */
+    /* ── 4. Geographic Distribution: Bookings by Country ── */
+    const bookingsByCountry = await Booking.aggregate([
+      { $lookup: { from: "users", localField: "customerId", foreignField: "_id", as: "user" } },
+      { $unwind: "$user" },
+      { $group: { _id: "$user.country", count: { $sum: 1 } } },
+      { $project: { _id: 0, country: "$_id", bookings: "$count" } },
+      { $sort: { bookings: -1 } },
+      { $limit: 10 }
+    ]);
+
+    /* ── 5. Geographic Distribution: Trips by Country ── */
+    const tripsByCountry = await Trip.aggregate([
+      { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "user" } },
+      { $unwind: "$user" },
+      { $group: { _id: "$user.country", count: { $sum: 1 } } },
+      { $project: { _id: 0, country: "$_id", trips: "$count" } },
+      { $sort: { trips: -1 } },
+      { $limit: 10 }
+    ]);
+
+    /* ── 6. System-wide Counts ── */
     const [totalUsers, totalProviders, totalActivePackages, totalBookings, totalRevResult] =
       await Promise.all([
         User.countDocuments({ accountType: "user" }),
@@ -112,6 +133,8 @@ exports.getAnalytics = async (req, res) => {
       monthlyRevenue,
       revenueByCategory,
       topPackages,
+      bookingsByCountry,
+      tripsByCountry,
       systemStats: { totalUsers, totalProviders, totalActivePackages, totalBookings, totalRevenue },
     });
   } catch (err) {

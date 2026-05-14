@@ -402,6 +402,8 @@ exports.loginUser = async (req, res) => {
       username:    user.username,
       email:       user.email,
       accountType: user.accountType,
+      dateOfBirth: user.dateOfBirth,
+      jobRole:     user.jobRole,
       country:     user.country,
       currency:    user.currency || "LKR",
       token:       generateToken(user._id),

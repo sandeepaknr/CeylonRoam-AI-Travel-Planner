@@ -30,3 +30,31 @@ exports.updateUserProfile = async (req, res) => {
         res.status(500).json({ message: "Server error during update" });
     }
 };
+
+// Upload Profile Picture
+exports.uploadProfilePicture = async (req, res) => {
+    console.log("[DEBUG] Profile picture upload request received for ID:", req.params.id);
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const { id } = req.params;
+        const profilePicture = `/uploads/${req.file.filename}`;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { $set: { profilePicture } },
+            { new: true }
+        ).select("-password");
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json(updatedUser);
+    } catch (err) {
+        console.error("Profile picture upload error:", err);
+        res.status(500).json({ message: "Server error during image upload" });
+    }
+};

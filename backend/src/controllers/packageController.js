@@ -1,5 +1,6 @@
 const Package  = require('../models/Package');
 const Category = require('../models/Category');
+const mongoose = require('mongoose');
 
 /* ── helpers ──────────────────────────────────────────────── */
 const parseArr = val =>
@@ -23,7 +24,8 @@ exports.createPackage = async (req, res) => {
       itinerary, inclusions, duration,
     } = req.body;
 
-    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+    const imagePaths = req.files ? req.files.map(f => `/uploads/${f.filename}`) : [];
+    const imagePath  = imagePaths.length > 0 ? imagePaths[0] : null;
     const type      = listingType || 'Service';
 
     // ── Safe numeric parsers (FormData sends everything as strings) ──
@@ -54,6 +56,8 @@ exports.createPackage = async (req, res) => {
       includedKM:      includedKM  && String(includedKM).trim()  !== '' ? safeNum(includedKM)    : null,
       extraKMCharge:   extraKMCharge && String(extraKMCharge).trim() !== '' ? safeNum(extraKMCharge) : null,
 
+      images:          imagePaths,
+
       // Package-only fields
       itinerary:  itinerary   || '',
       inclusions: parseArr(inclusions),
@@ -75,7 +79,10 @@ exports.createPackage = async (req, res) => {
 exports.updatePackage = async (req, res) => {
   try {
     const updateData = { ...req.body };
-    if (req.file) updateData.image = `/uploads/${req.file.filename}`;
+    if (req.files && req.files.length > 0) {
+      updateData.images = req.files.map(f => `/uploads/${f.filename}`);
+      updateData.image  = updateData.images[0];
+    }
     // Parse arrays if sent as strings
     if (typeof updateData.languages  === 'string') updateData.languages  = parseArr(updateData.languages);
     if (typeof updateData.inclusions === 'string') updateData.inclusions = parseArr(updateData.inclusions);
@@ -98,7 +105,7 @@ exports.deletePackage = async (req, res) => {
   }
 };
 
-const mongoose = require('mongoose');
+
 
 /* ─────────────────────────────────────────────────────────────
    GET /api/packages
