@@ -1,10 +1,12 @@
 import ssl
+import os
+from dotenv import load_dotenv
 
-# 🔴 අන්තර්ජාලයෙන් Model එක Download වෙද්දී එන SSL Certificate Error එක මඟහැරීම
+# 🔴 Bypass SSL Certificate Error that occurs when downloading the Model from the internet
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS # React එකෙන් එන ඉල්ලීම් වලට ඉඩ දෙන්න
+from flask_cors import CORS # Allow incoming requests from React frontend
 import torch
 from transformers import CLIPProcessor, CLIPModel
 from PIL import Image
@@ -12,7 +14,7 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}) # React එකෙන් එන ඉල්ලීම් භාරගන්න මේක අත්‍යවශ්‍යයි!
+CORS(app, resources={r"/*": {"origins": "*"}}) # This is essential to accept requests from the React frontend!
 
 # 1. select the device
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -23,7 +25,7 @@ model_name = "openai/clip-vit-base-patch32"
 processor = CLIPProcessor.from_pretrained(model_name)
 model = CLIPModel.from_pretrained(model_name)
 
-# 🔴 වැදගත්: ඔයා Train කරලා Save කරපු මොඩල් එක ලෝඩ් කිරීම
+# 🔴 Important: Loading the trained and saved model
 model_path = r"C:\\Users\ASUS\Downloads\\Traveling System (2)\\Traveling System\\Traveling System\\backend\\srilanka_travel_clip_fixed.pth"
 
 if os.path.exists(model_path):
@@ -35,14 +37,14 @@ else:
 model.to(device)
 model.eval()
 
-# 3. CSV එකෙන් විස්තර සහ Classes 55 කියවා ගැනීම
+# 3. Read details and 55 Classes from CSV file
 csv_file = "image_dataset_info_enriched.csv"
 if os.path.exists(csv_file):
     df_meta = pd.read_csv(csv_file)
-    # අනුපිටපත් (duplicates) අයින් කරලා Classes ටික ගන්නවා
+    # Remove duplicates and get the list of unique Classes
     unique_classes_df = df_meta.drop_duplicates(subset=['class_name'])
     
-    # හරියටම ඔයාගේ ෆෝල්ඩර් 55 පිළිවෙලටම ගන්න ඕනේ
+    # Must retrieve the 55 folders in the exact same sorted order
     CLASSES = sorted(unique_classes_df['class_name'].tolist())
     
     # Create Text Prompts
@@ -50,22 +52,22 @@ if os.path.exists(csv_file):
     encoded_texts = processor(text=text_inputs, return_tensors="pt", padding=True).to(device)
     print(f"[*] Successfully loaded {len(CLASSES)} places from CSV.")
 else:
-    print(f"❌ Error: '{csv_file}' සොයාගැනීමට නොහැක. කරුණාකර එය ෆෝල්ඩරයේ ඇති බව තහවුරු කරන්න.")
+    print(f"❌ Error: '{csv_file}' not found. Please ensure it exists in the working directory.")
     CLASSES = []
 
-# 4. ෆොටෝ එකක් ආවාම වැඩ කරන විදිහ (API Endpoint)
+# 4. Handles incoming photo prediction requests (API Endpoint)
 @app.route('/predict', methods=['POST'])
 def predict():
     if not CLASSES:
         return jsonify({"error": "Server is missing class data from CSV."}), 500
 
     if 'image' not in request.files:
-        return jsonify({"error": "කරුණාකර Image එකක් Upload කරන්න"}), 400
+        return jsonify({"error": "Please upload an image file"}), 400
         
     file = request.files['image']
     
     try:
-        # Image එක Open කරලා RGB වලට හරවා ගැනීම
+        # Open the image and convert it to RGB format
         image = Image.open(file.stream).convert("RGB")
         inputs = processor(images=image, return_tensors="pt").to(device)
         
@@ -79,26 +81,26 @@ def predict():
             
             probs = outputs.logits_per_image.softmax(dim=1)
             pred_idx = probs.argmax(dim=1).item()
-            confidence = probs[0][pred_idx].item() * 100 # ප්‍රතිශතයක් බවට පත්කිරීම
+            confidence = probs[0][pred_idx].item() * 100 # Convert to percentage
             
             predicted_class = CLASSES[pred_idx]
             
-        # 🔴 Confidence එක 75% ට වඩා අඩු නම් Error එකක් යවනවා
+        # 🔴 If confidence is below 75%, return an error response
         if confidence < 75.0:
             return jsonify({
                 "status": "error",
                 "message": f"I can't detect a clear travel destination in this photo. Please upload a better image. (Confidence: {round(confidence, 2)}%)"
             })
             
-        # 🔴 Confidence එක 75% ට වැඩියි නම් (හරියට අඳුරගත්තා නම්) අදාළ විස්තර යවනවා
+        # 🔴 If confidence is above 75% (clearly identified), send the relevant details
         place_info = unique_classes_df[unique_classes_df['class_name'] == predicted_class].iloc[0]
         
         return jsonify({
             "status": "success",
-            "predicted_place": place_info['Display_Name'],    # උදා: Adam's Peak
-            "district": place_info['District'],               # උදා: Nuwara Eliya
-            "category": place_info['Category'],               # උදා: Mountain/Pilgrimage
-            "description": place_info['Description'],         # උදා: A tall, sacred mountain...
+            "predicted_place": place_info['Display_Name'],    # e.g. Adam's Peak
+            "district": place_info['District'],               # e.g. Nuwara Eliya
+            "category": place_info['Category'],               # e.g. Mountain/Pilgrimage
+            "description": place_info['Description'],         # e.g. A tall, sacred mountain...
             "confidence": round(confidence, 2)
         })
         
@@ -111,8 +113,7 @@ def predict():
 # ══════════════════════════════════════════════════════════════
 from google import genai as google_genai
 
-GEMINI_API_KEY = "AIzaSyDcKRUq8ICxmdJbnf1CgMFmnb2T5ViA6As"
-
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SYSTEM_PROMPT_TEMPLATE = """You are "Roamy", a highly professional, respectful, and knowledgeable Sri Lankan Travel Expert built into the CeylonRoam trip planning app.
 
 Tone & Conduct:
@@ -191,5 +192,5 @@ def chat():
 
 
 if __name__ == '__main__':
-    # Server එක Port 5001 හරහා Start වෙනවා
+    # Start the server on Port 5001
     app.run(debug=True, host='0.0.0.0', port=5001)

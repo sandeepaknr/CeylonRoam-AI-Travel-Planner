@@ -1,7 +1,9 @@
 import sys
 import io
+import os
+from dotenv import load_dotenv
 
-# Windows Terminal එකේ Emoji / Unicode අවුල් යන එක නවත්තන්න
+# Fix encoding issues with Emoji / Unicode characters in Windows Terminal
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 import pandas as pd
@@ -19,8 +21,8 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# 🔴 API Key එක මෙතන දාන්න
-GEMINI_API_KEY = "AIzaSyDcKRUq8ICxmdJbnf1CgMFmnb2T5ViA6As" 
+# geminai api 
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371.0
@@ -43,7 +45,7 @@ def enhance_search_keywords(user_interests):
     combined_text = " ".join(user_interests).lower()
     expanded_keywords = []
     
-    # "All around Sri Lanka" වගේ දැම්මොත් විශේෂ Keywords ටිකක් දානවා
+    # "All around Sri Lanka logic"user want go all around sri lanaka 
     if "all around" in combined_text or "whole island" in combined_text:
         expanded_keywords.extend(["beach", "mountain", "temple", "safari", "culture", "waterfall"])
         
@@ -136,7 +138,7 @@ def generate_multi_day_itinerary(holidays_csv, start_date_str, num_days, start_l
     expanded_interests = enhance_search_keywords(user_interests)
     interest_pattern = r'\b(?:' + '|'.join([re.escape(i) for i in expanded_interests]) + r')\b'
     
-    # 🔴 1. මුලින්ම බලනවා User දීපු Keywords වල District එකක් (Preferred Region) තියෙනවද කියලා
+    # fisrst find the distric or user interest
     preferred_districts = []
     all_districts_in_db = places_df['district'].str.lower().unique().tolist()
     
@@ -150,7 +152,7 @@ def generate_multi_day_itinerary(holidays_csv, start_date_str, num_days, start_l
     if "ella" in expanded_interests and "badulla" not in preferred_districts:
         preferred_districts.append("badulla")
 
-    # 🔴 2. Places ෆිල්ටර් කරනවා
+    #  filter places
     filtered_places = places_df[
         places_df['name'].astype(str).str.lower().str.contains(interest_pattern, regex=True, na=False) |
         places_df['description'].astype(str).str.lower().str.contains(interest_pattern, regex=True, na=False) |
@@ -163,7 +165,7 @@ def generate_multi_day_itinerary(holidays_csv, start_date_str, num_days, start_l
         
     available_districts = filtered_places['district'].unique().tolist()
     
-    # 🔴 3. Route එක හදන තැන (Priority & All Around Sri Lanka Logic)
+    # creat route (Priority & All Around Sri Lanka Logic)
     route_districts = []
     curr_lat, curr_lon = start_lat, start_lon
     unvisited = available_districts.copy()
@@ -174,18 +176,18 @@ def generate_multi_day_itinerary(holidays_csv, start_date_str, num_days, start_l
             
         best_dist = None
         
-        # අ) Preferred District එකක් තියෙනවා නම් ඒකට මුල් තැන දෙනවා
+        # first its have Preferred District, it gives first
         priority_dists = [d for d in unvisited if d.lower() in preferred_districts]
         
         if priority_dists:
             best_dist = priority_dists[0]
-            # ඒ දිස්ත්‍රික්කයේ දවසකට යන්න පුළුවන් තැන් ඉවර නම් විතරක් List එකෙන් අයින් කරනවා
+            # go all places in that distric remove it
             dist_places_count = len(filtered_places[filtered_places['district'] == best_dist])
             if (route_districts.count(best_dist) + 1) * 3 >= dist_places_count:
                 unvisited.remove(best_dist)
                 
         else:
-            # ආ) Preferred එකක් නැත්නම් (හෝ ඉවර නම්), ළඟම තියෙන දිස්ත්‍රික්කයට යනවා (Touring)
+            # its done go to the near district (Touring)
             min_distance = float('inf')
             best_lat, best_lon = curr_lat, curr_lon
             
@@ -420,7 +422,8 @@ def get_ai_story(structured_data, start_loc, start_date, interests, transport_mo
         3. Advise caution if 'Access_Warning' is present.
         """
         
-        models_to_try = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest']
+        # Models selected from the list that are confirmed to work correctly:
+        models_to_try = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash']
         for model_name in models_to_try:
             try:
                 response = client.models.generate_content(model=model_name, contents=prompt)
