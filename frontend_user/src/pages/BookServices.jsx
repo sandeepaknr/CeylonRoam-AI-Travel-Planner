@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { LuHeart, LuWifiOff, LuStar, LuMapPin, LuCreditCard } from "react-icons/lu";
 import API from "../api/axios";
-import { CurrencyContext, SUPPORTED_CURRENCIES } from "../context/CurrencyContext";
+import { CurrencyContext } from "../context/CurrencyContext";
+import { AuthContext } from "../context/AuthContext";
+import { useOfflineData } from "../context/OfflineDataContext";
+import toast from "react-hot-toast";
 import "./styles/explore.css";
 import "./styles/bookservices.css";
 
@@ -22,69 +26,79 @@ const SUPER_SECTIONS = [
     label: "🏨 Accommodations",
     desc: "Hotels, Villas, Resorts & more",
     keys: ["Hotel Package"],
-    badge: { bg: "#e8f4fd", color: "#1e40af" },
+    badge: { bg: "rgba(167,235,242,0.12)", color: "#A7EBF2" },
   },
   {
     id: "transport",
     label: "🚗 Transport",
     desc: "Self-drive rentals & chauffeur hire",
     keys: ["Rent Vehicle", "Hire Vehicle"],
-    badge: { bg: "#f3e8ff", color: "#6b21a8" },
+    badge: { bg: "rgba(167,235,242,0.12)", color: "#A7EBF2" },
   },
   {
     id: "guide",
     label: "🧭 Guides",
     desc: "Tour guides & chauffeur guides",
     keys: ["Guide", "Chauffeur Guide"],
-    badge: { bg: "#d1fae5", color: "#065f46" },
+    badge: { bg: "rgba(167,235,242,0.12)", color: "#A7EBF2" },
   },
 ];
 
 /* ── Sub-category meta within sections ── */
 const SUBCAT_META = {
-  "Hotel Package": { icon: "🏨", label: "Hotels & Accommodations" },
-  "Rent Vehicle": { icon: "🔑", label: "Rent a Vehicle" },
-  "Hire Vehicle": { icon: "🚕", label: "Hire a Vehicle" },
-  "Guide": { icon: "🧭", label: "Tour Guides" },
+  "Hotel Package":   { icon: "🏨", label: "Hotels & Accommodations" },
+  "Rent Vehicle":    { icon: "🔑", label: "Rent a Vehicle" },
+  "Hire Vehicle":    { icon: "🚐", label: "Hire a Vehicle" },
+  "Guide":           { icon: "🧭", label: "Tour Guides" },
   "Chauffeur Guide": { icon: "🚗", label: "Chauffeur Guides" },
 };
 
-/* ── Pricing meta per card ── */
-function PricingDetail({ svc }) {
-  const { formatPrice } = useContext(CurrencyContext);
+/* ── Feature chips shown on card ── */
+function FeatureChips({ svc }) {
   switch (svc.serviceCategory) {
     case "Rent Vehicle":
       return (
-        <div className="bs-meta-row">
-          <span>📏 {svc.includedKM ?? "—"} KM included/day</span>
-          {svc.extraKMCharge && (
-            <span className="bs-extra-km">
-              + {formatPrice(svc.extraKMCharge)} / extra KM
-            </span>
-          )}
+        <div className="bs-feature-chips">
+          <span className="bs-chip bs-chip-blue">Self-Drive</span>
+          {svc.includedKM && <span className="bs-chip bs-chip-teal">{svc.includedKM} KM/day</span>}
         </div>
       );
     case "Hire Vehicle":
-      return <div className="bs-meta-row"><span>📏 Priced per KM</span></div>;
-    case "Guide":
-    case "Chauffeur Guide":
       return (
-        <div className="bs-meta-row">
-          {svc.languages?.length > 0 && <span>🗣 {svc.languages.join(", ")}</span>}
-          {svc.specialization && <span>🎯 {svc.specialization}</span>}
+        <div className="bs-feature-chips">
+          <span className="bs-chip bs-chip-blue">Chauffeur Driven</span>
+          <span className="bs-chip bs-chip-teal">Per KM Rate</span>
         </div>
       );
-    case "Hotel Package":
-      if (svc.description && svc.description.includes("Room Size")) {
-        const parts = svc.description.split('|');
-        return (
-          <div className="bs-meta-row" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span>🛏️ {parts[2]?.trim() || "Accommodation"}</span>
-            <span>📏 {parts[0]?.replace('Room Size:', '').trim() || ""}</span>
-          </div>
-        );
-      }
-      return null;
+    case "Guide":
+      return (
+        <div className="bs-feature-chips">
+          <span className="bs-chip bs-chip-blue">Tour Guide</span>
+          {svc.languages?.length > 0 && (
+            <span className="bs-chip bs-chip-teal">{svc.languages.slice(0, 2).join(" & ")}</span>
+          )}
+        </div>
+      );
+    case "Chauffeur Guide":
+      return (
+        <div className="bs-feature-chips">
+          <span className="bs-chip bs-chip-blue">Chauffeur Guide</span>
+          {svc.languages?.length > 0 && (
+            <span className="bs-chip bs-chip-teal">{svc.languages.slice(0, 2).join(" & ")}</span>
+          )}
+        </div>
+      );
+    case "Hotel Package": {
+      const parts = svc.description?.includes("|") ? svc.description.split("|") : [];
+      const accommodation = parts[2]?.trim();
+      const roomSize = parts[0]?.replace("Room Size:", "").trim();
+      return (
+        <div className="bs-feature-chips">
+          {accommodation && <span className="bs-chip bs-chip-blue">{accommodation}</span>}
+          {roomSize && <span className="bs-chip bs-chip-teal">{roomSize}</span>}
+        </div>
+      );
+    }
     default:
       return null;
   }
@@ -100,148 +114,40 @@ const DISTRICTS = [
 ];
 
 const CATEGORY_FILTERS = [
-  { value: "", label: "All Services" },
-  { value: "Hotel Package", label: "🏨 Accommodation" },
-  { value: "Guide", label: "🧭 Tour Guide" },
+  { value: "",                label: "All Services" },
+  { value: "Hotel Package",   label: "🏨 Accommodation" },
+  { value: "Guide",           label: "🧭 Tour Guide" },
   { value: "Chauffeur Guide", label: "🚗 Chauffeur Guide" },
-  { value: "Rent Vehicle", label: "🔑 Rent Vehicle" },
-  { value: "Hire Vehicle", label: "🚕 Hire Vehicle" },
+  { value: "Rent Vehicle",    label: "🔑 Rent Vehicle" },
+  { value: "Hire Vehicle",    label: "🚐 Hire Vehicle" },
 ];
-
-/* ══════════════════════════════════════════════════════════
-   CURRENCY SELECTOR — sidebar widget
-   Self-contained: reads from / writes to CurrencyContext.
-   Offline-first: shows rate-source badge (live / cached / offline).
-══════════════════════════════════════════════════════════ */
-const SOURCE_BADGE = {
-  live: { label: "Live rates", color: "#16a34a", bg: "#f0fdf4", dot: "#22c55e" },
-  cached: { label: "Cached rates", color: "#0369a1", bg: "#eff6ff", dot: "#60a5fa" },
-  static: { label: "Offline rates", color: "#b45309", bg: "#fffbeb", dot: "#f59e0b" },
-};
-
-function CurrencySelectorGroup() {
-  const { selectedCurrency, setSelectedCurrency, loadingRates, rateSource } =
-    useContext(CurrencyContext);
-
-  const badge = SOURCE_BADGE[rateSource] || SOURCE_BADGE.static;
-
-  return (
-    <div className="filter-group" style={{ borderBottom: "1.5px solid #f1f5f9", paddingBottom: "20px", marginBottom: "20px" }}>
-      {/* Label + source badge row */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-        <label style={{ margin: 0 }}>🌐 Display Currency</label>
-        {!loadingRates && (
-          <span style={{
-            display: "inline-flex", alignItems: "center", gap: "4px",
-            fontSize: "10px", fontWeight: 600, letterSpacing: "0.3px",
-            color: badge.color, background: badge.bg,
-            padding: "2px 8px", borderRadius: "9999px",
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: badge.dot, display: "inline-block" }} />
-            {badge.label}
-          </span>
-        )}
-      </div>
-
-      {/* Currency <select> */}
-      <select
-        value={selectedCurrency}
-        onChange={e => setSelectedCurrency(e.target.value)}
-        disabled={loadingRates}
-        style={{
-          width: "100%",
-          padding: "12px 36px 12px 14px",
-          border: "2px solid #bae6fd",
-          borderRadius: "14px",
-          /* solid fill — avoids background/backgroundImage conflict */
-          backgroundColor: "#f0f9ff",
-          fontFamily: "'Poppins', sans-serif",
-          fontSize: "14px",
-          fontWeight: 700,
-          color: "#0369a1",
-          outline: "none",
-          cursor: loadingRates ? "wait" : "pointer",
-          /* suppress native arrow, inject custom SVG chevron */
-          WebkitAppearance: "none",
-          MozAppearance: "none",
-          appearance: "none",
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230369a1' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 14px center",
-          backgroundSize: "12px 8px",
-          boxShadow: "0 2px 8px rgba(3,105,161,0.10)",
-          transition: "border-color 0.2s, box-shadow 0.2s",
-          opacity: loadingRates ? 0.65 : 1,
-        }}
-      >
-        {SUPPORTED_CURRENCIES.map(c => (
-          <option key={c.code} value={c.code}>
-            {c.symbol} {c.code} — {c.label}
-          </option>
-        ))}
-      </select>
-
-      {loadingRates && (
-        <p style={{ fontSize: 11, color: "#94a3b8", margin: "6px 0 0", textAlign: "center" }}>
-          ↻ Fetching live rates…
-        </p>
-      )}
-    </div>
-  );
-}
 
 export default function BookServices() {
   const navigate = useNavigate();
-  const { selectedCurrency, formatPrice, loadingRates } = useContext(CurrencyContext);
+  const { formatPrice, loadingRates } = useContext(CurrencyContext);
+  const { user } = useContext(AuthContext);
 
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [selCategory, setSelCategory] = useState("");
-  const [selLocation, setSelLocation] = useState("All Locations");
-  const [maxPrice, setMaxPrice] = useState(50000);
+  const { services, savedItems, isOffline, loading: ctxLoading } = useOfflineData();
+  const loading = ctxLoading.services;
+
+  const [selCategory, setSelCategory]   = useState("");
+  const [selLocation, setSelLocation]   = useState("All Locations");
+  const [maxPrice, setMaxPrice]         = useState(50000);
+  const [savedPackageIds, setSavedPackageIds] = useState(new Set());
 
   useEffect(() => {
-    let isMounted = true;
-
-    // Failsafe timer: force loading false after 8s if something hangs
-    const fallbackTimer = setTimeout(() => {
-      if (isMounted) {
-        setLoading(false);
-        if (services.length === 0) setError(true);
-      }
-    }, 8000);
-
-    fetch("http://localhost:5000/api/packages?listingType=Service")
-      .then(async r => {
-        if (!r.ok) throw new Error("Network response was not ok");
-        const data = await r.json();
-        if (isMounted) {
-          setServices(Array.isArray(data) ? data : []);
-          setError(false);
-        }
-      })
-      .catch(err => {
-        console.error("Failed to fetch services", err);
-        if (isMounted) setError(true);
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoading(false);
-          clearTimeout(fallbackTimer);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-      clearTimeout(fallbackTimer);
-    };
-  }, [services.length]);
+    const ids = new Set(
+      savedItems
+        .filter(item => item.packageId?._id)
+        .map(item => item.packageId._id)
+    );
+    setSavedPackageIds(ids);
+  }, [savedItems]);
 
   /* Apply sidebar filters */
   const filtered = services.filter(s => {
-    const matchCat = !selCategory || s.serviceCategory === selCategory;
-    const matchLoc = selLocation === "All Locations" || s.location === selLocation;
+    const matchCat   = !selCategory || s.serviceCategory === selCategory;
+    const matchLoc   = selLocation === "All Locations" || s.location === selLocation;
     const matchPrice = s.price <= maxPrice;
     return matchCat && matchLoc && matchPrice;
   });
@@ -249,64 +155,145 @@ export default function BookServices() {
   /* Group by serviceCategory */
   const grouped = groupBy(filtered, s => s.serviceCategory);
 
-  /* Shared service card */
-  const ServiceCard = ({ svc, badge }) => (
-    <div className="matte-card" onClick={() => navigate(`/viewpackage/${svc._id}`)}>
-      <div className="card-img">
-        <img
-          src={`http://localhost:5000${svc.image}`}
-          alt={svc.name}
-          loading="lazy"
-          onError={e => { e.target.src = "https://via.placeholder.com/400x260?text=No+Image"; }}
-        />
-        <div className="card-category-badge" style={{ background: badge.bg, color: badge.color }}>
-          {svc.serviceCategory}
+  const openPackage = (packageId) => {
+    const target = `/viewpackage/${packageId}`;
+    const navAction = () => navigate(target, { state: { transition: "card-to-detail" } });
+    if (typeof document !== "undefined" && document.startViewTransition) {
+      document.startViewTransition(navAction);
+    } else {
+      navAction();
+    }
+  };
+
+  /* ── Service card — same visual structure as tour-card on Packages page ── */
+  const ServiceCard = ({ svc }) => {
+    const isFavorite = savedPackageIds.has(svc._id);
+
+    const handleFavoriteClick = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!user) { toast.error("Please login to save services!"); return; }
+      try {
+        const res = await API.post("/saved/save-package", { userId: user._id, packageId: svc._id });
+        const newSaved = new Set(savedPackageIds);
+        if (res.data.saved) {
+          newSaved.add(svc._id);
+          toast.success(res.data.message);
+        } else {
+          newSaved.delete(svc._id);
+          toast.success(res.data.message);
+        }
+        setSavedPackageIds(newSaved);
+      } catch {
+        toast.error("Failed to update favorite");
+      }
+    };
+
+    return (
+      /* Use tour-card class so it inherits ALL the same dark-glass styles */
+      <div className="matte-card tour-card bs-service-card" onClick={() => openPackage(svc._id)}>
+
+        {/* ── Card Image (same structure as tour-card) ── */}
+        <div className="card-img">
+          <img
+            src={`http://localhost:5000${svc.image}`}
+            alt={svc.name}
+            loading="lazy"
+            onError={e => { e.target.src = "https://via.placeholder.com/400x260?text=No+Image"; }}
+          />
+
+          {/* Service type badge where duration badge normally lives */}
+          <div className="tour-duration-badge">{svc.serviceCategory}</div>
+
+          {/* Favourite button */}
+          <button className="card-save-btn" title="Favourite" onClick={handleFavoriteClick}>
+            <LuHeart
+              size={20}
+              color={isFavorite ? "#ef4444" : "#26658C"}
+              fill={isFavorite ? "#ef4444" : "none"}
+              style={{ transition: "all 0.2s ease" }}
+            />
+          </button>
         </div>
-      </div>
 
-      <div className="card-info">
-        <h4>{svc.name}</h4>
+        {/* ── Card Body ── */}
+        <div className="card-info">
 
-
-        <PricingDetail svc={svc} />
-
-        {svc.creator && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', fontSize: '12px', color: '#64748b' }}>
-            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#e0e7ff', color: '#4338ca', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-              {svc.creator.username?.charAt(0).toUpperCase() || "P"}
-            </div>
-            <span>Posted by <strong>{svc.creator.username || "Partner"}</strong> in {svc.location}</span>
-          </div>
-        )}
-
-        <div className="card-info-divider" />
-        <div className="price-box" style={{ alignItems: "flex-end" }}>
-          <div>
-            <div className="price-label">From</div>
-            <div className="amt" style={{ lineHeight: 1.2 }}>
-              {loadingRates ? <span style={{ fontSize: 13, color: "#999" }}>…</span> : formatPrice(svc.price)}
-              <span className="amt-per" style={{ fontSize: 12 }}>
-                {svc.pricingType === "Per KM" ? " /km" : " /day"}
-              </span>
+          {/* Title + Stars row */}
+          <div className="card-title-area">
+            <h4>{svc.name}</h4>
+            <div className="card-stars">
+              <LuStar fill="#d97706" color="#d97706" size={14} />
+              <LuStar fill="#d97706" color="#d97706" size={14} />
+              <LuStar fill="#d97706" color="#d97706" size={14} />
             </div>
           </div>
-          <button className="view-btn" onClick={e => { e.stopPropagation(); navigate(`/viewpackage/${svc._id}`); }}>
-            Book
+
+          {/* Location */}
+          {svc.location && (
+            <div className="card-location-area">
+              <p className="loc-primary">
+                <LuMapPin size={14} className="loc-icon" />
+                <span>{svc.location} — View on map</span>
+              </p>
+            </div>
+          )}
+
+          {/* Feature chips — self-drive, per-km, languages, etc. */}
+          <FeatureChips svc={svc} />
+
+          {/* Posted by */}
+          {svc.creator && (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "4px 0 8px", fontSize: "12px", color: "rgba(231,249,252,0.65)" }}>
+              <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "rgba(167,235,242,0.18)", color: "#d8f8ff", border: "1px solid rgba(167,235,242,0.32)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", flexShrink: 0 }}>
+                {svc.creator.username?.charAt(0).toUpperCase() || "P"}
+              </div>
+              <span>Posted by <strong style={{ color: "#f2fbff" }}>{svc.creator.username || "Partner"}</strong></span>
+            </div>
+          )}
+
+          {/* Perks row */}
+          <div className="card-perks-area">
+            <div className="perk-row-credit">
+              <LuCreditCard size={15} /> Book without a credit card
+            </div>
+          </div>
+
+          <div className="card-info-divider" />
+
+          {/* Price + Button */}
+          <div className="price-box-vertical">
+            <div className="price-label">From{svc.pricingType === "Per KM" ? " (per km)" : " (per day)"}</div>
+            <div className="amt">
+              {loadingRates ? <span style={{ fontSize: 13 }}>…</span> : formatPrice(svc.price)}
+            </div>
+          </div>
+
+          <button
+            className="view-btn-full"
+            onClick={e => { e.stopPropagation(); openPackage(svc._id); }}
+          >
+            Book Now
           </button>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="explore-container">
 
-      {/* ══ SIDEBAR ══ */}
-      <aside className="filter-sidebar">
-        <h3>🔍 Filter Services</h3>
+      {/* ── Offline banner ── */}
+      {isOffline && (
+        <div className="offline-banner" role="alert">
+          <LuWifiOff size={16} />
+          <span>You're offline — showing cached services. Some data may be outdated.</span>
+        </div>
+      )}
 
-        {/* ── Currency Selector (offline-first, live rates) ── */}
-        <CurrencySelectorGroup />
+      {/* ══ SIDEBAR — left column (same structure as Packages page) ══ */}
+      <aside className="filter-sidebar">
+        <h3>Filter Services</h3>
 
         <div className="filter-group">
           <label>Service Type</label>
@@ -329,8 +316,11 @@ export default function BookServices() {
               {loadingRates ? "…" : formatPrice(maxPrice)}
             </span>
           </label>
-          <input type="range" min={0} max={50000} step={500}
-            value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} />
+          <input
+            type="range" min={0} max={50000} step={500}
+            value={maxPrice}
+            onChange={e => setMaxPrice(Number(e.target.value))}
+          />
         </div>
 
         <div className="filter-btn-group">
@@ -340,8 +330,10 @@ export default function BookServices() {
         </div>
       </aside>
 
-      {/* ══ MAIN ══ */}
+      {/* ══ MAIN — right column ══ */}
       <main className="packages-display">
+
+        {/* Hero header */}
         <div className="grid-header">
           <h2>Book Services</h2>
           <span className="result-count">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
@@ -349,50 +341,48 @@ export default function BookServices() {
 
         {loading ? (
           <div className="bs-loader">⏳ Loading services…</div>
-        ) : error && filtered.length === 0 ? (
-          <div className="no-results" style={{ marginTop: '60px' }}>
-            <div className="no-results-icon" style={{ filter: 'grayscale(100%)' }}>⚠️</div>
+
+        ) : isOffline && services.length === 0 ? (
+          <div className="no-results" style={{ marginTop: "60px" }}>
+            <div className="no-results-icon" style={{ filter: "grayscale(100%)" }}>🗺️</div>
             <div className="no-results-title">Offline data not available</div>
             <p>Please check your connection and try again.</p>
             <button
               onClick={() => window.location.reload()}
-              style={{ marginTop: '20px', padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#0a3d62', color: '#fff', cursor: 'pointer' }}
-            >
-              Retry
-            </button>
+              style={{ marginTop: "20px", padding: "10px 20px", borderRadius: "8px", border: "none", background: "#023859", color: "#fff", cursor: "pointer" }}
+            >Retry</button>
           </div>
+
         ) : filtered.length === 0 ? (
           <div className="no-results">
             <div className="no-results-icon">🔍</div>
             <div className="no-results-title">No services found</div>
             <p>Try adjusting your filters.</p>
           </div>
+
         ) : (
-          /* ── Three super-sections: Accommodations, Transport, Guides ── */
           SUPER_SECTIONS.map(section => {
-            // collect all sub-keys for this super-section that have results
             const subKeys = section.keys.filter(k => grouped[k]?.length > 0);
             if (subKeys.length === 0) return null;
-
             return (
               <section key={section.id} className="bs-super-section">
-
-                {/* Sub-category groups within this super-section */}
                 {subKeys.map(subKey => {
-                  const { icon, label } = SUBCAT_META[subKey] || { icon: "📦", label: subKey };
+                  const { icon, label } = SUBCAT_META[subKey] || { icon: "", label: subKey };
                   return (
                     <div key={subKey} className="ep-category-section" style={{ marginLeft: 0 }}>
                       <div className="ep-section-heading">
                         <span className="ep-section-icon">{icon}</span>
                         <h3>{label}</h3>
-                        <span className="ep-section-count"
-                          style={{ background: section.badge.bg, color: section.badge.color }}>
+                        <span
+                          className="ep-section-count"
+                          style={{ background: section.badge.bg, color: section.badge.color }}
+                        >
                           {grouped[subKey].length}
                         </span>
                       </div>
                       <div className="explore-grid">
                         {grouped[subKey].map(svc => (
-                          <ServiceCard key={svc._id} svc={svc} badge={section.badge} />
+                          <ServiceCard key={svc._id} svc={svc} />
                         ))}
                       </div>
                     </div>

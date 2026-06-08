@@ -56,7 +56,7 @@ exports.createBooking = async (req, res) => {
 
     const savedBooking = await newBooking.save();
 
-    // ✅ Verification log — visible in your backend terminal
+    // Verification log — visible in your backend terminal
     console.log("✅ New Booking Saved:", {
       _id:             savedBooking._id,
       packageId:       savedBooking.packageId,
@@ -127,10 +127,10 @@ exports.getMyBookings = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────────────────────
+/* 
    GET /api/bookings/my-business-bookings/:userId
    Returns all bookings for packages owned by this seller.
-   ───────────────────────────────────────────────────────── */
+    */
 exports.getBusinessBookings = async (req, res) => {
   try {
     const { userId } = req.params;

@@ -144,10 +144,10 @@ exports.suspendBusiness = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────────────────────
+/* 
    GET /api/business/stats/:userId
    Aggregate live dashboard metrics for the Business Dashboard
-   ───────────────────────────────────────────────────────── */
+    */
 exports.getBusinessStats = async (req, res) => {
   try {
     const { userId } = req.params;

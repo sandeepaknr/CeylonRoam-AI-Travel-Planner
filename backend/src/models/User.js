@@ -109,11 +109,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: null
     },
-    jobRole: {
-      type: String,
-      required: true,
-      default: ""
-    },
     currency: {
       type: String,
       default: "LKR"

@@ -1,214 +1,209 @@
 /* ================================================================
-   ACCOUNT SETTINGS PAGE — CeylonRoam Design System
-   Premium Bento-Box Aesthetic
-   ================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+ ACCOUNT SETTINGS PAGE — CeylonRoam Design System
+ Premium Bento-Box Aesthetic
+ ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 .settings-page {
-  --font:        'Poppins', 'Inter', system-ui, sans-serif;
-  --ink:         #0f172a;
-  --ink-70:      #334155;
-  --ink-50:      #64748b;
-  --ink-30:      #94a3b8;
-  --border:      #e2e8f0;
-  --surface:     #f8fafc;
-  --surface-b:   #f0f9ff;
-  --white:       #ffffff;
-  --primary:     #0369a1;
-  --primary-l:   #e0f2fe;
-  --primary-d:   #0c4a6e;
-  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
-  --spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+ --font: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --ink: #011C40;
+ --ink-70: #26658C;
+ --ink-50: #26658C;
+ --ink-30: #54ACBF;
+ --border: #A7EBF2;
+ --surface: #F5FCFD;
+ --surface-b: #E7F9FC;
+ --white: #ffffff;
+ --primary: #26658C;
+ --primary-l: #A7EBF2;
+ --primary-d: #023859;
+ --ease: cubic-bezier(0.4, 0, 0.2, 1);
+ --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  font-family: var(--font);
-  background: var(--surface);
-  min-height: 100vh;
-  padding: 120px 24px 80px;
-  -webkit-font-smoothing: antialiased;
-  color: var(--ink);
+ font-family: var(--font);
+ background: var(--surface);
+ min-height: 100vh;
+ padding: 120px 24px 80px;
+ -webkit-font-smoothing: antialiased;
+ color: var(--ink);
 }
 
 .settings-container {
-  max-width: 1080px;
-  margin: 0 auto;
+ max-width: 1080px;
+ margin: 0 auto;
 }
 
 /* ── Header ── */
 .settings-header {
-  margin-bottom: 48px;
-  text-align: center;
+ margin-bottom: 48px;
+ text-align: center;
 }
 
 .settings-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
-  color: var(--primary);
-  background: var(--primary-l);
-  padding: 6px 20px;
-  border-radius: 9999px;
-  margin-bottom: 24px;
-  border: 1px solid #bae6fd;
+ display: inline-flex;
+ align-items: center;
+ gap: 8px;
+ font-size: 11px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 2.5px;
+ color: var(--primary);
+ background: var(--primary-l);
+ padding: 6px 20px;
+ border-radius: 9999px;
+ margin-bottom: 24px;
+ border: 1px solid #54ACBF;
 }
 
 .settings-eyebrow-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--primary);
+ width: 6px; height: 6px;
+ border-radius: 50%;
+ background: var(--primary);
 }
 
 .settings-header h1 {
-  font-size: clamp(32px, 5vw, 48px);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
-  color: var(--ink);
-  margin-bottom: 12px;
+ font-size: clamp(32px, 5vw, 48px);
+ font-weight: 800;
+ letter-spacing: -1.5px;
+ line-height: 1.1;
+ color: var(--ink);
+ margin-bottom: 12px;
 }
 
 .settings-header p {
-  font-size: 16px;
-  color: var(--ink-50);
-  font-weight: 400;
-  max-width: 500px;
-  margin: 0 auto;
+ font-size: 16px;
+ color: var(--ink-50);
+ font-weight: 400;
+ max-width: 500px;
+ margin: 0 auto;
 }
 
 /* ── Grid ── */
 .settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+ gap: 24px;
 }
 
 /* ── Card (Bento Box) ── */
 .settings-card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 28px;
-  padding: 36px 32px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.03);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.4s var(--spring), box-shadow 0.3s var(--ease), border-color 0.3s ease;
-  position: relative;
-  overflow: hidden;
+ background: var(--white);
+ border: 1.5px solid var(--border);
+ border-radius: 28px;
+ padding: 36px 32px;
+ box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+ display: flex;
+ flex-direction: column;
+ transition: transform 0.4s var(--spring), box-shadow 0.3s var(--ease), border-color 0.3s ease;
+ position: relative;
+ overflow: hidden;
 }
 
 .settings-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(3,105,161,0.08), 0 4px 12px rgba(0,0,0,0.03);
-  border-color: #bae6fd;
+ transform: translateY(-6px);
+ box-shadow: 0 16px 40px rgba(38,101,140,0.08), 0 4px 12px rgba(0,0,0,0.03);
+ border-color: #54ACBF;
 }
 
 /* ── Icon ── */
 .settings-card-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 20px;
-  background: var(--surface-b);
-  border: 1.5px solid var(--primary-l);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  margin-bottom: 24px;
-  color: var(--primary);
-  transition: background 0.3s ease, border-color 0.3s ease;
+ width: 56px;
+ height: 56px;
+ border-radius: 20px;
+ background: var(--surface-b);
+ border: 1.5px solid var(--primary-l);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 24px;
+ margin-bottom: 24px;
+ color: var(--primary);
+ transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .settings-card:hover .settings-card-icon {
-  background: var(--primary-l);
-  border-color: #7dd3fc;
+ background: var(--primary-l);
+ border-color: #54ACBF;
 }
 
 /* ── Text Content ── */
 .settings-card h3 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: -0.5px;
-  margin-bottom: 10px;
+ font-size: 20px;
+ font-weight: 700;
+ color: var(--ink);
+ letter-spacing: -0.5px;
+ margin-bottom: 10px;
 }
 
 .settings-card p {
-  font-size: 14.5px;
-  color: var(--ink-50);
-  line-height: 1.65;
-  flex-grow: 1;
-  margin-bottom: 32px;
+ font-size: 14.5px;
+ color: var(--ink-50);
+ line-height: 1.65;
+ flex-grow: 1;
+ margin-bottom: 32px;
 }
 
 /* ── Action Buttons ── */
 .settings-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 14px 24px;
-  background: var(--primary);
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 16px;
-  text-decoration: none;
-  box-shadow: 0 4px 16px rgba(3,105,161,0.25);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s var(--ease), background 0.2s ease;
-  border: none;
-  cursor: pointer;
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ width: 100%;
+ padding: 14px 24px;
+ background: var(--primary);
+ color: var(--white);
+ font-size: 14px;
+ font-weight: 600;
+ border-radius: 16px;
+ text-decoration: none;
+ box-shadow: 0 4px 16px rgba(38,101,140,0.25);
+ transition: transform 0.3s var(--spring), box-shadow 0.3s var(--ease), background 0.2s ease;
+ border: none;
+ cursor: pointer;
 }
 
 .settings-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(3,105,161,0.35);
-  background: var(--primary-d);
+ transform: translateY(-2px);
+ box-shadow: 0 8px 24px rgba(38,101,140,0.35);
+ background: var(--primary-d);
 }
 
 .settings-btn.secondary {
-  background: var(--white);
-  color: var(--ink-70);
-  border: 1.5px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-
-.settings-card:hover .settings-btn.secondary {
-  border-color: var(--primary-l);
+ background: var(--primary);
+ color: var(--white);
+ border: none;
+ box-shadow: 0 4px 16px rgba(38,101,140,0.25);
 }
 
 .settings-btn.secondary:hover {
-  background: var(--surface);
-  color: var(--ink);
-  border-color: var(--border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+ transform: translateY(-2px);
+ box-shadow: 0 8px 24px rgba(38,101,140,0.35);
+ background: var(--primary-d);
 }
 
 /* Link-only button */
 .settings-btn.link-only {
-  background: transparent;
-  box-shadow: none;
-  color: var(--primary);
-  border: none;
-  padding: 0;
-  width: auto;
-  justify-content: flex-start;
-  font-size: 14.5px;
+ background: var(--primary);
+ color: var(--white);
+ border: none;
+ box-shadow: 0 4px 16px rgba(38,101,140,0.25);
+ width: 100%;
+ justify-content: center;
+ font-size: 14px;
+ padding: 14px 24px;
 }
 
 .settings-btn.link-only:hover {
-  transform: translateX(4px);
-  background: transparent;
-  box-shadow: none;
-  color: var(--primary-d);
+ transform: translateY(-2px);
+ box-shadow: 0 8px 24px rgba(38,101,140,0.35);
+ background: var(--primary-d);
+ color: var(--white);
 }
 
 /* ── Animations ── */
 .animate-in {
-  animation: ap-slide-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+ animation: ap-slide-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 .animate-in:nth-child(1) { animation-delay: 0.05s; }
 .animate-in:nth-child(2) { animation-delay: 0.1s; }
@@ -218,14 +213,14 @@
 .animate-in:nth-child(6) { animation-delay: 0.3s; }
 
 @keyframes ap-slide-up {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to   { opacity: 1; transform: none; }
+ from { opacity: 0; transform: translateY(30px) scale(0.98); }
+ to { opacity: 1; transform: none; }
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .settings-page { padding: 100px 20px 60px; }
-  .settings-header h1 { font-size: 36px; }
-  .settings-grid { gap: 20px; }
-  .settings-card { padding: 28px 24px; border-radius: 24px; }
+ .settings-page { padding: 100px 20px 60px; }
+ .settings-header h1 { font-size: 36px; }
+ .settings-grid { gap: 20px; }
+ .settings-card { padding: 28px 24px; border-radius: 24px; }
 }

@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import io
 import os
 from dotenv import load_dotenv
@@ -340,6 +340,7 @@ def generate_multi_day_itinerary(holidays_csv, start_date_str, num_days, start_l
                     "Name": place_name,
                     "Category": str(row['category']),
                     "Tickets_Cost": int(place_ticket_cost), 
+                    "Distance_to_Hotel": float(round(row['distance_to_hotel'], 1)),
                     "Travel_Time": float(round(travel_time_hrs, 1)),
                     "Visit_Time": float(visit_time_hrs),
                     "Access_Warning": access_warning 

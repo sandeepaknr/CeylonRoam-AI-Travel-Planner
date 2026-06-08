@@ -3,9 +3,9 @@ const Package = require("../models/Package");
 const Booking = require("../models/Booking");
 const Trip    = require("../models/Trip");
 
-/* ─────────────────────────────────────────────────────────────
+/* 
    GET /api/admin/dynamic-stats  (keep existing endpoint intact)
-   ───────────────────────────────────────────────────────────── */
+   */
 exports.getAdminStats = async (req, res) => {
   try {
     const totalUsers       = await User.countDocuments({ accountType: "user" });
@@ -35,10 +35,10 @@ exports.getAdminStats = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────────────────────────
+/* 
    GET /api/admin/analytics
    Aggregates live metrics for the Analytics Dashboard charts
-   ───────────────────────────────────────────────────────────── */
+   */
 exports.getAnalytics = async (req, res) => {
   try {
     /* ── 1. Monthly Revenue — aggregate confirmed/completed bookings ── */
@@ -72,7 +72,7 @@ exports.getAnalytics = async (req, res) => {
       },
     ]);
 
-    /* ── 2. Revenue by Service Category ── */
+    /*  2. Revenue by Service Category  */
     const revenueByCategory = await Booking.aggregate([
       { $match: { status: { $in: ["Confirmed", "Completed"] } } },
       { $lookup: { from: "packages", localField: "packageId", foreignField: "_id", as: "pkg" } },
@@ -87,14 +87,14 @@ exports.getAnalytics = async (req, res) => {
       { $sort: { value: -1 } },
     ]);
 
-    /* ── 3. Top 5 Most Viewed Packages ── */
+    /*  3. Top 5 Most Viewed Packages  */
     const topPackages = await Package.find()
       .sort({ views: -1 })
       .limit(5)
       .populate("creator", "username email")
       .select("name price views serviceCategory listingType creator");
 
-    /* ── 4. Geographic Distribution: Bookings by Country ── */
+    /*  4. Geographic Distribution: Bookings by Country  */
     const bookingsByCountry = await Booking.aggregate([
       { $lookup: { from: "users", localField: "customerId", foreignField: "_id", as: "user" } },
       { $unwind: "$user" },
@@ -104,7 +104,7 @@ exports.getAnalytics = async (req, res) => {
       { $limit: 10 }
     ]);
 
-    /* ── 5. Geographic Distribution: Trips by Country ── */
+    /*  5. Geographic Distribution: Trips by Country  */
     const tripsByCountry = await Trip.aggregate([
       { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "user" } },
       { $unwind: "$user" },
@@ -114,7 +114,7 @@ exports.getAnalytics = async (req, res) => {
       { $limit: 10 }
     ]);
 
-    /* ── 6. System-wide Counts ── */
+    /*  6. System-wide Counts  */
     const [totalUsers, totalProviders, totalActivePackages, totalBookings, totalRevResult] =
       await Promise.all([
         User.countDocuments({ accountType: "user" }),
@@ -141,4 +141,4 @@ exports.getAnalytics = async (req, res) => {
     console.error("[getAnalytics]", err.message);
     res.status(500).json({ message: "Analytics Error", error: err.message });
   }
-};
+};

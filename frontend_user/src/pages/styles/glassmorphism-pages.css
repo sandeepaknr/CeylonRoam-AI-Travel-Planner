@@ -1,0 +1,547 @@
+/* ================================================================
+ USER PAGES - dark blue glassmorphism visual layer
+ CSS-only: no route, API, auth, booking, payment, or AI behavior changes.
+ ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+ --glass-bg: #020814;
+ --glass-navy: #011C40;
+ --glass-deep: #023859;
+ --glass-blue: #26658C;
+ --glass-aqua: #54ACBF;
+ --glass-mist: #A7EBF2;
+ --glass-white: #f7fbff;
+ --glass-muted: rgba(247, 251, 255, 0.68);
+ --glass-border: rgba(167, 235, 242, 0.22);
+ --glass-card: rgba(3, 28, 58, 0.62);
+ --glass-card-strong: rgba(2, 15, 35, 0.82);
+ --glass-glow: 0 0 42px rgba(84, 172, 191, 0.22);
+ --glass-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+ --font-body: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --font-heading: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --font-display: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --font-serif: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --font: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --ink: var(--glass-white);
+ --ink-70: rgba(247, 251, 255, 0.78);
+ --ink-60: var(--glass-muted);
+ --ink-50: rgba(247, 251, 255, 0.56);
+ --ink-40: rgba(247, 251, 255, 0.44);
+ --ink-30: rgba(247, 251, 255, 0.32);
+ --surface: rgba(3, 28, 58, 0.58);
+ --surface-b: rgba(2, 56, 89, 0.45);
+ --white: #ffffff;
+ --border: var(--glass-border);
+ --primary: var(--glass-aqua);
+ --primary-l: rgba(167, 235, 242, 0.14);
+ --primary-d: var(--glass-mist);
+ --accent: var(--glass-aqua);
+ --accent-2: var(--glass-blue);
+ --gold: var(--glass-mist);
+}
+
+body {
+ background:
+ radial-gradient(circle at 80% 0%, rgba(84, 172, 191, 0.26), transparent 28vw),
+ radial-gradient(circle at 8% 78%, rgba(167, 235, 242, 0.14), transparent 30vw),
+ linear-gradient(180deg, var(--glass-bg) 0%, var(--glass-navy) 46%, var(--glass-bg) 100%) !important;
+ color: var(--glass-white) !important;
+}
+
+body::before {
+ content: "";
+ position: fixed;
+ inset: 0;
+ z-index: -1;
+ pointer-events: none;
+ background:
+ linear-gradient(120deg, rgba(167, 235, 242, 0.06) 1px, transparent 1px),
+ radial-gradient(circle at 20% 8%, rgba(255, 255, 255, 0.14) 0 1px, transparent 2px),
+ radial-gradient(circle at 72% 20%, rgba(167, 235, 242, 0.16) 0 1px, transparent 2px);
+ background-size: 160px 160px, 210px 210px, 260px 260px;
+ opacity: 0.45;
+}
+
+body,
+body * {
+ font-family: var(--font-body) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title-display,
+.sub-hero h1,
+.about-hero-h1,
+.contact-title,
+.svc-hero-title,
+.bt-hero-title,
+.ap-title,
+.profile-name,
+.hero-content h1,
+.planner-hero h1,
+.hero-title {
+ color: var(--glass-white) !important;
+ font-family: var(--font-heading) !important;
+ font-weight: 600 !important;
+ letter-spacing: 0.005em !important;
+ line-height: 1.16 !important;
+ text-transform: none !important;
+}
+
+p,
+li,
+label,
+small,
+td,
+th,
+.section-sub,
+.sub-hero p,
+.about-hero-desc,
+.contact-subtitle,
+.svc-subtitle,
+.bt-muted,
+.ap-muted,
+.profile-muted,
+.settings-subtitle,
+.card-location,
+.card-meta,
+.pkg-description,
+.legal-page p,
+.empty-state p {
+ color: var(--glass-muted) !important;
+}
+
+/* Page shells */
+.page-shell,
+.explore-shell,
+.services-page,
+.about-page,
+.contact-page,
+.legal-page,
+.profile-shell,
+.settings-page,
+.saved-page,
+.mybookings-page,
+.payment-page,
+.request-business-page,
+.bt-page,
+.ap-page,
+.business-page,
+.planner-hero.step-dashboard,
+.vp-page,
+.view-package-page {
+ background: transparent !important;
+ color: var(--glass-white) !important;
+}
+
+/* Hero bands */
+.sub-hero,
+.about-hero,
+.contact-hero,
+.services-hero,
+.bt-hero,
+.ap-hero,
+.profile-hero,
+.pkg-hero,
+.planner-hero.step-landing,
+.auth-page,
+.forgot-page {
+ position: relative;
+ overflow: hidden;
+ border: 1px solid var(--glass-border) !important;
+ background:
+ radial-gradient(circle at 78% 18%, rgba(84, 172, 191, 0.3), transparent 30%),
+ linear-gradient(135deg, rgba(2, 8, 20, 0.92), rgba(2, 56, 89, 0.62), rgba(2, 8, 20, 0.9)) !important;
+ box-shadow: var(--glass-shadow), var(--glass-glow) !important;
+}
+
+.sub-hero::after,
+.about-hero::after,
+.contact-hero::after,
+.services-hero::after,
+.bt-hero::after,
+.ap-hero::after,
+.profile-hero::after,
+.pkg-hero::after {
+ background:
+ radial-gradient(circle at 78% 20%, rgba(167, 235, 242, 0.18), transparent 28%),
+ linear-gradient(180deg, rgba(2, 8, 20, 0.12), rgba(2, 8, 20, 0.84)) !important;
+}
+
+/* Glass cards and panels */
+.g-card,
+.matte-card,
+.tour-card,
+.service-card,
+.svc-card,
+.about-card,
+.about-value-card,
+.about-team-card,
+.contact-card,
+.profile-card,
+.settings-card,
+.saved-card,
+.booking-card,
+.biz-tool-card,
+.biz-action-card,
+.ap-card,
+.ap-form-card,
+.table-section,
+.modal-content,
+.review-card,
+.provider-card,
+.payment-card,
+.form-card,
+.auth-card,
+.login-card,
+.register-card,
+.forgot-card,
+.day-card,
+.trip-card,
+.planner-card,
+.plan-card,
+.invoice-modal,
+.view-package-card,
+.pkg-info-card,
+.booking-panel,
+.business-card,
+.request-card,
+.feature-card,
+.help-card,
+.legal-card,
+.filter-sidebar,
+.filters-panel,
+.results-panel,
+.chat-window,
+.chat-panel,
+.result-panel,
+.itinerary-card,
+.choice-card,
+.transport-card,
+.toggle-card,
+.budget-option,
+.popup-content {
+ border: 1px solid var(--glass-border) !important;
+ background:
+ radial-gradient(circle at 85% 12%, rgba(84, 172, 191, 0.16), transparent 28%),
+ var(--glass-card) !important;
+ color: var(--glass-white) !important;
+ box-shadow: var(--glass-shadow) !important;
+ backdrop-filter: blur(18px);
+ -webkit-backdrop-filter: blur(18px);
+}
+
+.matte-card,
+.tour-card,
+.service-card,
+.svc-card,
+.saved-card,
+.booking-card,
+.biz-tool-card,
+.biz-action-card,
+.about-card,
+.profile-card,
+.settings-card,
+.ap-card,
+.choice-card,
+.transport-card {
+ transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.matte-card:hover,
+.tour-card:hover,
+.service-card:hover,
+.svc-card:hover,
+.biz-tool-card:hover,
+.biz-action-card:hover,
+.about-card:hover,
+.choice-card:hover,
+.transport-card:hover {
+ transform: translateY(-5px);
+ border-color: rgba(167, 235, 242, 0.48) !important;
+ box-shadow: 0 28px 80px rgba(0, 0, 0, 0.36), var(--glass-glow) !important;
+}
+
+/* Media treatment */
+.matte-card img,
+.tour-card img,
+.service-card img,
+.svc-card img,
+.saved-card img,
+.about-hero-img-wrap img,
+.about-card img,
+.provider-card img,
+.pkg-hero img,
+.gallery-main img,
+.gallery-thumb img,
+.bento-img-wrap img,
+.profile-avatar img {
+ filter: saturate(1.1) contrast(1.04) brightness(0.78);
+}
+
+.card-image,
+.pkg-image,
+.svc-image,
+.about-img,
+.profile-cover {
+ background: var(--glass-card-strong) !important;
+}
+
+/* Buttons */
+.btn,
+.btn-primary,
+.btn-gold,
+.pill-btn,
+.view-btn,
+.view-btn-full,
+.book-now-btn,
+.ap-submit-btn,
+.ap-back-btn,
+.auth-submit,
+.login-btn-main,
+.profile-btn,
+.settings-save-btn,
+.bt-primary,
+.biz-action-primary,
+.chat-send-btn,
+.pay-btn,
+.submit-btn,
+.save-btn,
+.filter-apply-btn,
+.provider-btn,
+.map-btn,
+.quick-reply-btn {
+ border-radius: 999px !important;
+}
+
+.btn-primary,
+.btn-gold,
+.pill-btn-dark,
+.view-btn,
+.view-btn-full,
+.book-now-btn,
+.ap-submit-btn,
+.auth-submit,
+.login-btn-main,
+.profile-btn.primary,
+.settings-save-btn,
+.bt-primary,
+.biz-action-primary,
+.chat-send-btn,
+.pay-btn,
+.submit-btn,
+.save-btn,
+.filter-apply-btn {
+ border: 1px solid rgba(167, 235, 242, 0.62) !important;
+ background: linear-gradient(135deg, var(--glass-mist), var(--glass-aqua)) !important;
+ color: var(--glass-navy) !important;
+ box-shadow: 0 14px 30px rgba(84, 172, 191, 0.22) !important;
+ font-weight: 800 !important;
+}
+
+.btn-outline,
+.pill-btn-bordered,
+.ap-back-btn,
+.ghost-btn,
+.secondary-btn,
+.profile-btn,
+.map-btn,
+.quick-reply-btn,
+.cancel-btn,
+.close-action {
+ border: 1px solid rgba(167, 235, 242, 0.36) !important;
+ background: rgba(167, 235, 242, 0.1) !important;
+ color: var(--glass-white) !important;
+}
+
+button:hover,
+.btn:hover,
+.view-btn:hover,
+.view-btn-full:hover,
+.book-now-btn:hover,
+.ap-submit-btn:hover,
+.auth-submit:hover {
+ filter: brightness(1.04);
+}
+
+/* Forms */
+input,
+select,
+textarea,
+.g-input,
+.g-select,
+.g-textarea,
+.ap-input,
+.ap-select,
+.ap-textarea,
+.auth-input,
+.profile-input,
+.settings-input,
+.search-input,
+.filter-select,
+.chat-text-input,
+.contact-input {
+ border: 1px solid rgba(167, 235, 242, 0.3) !important;
+ background: rgba(2, 8, 20, 0.34) !important;
+ color: var(--glass-white) !important;
+ box-shadow: none !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+ color: rgba(247, 251, 255, 0.44) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.g-input:focus,
+.g-select:focus,
+.g-textarea:focus,
+.ap-input:focus,
+.ap-select:focus,
+.ap-textarea:focus,
+.auth-input:focus,
+.chat-text-input:focus {
+ border-color: var(--glass-mist) !important;
+ box-shadow: 0 0 0 3px rgba(167, 235, 242, 0.14) !important;
+ outline: none !important;
+}
+
+/* Badges, tabs, chips */
+.section-badge,
+.sub-hero-badge,
+.card-category-badge,
+.status-badge,
+.status-pill,
+.biz-badge,
+.tag-pill,
+.hotel-chip,
+.ap-badge,
+.an-type,
+.cat-hotel,
+.cat-guide,
+.cat-transport,
+.st-pending,
+.st-approved,
+.st-rejected,
+.filter-chip,
+.tab,
+.hl-tab,
+.choice-badge {
+ border: 1px solid rgba(167, 235, 242, 0.26) !important;
+ background: rgba(167, 235, 242, 0.12) !important;
+ color: var(--glass-mist) !important;
+}
+
+.active,
+.active-tab,
+.hl-tab-active,
+.selected,
+.toggle-card.active,
+.transport-card.selected {
+ border-color: rgba(167, 235, 242, 0.5) !important;
+ background: rgba(167, 235, 242, 0.18) !important;
+}
+
+/* Tables and lists */
+table,
+.admin-table,
+.ap-table,
+.bookings-table,
+.seller-table,
+.invoice-table {
+ background: rgba(1, 28, 64, 0.68) !important;
+ color: var(--glass-white) !important;
+}
+
+th,
+thead,
+.table-header {
+ background: rgba(167, 235, 242, 0.12) !important;
+ color: var(--glass-mist) !important;
+}
+
+td,
+tr,
+.table-row,
+.list-item {
+ border-color: rgba(167, 235, 242, 0.14) !important;
+}
+
+tr:hover,
+.list-item:hover {
+ background: rgba(167, 235, 242, 0.08) !important;
+}
+
+/* Trip planner */
+.planner-hero.step-landing,
+.planner-hero.step-dashboard {
+ background:
+ radial-gradient(circle at 78% 8%, rgba(84, 172, 191, 0.28), transparent 28vw),
+ linear-gradient(180deg, var(--glass-bg), var(--glass-navy) 58%, var(--glass-bg)) !important;
+}
+
+.blob {
+ opacity: 0.55;
+}
+
+.chat-fab {
+ background: linear-gradient(135deg, var(--glass-mist), var(--glass-aqua)) !important;
+ color: var(--glass-navy) !important;
+}
+
+.message.bot,
+.bot-message,
+.chat-bubble.bot {
+ background: var(--glass-card) !important;
+ color: var(--glass-white) !important;
+}
+
+.message.user,
+.user-message,
+.chat-bubble.user {
+ background: linear-gradient(135deg, var(--glass-blue), var(--glass-deep)) !important;
+ color: var(--glass-white) !important;
+}
+
+/* Legal/simple pages */
+.legal-page,
+.privacy-page,
+.terms-page {
+ background: transparent !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+ width: 8px;
+}
+
+::-webkit-scrollbar-track {
+ background: var(--glass-navy);
+}
+
+::-webkit-scrollbar-thumb {
+ background: var(--glass-aqua);
+ border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+ .g-card,
+ .matte-card,
+ .tour-card,
+ .service-card,
+ .svc-card,
+ .about-card,
+ .profile-card,
+ .settings-card,
+ .ap-card,
+ .ap-form-card {
+ box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32) !important;
+ }
+}

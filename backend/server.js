@@ -26,7 +26,7 @@ app.get("/create-admin", async (req, res) => {
 
     // Insert the new Admin into the User Database
     const newAdmin = new User({
-      username: "MainAdmin", // <--- This is the newly added field
+      username: "MainAdmin", 
       email: "admin@travel.com",
       password: hashedPassword,
       role: "admin",

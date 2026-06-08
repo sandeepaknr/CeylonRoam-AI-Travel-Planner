@@ -9,9 +9,9 @@ const sendMail        = require("../middlewares/mailer");
 
 let otpCache = {};
 
-/* ══════════════════════════════════════════════════════════════
+/* 
    OTP — unchanged
-   ══════════════════════════════════════════════════════════════ */
+    */
 exports.sendPasswordOTP = async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: "Email is required" });
@@ -78,10 +78,10 @@ exports.updatePassword = async (req, res) => {
   }
 };
 
-/* ══════════════════════════════════════════════════════════════
+/*  
    FORGOT PASSWORD — Step 1: send 6-digit OTP to email
    POST /api/auth/forgot-password
-   ══════════════════════════════════════════════════════════════ */
+    */
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -140,10 +140,10 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-/* ══════════════════════════════════════════════════════════════
+/* 
    RESET PASSWORD — Step 2: verify OTP + hash + save new password
    POST /api/auth/reset-password
-   ══════════════════════════════════════════════════════════════ */
+    */
 exports.resetPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
@@ -194,18 +194,18 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-/* ══════════════════════════════════════════════════════════════
+/* 
    HELPERS — shared file path extractors (same as partnerRequest)
-   ══════════════════════════════════════════════════════════════ */
+    */
 const fp  = (files, field) => files?.[field]?.[0]?.path || undefined;
 const fps = (files, field) => files?.[field]?.map(f => f.path) || [];
 
-/* ══════════════════════════════════════════════════════════════
+/* 
    REGISTER USER
    — Handles BOTH:
      1. Traveller (JSON or form-data, no files)
      2. Business / Operator (multipart/form-data with files)
-   ══════════════════════════════════════════════════════════════ */
+    */
 exports.registerUser = async (req, res) => {
   try {
     const {
@@ -225,9 +225,9 @@ exports.registerUser = async (req, res) => {
     const salt           = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    /* ─────────────────────────────────────────────────────────
+    /* 
        TRAVELLER  — fast path (no business data)
-       ───────────────────────────────────────────────────────── */
+        */
     if (accountType !== "business") {
       const user = await User.create({
         username,
@@ -236,7 +236,6 @@ exports.registerUser = async (req, res) => {
         accountType: accountType || "user",
         country,
         dateOfBirth,
-        jobRole,
         currency:    currency || "LKR",
       });
 
@@ -247,15 +246,14 @@ exports.registerUser = async (req, res) => {
         accountType: user.accountType,
         country:     user.country,
         dateOfBirth: user.dateOfBirth,
-        jobRole:     user.jobRole,
         currency:    user.currency,
         token:       generateToken(user._id),
       });
     }
 
-    /* ─────────────────────────────────────────────────────────
+    /* 
        BUSINESS / OPERATOR — parse details + create BusinessRequest
-       ───────────────────────────────────────────────────────── */
+        */
     if (country !== "Sri Lanka")
       return res.status(400).json({ message: "Business registration is only available for Sri Lanka-based users." });
 
@@ -351,7 +349,6 @@ exports.registerUser = async (req, res) => {
       accountType:    "pending",
       country,
       dateOfBirth,
-      jobRole,
       currency:       currency || "LKR",
       businessProfile,
     });
@@ -371,7 +368,6 @@ exports.registerUser = async (req, res) => {
       accountType: user.accountType,   // "pending"
       country:     user.country,
       dateOfBirth: user.dateOfBirth,
-      jobRole:     user.jobRole,
       currency:    user.currency,
       token:       generateToken(user._id),
     });
@@ -382,9 +378,9 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-/* ══════════════════════════════════════════════════════════════
+/* 
    LOGIN — unchanged
-   ══════════════════════════════════════════════════════════════ */
+    */
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -403,7 +399,6 @@ exports.loginUser = async (req, res) => {
       email:       user.email,
       accountType: user.accountType,
       dateOfBirth: user.dateOfBirth,
-      jobRole:     user.jobRole,
       country:     user.country,
       currency:    user.currency || "LKR",
       token:       generateToken(user._id),
@@ -413,31 +408,30 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-/* ══════════════════════════════════════════════════════════════
-   ADMIN LOGIN — unchanged
-   ══════════════════════════════════════════════════════════════ */
+/* 
+   ADMIN LOGIN — hardcoded credentials (no database check)
+    */
+const ADMIN_EMAIL    = "admin@travel.com";
+const ADMIN_PASSWORD = "admin123";
+
 exports.adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "Admin not found!" });
-
-    if (user.accountType !== "admin")
-      return res.status(403).json({ message: "Access denied. Not an admin account!" });
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials!" });
+    // Hardcoded credential check — no database lookup required
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      return res.status(400).json({ message: "Invalid credentials!" });
+    }
 
     const token = jwt.sign(
-      { id: user._id, role: user.accountType },
+      { id: "admin", role: "admin" },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     res.status(200).json({
       token,
-      user: { id: user._id, username: user.username, accountType: user.accountType }
+      user: { id: "admin", username: "MainAdmin", accountType: "admin" }
     });
   } catch (err) {
     console.error(err);

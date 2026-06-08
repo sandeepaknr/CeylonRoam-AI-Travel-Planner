@@ -5,8 +5,10 @@ const PackageSchema = new mongoose.Schema({
   name:        { type: String, required: true },
   description: { type: String, required: true },
   price:       { type: Number, required: true },
-  category:    { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },   // required for Packages; optional for Services
+  category:    { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   location:    { type: String, required: true },
+  latitude:    { type: Number, default: null },
+  longitude:   { type: Number, default: null },
   creator:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   image:       { type: String },
   images:      { type: [String], default: [] },

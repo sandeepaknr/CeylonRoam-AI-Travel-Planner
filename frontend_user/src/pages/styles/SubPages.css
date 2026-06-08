@@ -1,86 +1,86 @@
 /* ================================================================
-   SUB-PAGES: About, Contact, Services — Shared Premium Base
-   ================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap');
+ SUB-PAGES: About, Contact, Services — Shared Premium Base
+ ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 /* ── Page wrapper ────────────────────────────────────────── */
 .sub-page {
-  max-width: 920px;
-  margin: 0 auto;
-  padding: 112px 32px 80px;
-  font-family: 'Poppins', sans-serif;
-  min-height: 100vh;
+ max-width: 920px;
+ margin: 0 auto;
+ padding: 112px 32px 80px;
+ font-family: 'Montserrat', sans-serif;
+ min-height: 100vh;
 }
 
 /* ── Page Hero ───────────────────────────────────────────── */
 .sub-hero {
-  background: linear-gradient(135deg, #0a3d62, #1a6fa8);
-  border-radius: 24px;
-  padding: 52px 48px;
-  color: #fff;
-  margin-bottom: 48px;
-  position: relative;
-  overflow: hidden;
+ background: linear-gradient(135deg, #023859, #26658C);
+ border-radius: 24px;
+ padding: 52px 48px;
+ color: #fff;
+ margin-bottom: 48px;
+ position: relative;
+ overflow: hidden;
 }
 .sub-hero::after {
-  content: '';
-  position: absolute;
-  width: 300px; height: 300px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  top: -80px; right: -60px;
+ content: '';
+ position: absolute;
+ width: 300px; height: 300px;
+ border-radius: 50%;
+ background: rgba(255,255,255,0.05);
+ top: -80px; right: -60px;
 }
 
 .sub-hero-badge {
-  display: inline-block;
-  background: rgba(244,162,97,0.25);
-  border: 1px solid rgba(244,162,97,0.45);
-  color: #fcd5ae;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 4px 14px;
-  border-radius: 9999px;
-  margin-bottom: 14px;
+ display: inline-block;
+ background: rgba(84,172,191,0.25);
+ border: 1px solid rgba(84,172,191,0.45);
+ color: #A7EBF2;
+ font-size: 11px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 1px;
+ padding: 4px 14px;
+ border-radius: 9999px;
+ margin-bottom: 14px;
 }
 
 .sub-hero h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(28px, 4vw, 46px);
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 12px;
-  line-height: 1.15;
+ font-family: 'Montserrat', sans-serif;
+ font-size: clamp(28px, 4vw, 46px);
+ font-weight: 700;
+ color: #fff;
+ margin-bottom: 12px;
+ line-height: 1.15;
 }
 
 .sub-hero p {
-  font-size: 15px;
-  color: rgba(255,255,255,0.80);
-  max-width: 540px;
-  line-height: 1.75;
+ font-size: 15px;
+ color: rgba(255,255,255,0.80);
+ max-width: 540px;
+ line-height: 1.75;
 }
 
 /* ── Content Cards ───────────────────────────────────────── */
 .content-card {
-  background: #fff;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-  padding: 32px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
+ background: #fff;
+ border-radius: 20px;
+ border: 1px solid #A7EBF2;
+ padding: 32px;
+ box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+ margin-bottom: 20px;
 }
 .content-card h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #0a3d62;
-  margin-bottom: 14px;
+ font-family: 'Montserrat', sans-serif;
+ font-size: 22px;
+ font-weight: 700;
+ color: #023859;
+ margin-bottom: 14px;
 }
 .content-card p {
-  font-size: 14.5px;
-  color: #475569;
-  line-height: 1.8;
+ font-size: 14.5px;
+ color: #26658C;
+ line-height: 1.8;
 }
 
 /* ── Contact Form ────────────────────────────────────────── */
@@ -88,100 +88,100 @@
 
 .cf-field { display: flex; flex-direction: column; gap: 7px; }
 .cf-field label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #64748b;
+ font-size: 11px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 0.6px;
+ color: #26658C;
 }
 .cf-field input,
 .cf-field textarea {
-  width: 100%;
-  padding: 13px 16px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  color: #0f172a;
-  outline: none;
-  background: #fff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+ width: 100%;
+ padding: 13px 16px;
+ border: 1.5px solid #A7EBF2;
+ border-radius: 12px;
+ font-family: 'Montserrat', sans-serif;
+ font-size: 14px;
+ color: #011C40;
+ outline: none;
+ background: #fff;
+ transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .cf-field input:focus,
 .cf-field textarea:focus {
-  border-color: #1a6fa8;
-  box-shadow: 0 0 0 3px rgba(26,111,168,0.10);
+ border-color: #26658C;
+ box-shadow: 0 0 0 3px rgba(38,101,140,0.10);
 }
 .cf-field textarea { min-height: 130px; resize: vertical; }
 
 .cf-submit {
-  padding: 14px 36px;
-  background: linear-gradient(135deg, #0a3d62, #1a6fa8);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  align-self: flex-start;
-  box-shadow: 0 4px 14px rgba(10,61,98,0.28);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+ padding: 14px 36px;
+ background: linear-gradient(135deg, #023859, #26658C);
+ color: #fff;
+ border: none;
+ border-radius: 12px;
+ font-family: 'Montserrat', sans-serif;
+ font-size: 15px;
+ font-weight: 600;
+ cursor: pointer;
+ align-self: flex-start;
+ box-shadow: 0 4px 14px rgba(2,56,89,0.28);
+ transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.cf-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(10,61,98,0.38); }
+.cf-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,56,89,0.38); }
 
 /* ── Services Grid ───────────────────────────────────────── */
 .services-list-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+ gap: 20px;
 }
 .svc-card {
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  padding: 28px 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+ background: #fff;
+ border-radius: 18px;
+ border: 1px solid #A7EBF2;
+ padding: 28px 24px;
+ box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+ transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
-.svc-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(10,61,98,0.11); }
+.svc-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(2,56,89,0.11); }
 .svc-icon { font-size: 36px; margin-bottom: 14px; }
 .svc-card h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 8px;
+ font-family: 'Montserrat', sans-serif;
+ font-size: 18px;
+ font-weight: 700;
+ color: #011C40;
+ margin-bottom: 8px;
 }
-.svc-card p { font-size: 13.5px; color: #64748b; line-height: 1.7; }
+.svc-card p { font-size: 13.5px; color: #26658C; line-height: 1.7; }
 
 /* ── Legal Pages ─────────────────────────────────────────── */
 .legal-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 112px 32px 80px;
-  font-family: 'Poppins', sans-serif;
+ max-width: 800px;
+ margin: 0 auto;
+ padding: 112px 32px 80px;
+ font-family: 'Montserrat', sans-serif;
 }
 .legal-page h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 34px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 6px;
+ font-family: 'Montserrat', sans-serif;
+ font-size: 34px;
+ font-weight: 700;
+ color: #011C40;
+ margin-bottom: 6px;
 }
-.legal-page .date { font-size: 13px; color: #94a3b8; margin-bottom: 32px; }
+.legal-page .date { font-size: 13px; color: #54ACBF; margin-bottom: 32px; }
 .legal-page section { margin-bottom: 28px; }
 .legal-page h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: #0a3d62;
-  margin-bottom: 10px;
+ font-family: 'Montserrat', sans-serif;
+ font-size: 20px;
+ font-weight: 700;
+ color: #023859;
+ margin-bottom: 10px;
 }
-.legal-page p { font-size: 14px; color: #475569; line-height: 1.8; }
+.legal-page p { font-size: 14px; color: #26658C; line-height: 1.8; }
 
 @media (max-width: 640px) {
-  .sub-page { padding: 96px 16px 48px; }
-  .sub-hero { padding: 36px 24px; }
-  .legal-page { padding: 96px 16px 48px; }
+ .sub-page { padding: 96px 16px 48px; }
+ .sub-hero { padding: 36px 24px; }
+ .legal-page { padding: 96px 16px 48px; }
 }

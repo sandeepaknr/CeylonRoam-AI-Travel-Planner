@@ -1,0 +1,186 @@
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Package  = require("./src/models/Package");
+const User     = require("./src/models/User");
+const Category = require("./src/models/Category");
+
+const img = (id) => `https://picsum.photos/seed/${id}/800/600`;
+
+async function run() {
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("Connected — adding 10 tour packages...");
+
+  // Grab first 5 business users as creators and first 5 categories
+  const biz  = await User.find({ accountType: "business" }).limit(5);
+  const cats = await Category.find().limit(5);
+
+  if (biz.length === 0) { console.error("No business users found. Run seed.js first."); process.exit(1); }
+
+  await Package.insertMany([
+    {
+      name: "5-Day Classic Sri Lanka Triangle",
+      description: "The unmissable Cultural Triangle — Colombo, Sigiriya, Dambulla, Kandy and back. Perfect first-timer circuit covering Sri Lanka's most iconic landmarks.",
+      price: 68000,
+      category: cats[0]?._id,
+      location: "Colombo",
+      creator: biz[0]._id,
+      image: img("triangle1"),
+      images: [img("triangle1"), img("triangle2"), img("triangle3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo city tour — Gangaramaya Temple, Dutch Hospital, Galle Face Green. Day 2: Colombo → Sigiriya — Lion Rock fortress climb (half day) → Pidurangala Rock. Day 3: Dambulla Cave Temple → Minneriya National Park elephant safari. Day 4: Sigiriya → Kandy — Spice Garden, Temple of Tooth, cultural dance show. Day 5: Kandy → Colombo — Peradeniya Royal Botanical Gardens, departure.",
+      inclusions: ["4-Night Accommodation","Daily Breakfast","AC Private Vehicle","Expert English Guide","All Entrance Fees","Minneriya Safari"],
+      duration: "5 Days / 4 Nights",
+      isFeatured: true,
+      views: 634,
+    },
+    {
+      name: "4-Day Ella & Hill Country Adventure",
+      description: "Ride the world's most scenic train, hike to waterfalls, cross the Nine Arches Bridge and watch the sun rise over Little Adam's Peak.",
+      price: 54000,
+      category: cats[4]?._id,
+      location: "Ella",
+      creator: biz[1]._id,
+      image: img("ella_adv1"),
+      images: [img("ella_adv1"), img("ella_adv2"), img("ella_adv3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo → Kandy by train — Temple of Tooth visit. Day 2: Kandy → Ella on the iconic blue train through tea estates. Day 3: Little Adam's Peak hike at sunrise, Nine Arches Bridge walk, Rawana Falls. Day 4: Ella town, Demodara Loop, return journey.",
+      inclusions: ["3-Night Accommodation","Breakfast","Train Tickets (Observation Class)","Hiking Guide","Waterfalls Visit"],
+      duration: "4 Days / 3 Nights",
+      isFeatured: true,
+      views: 521,
+    },
+    {
+      name: "3-Day Yala & Southern Coast Safari",
+      description: "Spot leopards at dawn in Yala, watch whales in Mirissa, stroll Galle Fort at sunset — the ultimate southern Sri Lanka escape.",
+      price: 72000,
+      category: cats[3]?._id,
+      location: "Yala",
+      creator: biz[2]._id,
+      image: img("yala_safari1"),
+      images: [img("yala_safari1"), img("yala_safari2"), img("yala_safari3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo → Yala — afternoon 4x4 game drive (leopard, elephant, crocodile). Day 2: Yala dawn drive → Mirissa — afternoon whale watching cruise (blue whales & dolphins). Day 3: Mirissa → Galle — Galle Fort UNESCO walk, lighthouse, Dutch architecture, departure.",
+      inclusions: ["2-Night Accommodation","Breakfast & Dinner","4x4 Safari Jeep","Naturalist Guide","Whale Watching Boat","Galle Fort Entry"],
+      duration: "3 Days / 2 Nights",
+      isFeatured: true,
+      views: 498,
+    },
+    {
+      name: "6-Day North & East Discovery",
+      description: "Explore the rarely visited north and east — Jaffna's Tamil heritage, pristine Nilaveli Beach, Pigeon Island snorkelling and Trincomalee's sacred temples.",
+      price: 89000,
+      category: cats[0]?._id,
+      location: "Jaffna",
+      creator: biz[3]._id,
+      image: img("jaffna1"),
+      images: [img("jaffna1"), img("jaffna2"), img("jaffna3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo → Jaffna by flight — Nallur Kandaswamy Temple, Jaffna Fort. Day 2: Jaffna islands by boat — Nainativu, Nagadeepa Vihara. Day 3: Jaffna → Trincomalee — Koneswaram Temple, Fort Frederick. Day 4: Nilaveli Beach — Pigeon Island snorkelling, coral reef. Day 5: Trincomalee → Sigiriya — Minneriya elephant gathering. Day 6: Sigiriya → Colombo, departure.",
+      inclusions: ["5-Night Accommodation","Daily Breakfast","Domestic Flight (CMB-JAF)","AC Vehicle","Guide","Snorkelling Gear","All Entrances"],
+      duration: "6 Days / 5 Nights",
+      isFeatured: false,
+      views: 312,
+    },
+    {
+      name: "2-Day Colombo City & Day Trips",
+      description: "The perfect weekend break — explore Colombo's vibrant city life, Dutch canals, street food, rooftop bars and a day trip to Negombo's fishing villages.",
+      price: 28000,
+      category: cats[0]?._id,
+      location: "Colombo",
+      creator: biz[4]._id,
+      image: img("colombo_city1"),
+      images: [img("colombo_city1"), img("colombo_city2")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo — Gangaramaya Temple, Pettah Market food tour, Dutch Hospital shopping, Galle Face sunset, rooftop cocktails. Day 2: Negombo — St Mary's Church, fish market, lagoon boat ride, Hamilton Canal, departure.",
+      inclusions: ["1-Night City Hotel","Breakfast","Tuk Tuk City Tour","Food Tastings","Negombo Day Trip","Local Guide"],
+      duration: "2 Days / 1 Night",
+      isFeatured: false,
+      views: 287,
+    },
+    {
+      name: "8-Day Island Grand Circuit",
+      description: "Sri Lanka from top to bottom — Colombo, Sigiriya, Kandy, Ella, Yala, Mirissa and Galle. The complete island experience for those with a week to spare.",
+      price: 148000,
+      category: cats[0]?._id,
+      location: "Colombo",
+      creator: biz[0]._id,
+      image: img("grand8_1"),
+      images: [img("grand8_1"), img("grand8_2"), img("grand8_3"), img("grand8_4")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo arrival & city tour. Day 2: Dambulla Cave Temple & Sigiriya Rock. Day 3: Minneriya Safari → Kandy. Day 4: Kandy cultural tour → Scenic train to Ella. Day 5: Ella hikes — Nine Arches, Little Adam's Peak. Day 6: Ella → Yala — afternoon safari. Day 7: Yala dawn drive → Mirissa whale watching. Day 8: Galle Fort → Colombo, departure.",
+      inclusions: ["7-Night Accommodation","Daily Breakfast","All Entrance Fees","Private AC Vehicle","Expert Guide","Minneriya Safari","Whale Watching","Train Tickets"],
+      duration: "8 Days / 7 Nights",
+      isFeatured: true,
+      views: 891,
+    },
+    {
+      name: "3-Day Anuradhapura & Polonnaruwa Ancient Kingdoms",
+      description: "Step back 2,000 years through Sri Lanka's most sacred ancient capitals — colossal stupas, moonstone carvings and the Sacred Bodhi Tree.",
+      price: 41000,
+      category: cats[0]?._id,
+      location: "Anuradhapura",
+      creator: biz[1]._id,
+      image: img("anura1"),
+      images: [img("anura1"), img("anura2"), img("anura3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo → Anuradhapura — Ruwanwelisaya, Sacred Bodhi Tree, Jetavanaramaya, Thuparamaya. Day 2: Anuradhapura → Polonnaruwa — Ancient City, Gal Vihara, Parakrama Samudra, Quadrangle. Day 3: Polonnaruwa → Dambulla Cave Temple → Colombo, departure.",
+      inclusions: ["2-Night Accommodation","Breakfast","AC Vehicle","Knowledgeable Guide","All UNESCO Site Entrances","Bicycle Hire in Polonnaruwa"],
+      duration: "3 Days / 2 Nights",
+      isFeatured: false,
+      views: 245,
+    },
+    {
+      name: "4-Day Surfing & Beach Hopping (East Coast)",
+      description: "Arugam Bay surf lessons, Batticaloa lagoon boat ride, Pasikudah's crystal clear waters — the east coast's best beaches in one trip.",
+      price: 52000,
+      category: cats[1]?._id,
+      location: "Arugam Bay",
+      creator: biz[2]._id,
+      image: img("arugam_surf1"),
+      images: [img("arugam_surf1"), img("arugam_surf2"), img("arugam_surf3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo → Arugam Bay (6h drive) — sunset at Main Point. Day 2: Arugam Bay — 2-hour beginner surf lesson, Elephant Rock viewpoint, Panama beach. Day 3: Arugam Bay → Pasikudah — white sand beach, snorkelling, reef walk. Day 4: Pasikudah → Batticaloa — lagoon boat trip, Dutch Fort → Colombo, departure.",
+      inclusions: ["3-Night Beach Accommodation","Daily Breakfast","Surf Lesson","Snorkelling Gear","Lagoon Boat Ride","AC Transport"],
+      duration: "4 Days / 3 Nights",
+      isFeatured: true,
+      views: 378,
+    },
+    {
+      name: "5-Day Ayurveda & Wellness Retreat",
+      description: "Detox, rebalance and restore at a riverfront Ayurvedic resort near Bentota — personalised treatments, organic food and morning yoga overlooking the Bentota River.",
+      price: 115000,
+      category: cats[2]?._id,
+      location: "Bentota",
+      creator: biz[3]._id,
+      image: img("ayur_retreat1"),
+      images: [img("ayur_retreat1"), img("ayur_retreat2"), img("ayur_retreat3")],
+      listingType: "Package",
+      itinerary: "Day 1: Arrival, welcome consultation with Ayurvedic physician, herbal bath. Day 2: Abhyanga full-body massage, yoga, river safari by boat. Day 3: Shirodhara treatment, meditation, spice garden walk. Day 4: Steam bath, reflexology, afternoon beach visit at Bentota. Day 5: Farewell oil treatment, departure to Colombo.",
+      inclusions: ["4-Night Resort Accommodation","Full Board (3 Meals/Day)","Daily Ayurvedic Treatments","Yoga Classes","River Safari","Doctor Consultation"],
+      duration: "5 Days / 4 Nights",
+      isFeatured: true,
+      views: 443,
+    },
+    {
+      name: "3-Day Tea Country & Train Experience",
+      description: "Board the legendary Kandy-to-Ella blue train, visit a working tea factory, pluck tea leaves, and sleep in a colonial-era tea estate bungalow.",
+      price: 46000,
+      category: cats[4]?._id,
+      location: "Nuwara Eliya",
+      creator: biz[4]._id,
+      image: img("tea_train1"),
+      images: [img("tea_train1"), img("tea_train2"), img("tea_train3")],
+      listingType: "Package",
+      itinerary: "Day 1: Colombo → Kandy — Temple of Tooth, evening cultural dance show. Day 2: Kandy → Nuwara Eliya by scenic train — Pedro Tea Estate visit, tea plucking & tasting, Gregory Lake walk. Day 3: Nuwara Eliya → Ella — Horton Plains & World's End trek, Nine Arches Bridge, departure.",
+      inclusions: ["2-Night Tea Estate/Colonial Hotel","Breakfast","Scenic Train Tickets","Tea Factory Tour & Tasting","Horton Plains Entry","Guide"],
+      duration: "3 Days / 2 Nights",
+      isFeatured: false,
+      views: 356,
+    },
+  ]);
+
+  console.log("✅ 10 tour packages added to the Packages page.");
+  await mongoose.disconnect();
+}
+
+run().catch(e => { console.error(e.message); process.exit(1); });

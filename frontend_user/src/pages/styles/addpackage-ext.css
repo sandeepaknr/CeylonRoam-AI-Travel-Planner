@@ -1,485 +1,716 @@
 /* ================================================================
-   ADD PACKAGE PAGE — CeylonRoam Design System
-   Self-contained: overrides the dark glass-container for this
-   specific page without touching managepackages.css (shared).
-   ================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+ ADD PACKAGE PAGE — CeylonRoam Design System
+ Self-contained: overrides the dark glass-container for this
+ specific page without touching managepackages.css (shared).
+ ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 /* ══════════════════════════════════════════════════════════
-   DESIGN TOKENS (scoped to .ap-page)
-   ══════════════════════════════════════════════════════════ */
+ DESIGN TOKENS (scoped to .ap-page)
+ ══════════════════════════════════════════════════════════ */
 .ap-page {
-  --font:        'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-  --ink:         #0f172a;
-  --ink-60:      #475569;
-  --ink-40:      #94a3b8;
-  --border:      #e2e8f0;
-  --surface:     #f8fafc;
-  --surface-b:   #f0f9ff;
-  --white:       #ffffff;
-  --primary:     #0369a1;
-  --primary-l:   #e0f2fe;
-  --primary-d:   #0c4a6e;
-  --green:       #16a34a;
-  --green-l:     #dcfce7;
-  --amber:       #d97706;
-  --amber-l:     #fef3c7;
-  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
-  --spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+ --font: 'Montserrat', 'Inter', system-ui, sans-serif;
+ --ink: #011C40;
+ --ink-60: #26658C;
+ --ink-40: #54ACBF;
+ --border: #A7EBF2;
+ --surface: #F5FCFD;
+ --surface-b: #E7F9FC;
+ --white: #ffffff;
+ --primary: #26658C;
+ --primary-l: #A7EBF2;
+ --primary-d: #023859;
+ --green: #16a34a;
+ --green-l: #dcfce7;
+ --amber: #d97706;
+ --amber-l: #fef3c7;
+ --ease: cubic-bezier(0.4, 0, 0.2, 1);
+ --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  font-family:   var(--font);
-  -webkit-font-smoothing: antialiased;
+ font-family: var(--font);
+ -webkit-font-smoothing: antialiased;
 
-  /* Page background — clean off-white */
-  min-height: 100vh;
-  background: var(--surface);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 100px 24px 80px;
+ /* Page background — clean off-white */
+ min-height: 100vh;
+ background: var(--surface);
+ display: flex;
+ align-items: flex-start;
+ justify-content: center;
+ padding: 100px 24px 80px;
 }
 
 /* ══════════════════════════════════════════════════════════
-   CARD — bento-box container
+ CARD — bento-box container
 ══════════════════════════════════════════════════════════ */
 .ap-card {
-  width: 100%;
-  max-width: 720px;
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 28px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-  padding: 48px 52px 52px;
-  animation: ap-slide-up 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+ width: 100%;
+ max-width: 720px;
+ background: var(--white);
+ border: 1.5px solid var(--border);
+ border-radius: 28px;
+ box-shadow: 0 4px 32px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+ padding: 48px 52px 52px;
+ animation: ap-slide-up 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 
 @keyframes ap-slide-up {
-  from { opacity: 0; transform: translateY(28px) scale(0.98); }
-  to   { opacity: 1; transform: none; }
+ from { opacity: 0; transform: translateY(28px) scale(0.98); }
+ to { opacity: 1; transform: none; }
 }
 
 /* ── Page header ── */
 .ap-page-header {
-  margin-bottom: 36px;
+ margin-bottom: 36px;
 }
 
 .ap-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: var(--ink-60);
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: 24px;
-  transition: color 0.2s var(--ease);
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ background: none;
+ border: none;
+ color: var(--ink-60);
+ font-family: var(--font);
+ font-size: 14px;
+ font-weight: 600;
+ cursor: pointer;
+ padding: 0;
+ margin-bottom: 24px;
+ transition: color 0.2s var(--ease);
 }
 .ap-back-btn:hover {
-  color: var(--primary);
+ color: var(--primary);
 }
 
 .ap-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
-  color: var(--primary);
-  background: var(--primary-l);
-  padding: 5px 16px;
-  border-radius: 9999px;
-  margin-bottom: 16px;
-  border: 1px solid #bae6fd;
+ display: inline-flex;
+ align-items: center;
+ gap: 7px;
+ font-size: 11px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 2.5px;
+ color: var(--primary);
+ background: var(--primary-l);
+ padding: 5px 16px;
+ border-radius: 9999px;
+ margin-bottom: 16px;
+ border: 1px solid #54ACBF;
 }
 
 .ap-page-title {
-  font-family: var(--font);
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 800;
-  color: var(--ink);
-  letter-spacing: -0.8px;
-  line-height: 1.15;
-  margin-bottom: 8px;
+ font-family: var(--font);
+ font-size: clamp(24px, 3vw, 32px);
+ font-weight: 800;
+ color: var(--ink);
+ letter-spacing: -0.8px;
+ line-height: 1.15;
+ margin-bottom: 8px;
 }
 
 .ap-page-sub {
-  font-size: 15px;
-  color: var(--ink-60);
-  line-height: 1.65;
-  font-weight: 400;
+ font-size: 15px;
+ color: var(--ink-60);
+ line-height: 1.65;
+ font-weight: 400;
 }
 
 /* ══════════════════════════════════════════════════════════
-   FORM LAYOUT
+ FORM LAYOUT
 ══════════════════════════════════════════════════════════ */
 .ap-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+ display: flex;
+ flex-direction: column;
+ gap: 20px;
 }
 
 /* Field group */
 .ap-field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+ display: flex;
+ flex-direction: column;
+ gap: 7px;
 }
 
 /* Label */
 .ap-label {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--ink-60);
-  display: block;
+ font-size: 12px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 1.5px;
+ color: var(--ink-60);
+ display: block;
 }
 
 /* Inputs & textareas & selects */
 .ap-input {
-  width: 100%;
-  padding: 14px 18px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  font-family: var(--font);
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--ink);
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.18s ease;
+ width: 100%;
+ padding: 14px 18px;
+ background: var(--surface);
+ border: 1.5px solid var(--border);
+ border-radius: 14px;
+ font-family: var(--font);
+ font-size: 15px;
+ font-weight: 400;
+ color: var(--ink);
+ outline: none;
+ box-sizing: border-box;
+ transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.18s ease;
 }
 .ap-input::placeholder { color: var(--ink-40); }
 .ap-input:focus {
-  border-color: var(--primary);
-  background: var(--white);
-  box-shadow: 0 0 0 4px rgba(3,105,161,0.08);
+ border-color: var(--primary);
+ background: var(--white);
+ box-shadow: 0 0 0 4px rgba(38,101,140,0.08);
 }
 
 textarea.ap-input {
-  resize: vertical;
-  line-height: 1.65;
-  min-height: 100px;
+ resize: vertical;
+ line-height: 1.65;
+ min-height: 100px;
 }
 
 /* Select — custom chevron */
 select.ap-input {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230369a1' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 12px 8px;
-  cursor: pointer;
-  padding-right: 44px;
+ appearance: none;
+ -webkit-appearance: none;
+ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230369a1' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+ background-repeat: no-repeat;
+ background-position: right 16px center;
+ background-size: 12px 8px;
+ cursor: pointer;
+ padding-right: 44px;
 }
 select.ap-input option { background: var(--white); color: var(--ink); }
 
 /* Hint text */
 .ap-hint {
-  font-size: 12px;
-  color: var(--ink-40);
-  font-weight: 400;
-  line-height: 1.4;
-  margin-top: 2px;
+ font-size: 12px;
+ color: var(--ink-40);
+ font-weight: 400;
+ line-height: 1.4;
+ margin-top: 2px;
 }
 
 /* ── Two-column grid ── */
 .ap-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 16px;
 }
 
 /* ── Section divider ── */
 .ap-section-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--ink-40);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin: 4px 0;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ color: var(--ink-40);
+ font-size: 11px;
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 1.5px;
+ margin: 4px 0;
 }
 .ap-section-divider::before,
 .ap-section-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+ content: '';
+ flex: 1;
+ height: 1px;
+ background: var(--border);
 }
 
 /* ══════════════════════════════════════════════════════════
-   FILE UPLOAD ZONE
+ FILE UPLOAD ZONE
 ══════════════════════════════════════════════════════════ */
 .ap-file-zone {
-  border: 2px dashed var(--border);
-  border-radius: 18px;
-  background: var(--surface);
-  padding: 28px 24px;
-  text-align: center;
-  transition: border-color 0.2s var(--ease), background 0.2s ease;
-  cursor: pointer;
-  position: relative;
+ border: 2px dashed var(--border);
+ border-radius: 18px;
+ background: var(--surface);
+ padding: 28px 24px;
+ text-align: center;
+ transition: border-color 0.2s var(--ease), background 0.2s ease;
+ cursor: pointer;
+ position: relative;
 }
 .ap-file-zone:hover {
-  border-color: var(--primary);
-  background: var(--surface-b);
+ border-color: var(--primary);
+ background: var(--surface-b);
 }
 .ap-file-zone-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
-  line-height: 1;
+ font-size: 32px;
+ margin-bottom: 8px;
+ line-height: 1;
 }
 .ap-file-zone-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink-60);
-  margin-bottom: 4px;
+ font-size: 14px;
+ font-weight: 600;
+ color: var(--ink-60);
+ margin-bottom: 4px;
 }
 .ap-file-zone-hint {
-  font-size: 12px;
-  color: var(--ink-40);
+ font-size: 12px;
+ color: var(--ink-40);
 }
 .ap-file-input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
+ position: absolute;
+ inset: 0;
+ opacity: 0;
+ cursor: pointer;
+ width: 100%;
+ height: 100%;
 }
 
 /* Selected file name pill */
 .ap-file-name {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--primary-l);
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 5px 14px;
-  border-radius: 9999px;
-  margin-top: 10px;
-  border: 1px solid #bae6fd;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ background: var(--primary-l);
+ color: var(--primary);
+ font-size: 13px;
+ font-weight: 600;
+ padding: 5px 14px;
+ border-radius: 9999px;
+ margin-top: 10px;
+ border: 1px solid #54ACBF;
+ max-width: 100%;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
 }
 
 /* ══════════════════════════════════════════════════════════
-   INCLUSIONS PREVIEW PILLS
+ INCLUSIONS PREVIEW PILLS
 ══════════════════════════════════════════════════════════ */
 .ap-inclusions-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 16px;
-  background: var(--green-l);
-  border: 1.5px solid #bbf7d0;
-  border-radius: 16px;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 8px;
+ padding: 16px;
+ background: var(--green-l);
+ border: 1.5px solid #bbf7d0;
+ border-radius: 16px;
 }
 
 .ap-inclusion-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--white);
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  border: 1px solid #bbf7d0;
-  letter-spacing: 0.2px;
+ display: inline-flex;
+ align-items: center;
+ gap: 5px;
+ background: var(--white);
+ color: var(--green);
+ font-size: 12px;
+ font-weight: 600;
+ padding: 5px 12px;
+ border-radius: 9999px;
+ border: 1px solid #bbf7d0;
+ letter-spacing: 0.2px;
 }
 
 /* ══════════════════════════════════════════════════════════
-   SUBMIT BUTTON
+ SUBMIT BUTTON
 ══════════════════════════════════════════════════════════ */
 .ap-submit-btn {
-  width: 100%;
-  padding: 17px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 16px;
-  font-family: var(--font);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  margin-top: 8px;
-  box-shadow: 0 6px 20px rgba(3,105,161,0.28);
-  transition: transform 0.3s var(--spring), box-shadow 0.25s var(--ease), background 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+ width: 100%;
+ padding: 17px;
+ background: var(--primary);
+ color: #fff;
+ border: none;
+ border-radius: 16px;
+ font-family: var(--font);
+ font-size: 15px;
+ font-weight: 700;
+ letter-spacing: 0.3px;
+ cursor: pointer;
+ margin-top: 8px;
+ box-shadow: 0 6px 20px rgba(38,101,140,0.28);
+ transition: transform 0.3s var(--spring), box-shadow 0.25s var(--ease), background 0.2s ease;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 10px;
 }
 .ap-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(3,105,161,0.36);
-  background: var(--primary-d);
+ transform: translateY(-2px);
+ box-shadow: 0 12px 32px rgba(38,101,140,0.36);
+ background: var(--primary-d);
 }
 .ap-submit-btn:active:not(:disabled) { transform: scale(0.98); }
 .ap-submit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+ opacity: 0.6;
+ cursor: not-allowed;
+ transform: none;
 }
 
 /* Spinner */
 .ap-spinner {
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,0.35);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: ap-spin 0.7s linear infinite;
-  flex-shrink: 0;
+ width: 18px; height: 18px;
+ border: 2.5px solid rgba(255,255,255,0.35);
+ border-top-color: #fff;
+ border-radius: 50%;
+ animation: ap-spin 0.7s linear infinite;
+ flex-shrink: 0;
 }
 @keyframes ap-spin { to { transform: rotate(360deg); } }
 
 /* ══════════════════════════════════════════════════════════
-   PREMIUM TABLES
-   ══════════════════════════════════════════════════════════ */
+ PREMIUM TABLES
+ ══════════════════════════════════════════════════════════ */
 .ap-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--white);
+ width: 100%;
+ overflow-x: auto;
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ background: var(--white);
 }
 
 .ap-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 14px;
+ width: 100%;
+ border-collapse: collapse;
+ text-align: left;
+ font-size: 14px;
 }
 
 .ap-table th {
-  background: var(--surface);
-  color: var(--ink-60);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 16px 24px;
-  font-size: 11px;
-  border-bottom: 1px solid var(--border);
+ background: var(--surface);
+ color: var(--ink-60);
+ font-weight: 700;
+ text-transform: uppercase;
+ letter-spacing: 0.5px;
+ padding: 16px 24px;
+ font-size: 11px;
+ border-bottom: 1px solid var(--border);
 }
 
 .ap-table td {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
-  color: var(--ink);
-  vertical-align: middle;
+ padding: 16px 24px;
+ border-bottom: 1px solid var(--border);
+ color: var(--ink);
+ vertical-align: middle;
 }
 
 .ap-table tr:last-child td {
-  border-bottom: none;
+ border-bottom: none;
 }
 
 .ap-table tr:hover {
-  background: #f8fafc;
+ background: #F5FCFD;
 }
 
 .ap-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 700;
+ display: inline-flex;
+ align-items: center;
+ gap: 6px;
+ padding: 6px 12px;
+ border-radius: 9999px;
+ font-size: 12px;
+ font-weight: 700;
 }
 .ap-status-pending { background: #fffaf0; color: #9a3412; }
 .ap-status-confirmed { background: #f0fdf4; color: #166534; }
 .ap-status-cancelled { background: #fef2f2; color: #991b1b; }
 
 .ap-table-btn {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-60);
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ padding: 6px 12px;
+ font-size: 12px;
+ font-weight: 600;
+ color: var(--ink-60);
+ cursor: pointer;
+ transition: all 0.2s var(--ease);
 }
 .ap-table-btn:hover {
-  background: var(--white);
-  border-color: var(--primary);
-  color: var(--primary);
+ background: var(--white);
+ border-color: var(--primary);
+ color: var(--primary);
 }
 .ap-table-btn.danger:hover {
-  border-color: #ef4444;
-  color: #ef4444;
+ border-color: #ef4444;
+ color: #ef4444;
 }
 
 /* ══════════════════════════════════════════════════════════
-   STATS ROW
-   ══════════════════════════════════════════════════════════ */
+ STATS ROW
+ ══════════════════════════════════════════════════════════ */
 .ap-stats-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
+ display: flex;
+ gap: 16px;
+ margin-bottom: 32px;
 }
 .ap-stat-card {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
+ flex: 1;
+ background: var(--surface);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ padding: 24px;
 }
 .ap-stat-val {
-  display: block;
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--ink);
-  letter-spacing: -1px;
-  margin-bottom: 4px;
+ display: block;
+ font-size: 32px;
+ font-weight: 800;
+ color: var(--ink);
+ letter-spacing: -1px;
+ margin-bottom: 4px;
 }
 .ap-stat-label {
-  font-size: 13px;
-  color: var(--ink-60);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+ font-size: 13px;
+ color: var(--ink-60);
+ font-weight: 600;
+ text-transform: uppercase;
+ letter-spacing: 0.5px;
 }
 
 /* ══════════════════════════════════════════════════════════
-   MODAL
-   ══════════════════════════════════════════════════════════ */
+ MODAL
+ ══════════════════════════════════════════════════════════ */
 .ap-modal-overlay {
-  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
-  z-index: 100;
+ position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4);
+ backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+ z-index: 100;
 }
 .ap-modal-content {
-  background: var(--white); border-radius: 24px; padding: 40px; width: 100%; max-width: 500px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.1);
-  animation: ap-slide-up 0.4s var(--spring) both;
+ background: var(--white); border-radius: 24px; padding: 40px; width: 100%; max-width: 500px;
+ box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+ animation: ap-slide-up 0.4s var(--spring) both;
 }
 
 /* ══════════════════════════════════════════════════════════
-   RESPONSIVE
-   ══════════════════════════════════════════════════════════ */
+ RESPONSIVE
+ ══════════════════════════════════════════════════════════ */
 @media (max-width: 700px) {
-  .ap-page    { padding: 88px 16px 60px; }
-  .ap-card    { padding: 32px 24px 40px; border-radius: 20px; }
-  .ap-two-col { grid-template-columns: 1fr; }
-  .ap-stats-row { flex-direction: column; }
+ .ap-page { padding: 88px 16px 60px; }
+ .ap-card { padding: 32px 24px 40px; border-radius: 20px; }
+ .ap-two-col { grid-template-columns: 1fr; }
+ .ap-stats-row { flex-direction: column; }
+}
+
+/* ================================================================
+   MODAL � scrollable overlay, glassmorphism card (override)
+   ================================================================ */
+.ap-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(1, 18, 42, 0.75) !important;
+  backdrop-filter: blur(14px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(150%) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+  padding: 100px 24px 60px !important;
+  z-index: 1000 !important;
+}
+
+.ap-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, rgba(167,235,242,0.07), rgba(38,101,140,0.05)),
+              rgba(255,255,255,0.98) !important;
+  border: 1.5px solid rgba(84,172,191,0.22) !important;
+  border-radius: 28px !important;
+  padding: 48px !important;
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  animation: ap-slide-up 0.38s cubic-bezier(.34,1.56,.64,1) both !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* ? close button */
+.ap-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #64748b;
+  line-height: 1;
+  transition: background 0.18s, color 0.18s;
+  z-index: 10;
+}
+.ap-modal-close:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
+@media (max-width: 720px) {
+  .ap-modal-overlay { padding: 84px 12px 48px !important; }
+  .ap-modal-content { padding: 32px 20px !important; border-radius: 20px !important; }
+}
+
+/* ================================================================
+   MANAGE PACKAGES � Dark-themed modal matching site aesthetics
+   ================================================================ */
+
+/* Overlay: deep navy with strong blur */
+.ap-modal-overlay {
+  background: rgba(1, 12, 30, 0.82) !important;
+  backdrop-filter: blur(18px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+}
+
+/* Card: dark glassmorphism matching navbar/other dark panels */
+.ap-modal-content {
+  background:
+    linear-gradient(135deg, rgba(167, 235, 242, 0.10), rgba(38, 101, 140, 0.08)),
+    rgba(1, 28, 64, 0.94) !important;
+  border: 1.5px solid rgba(167, 235, 242, 0.22) !important;
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(167, 235, 242, 0.14) !important;
+}
+
+/* Title & subtitle inside modal */
+.ap-modal-content .ap-page-title {
+  color: #E7F9FC !important;
+}
+.ap-modal-content .ap-page-sub {
+  color: #A7EBF2 !important;
+}
+
+/* Labels */
+.ap-modal-content .ap-label {
+  color: #A7EBF2 !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+/* Inputs, selects, textareas */
+.ap-modal-content .ap-input {
+  background: rgba(167, 235, 242, 0.07) !important;
+  border: 1.5px solid rgba(167, 235, 242, 0.22) !important;
+  color: #E7F9FC !important;
+  border-radius: 14px !important;
+  font-family: 'Montserrat', 'Inter', sans-serif !important;
+  transition: border-color 0.2s, background 0.2s !important;
+}
+.ap-modal-content .ap-input::placeholder {
+  color: rgba(167, 235, 242, 0.38) !important;
+}
+.ap-modal-content .ap-input:focus {
+  outline: none !important;
+  border-color: #54ACBF !important;
+  background: rgba(167, 235, 242, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(84, 172, 191, 0.20) !important;
+}
+.ap-modal-content select.ap-input option {
+  background: #011C40 !important;
+  color: #E7F9FC !important;
+}
+
+/* Section dividers */
+.ap-modal-content .ap-section-divider {
+  color: #54ACBF !important;
+  border-color: rgba(167, 235, 242, 0.18) !important;
+}
+.ap-modal-content .ap-section-divider::before,
+.ap-modal-content .ap-section-divider::after {
+  background: rgba(167, 235, 242, 0.18) !important;
+}
+
+/* Hint text */
+.ap-modal-content .ap-hint {
+  color: rgba(167, 235, 242, 0.50) !important;
+}
+
+/* Inclusions pills inside modal */
+.ap-modal-content .ap-inclusions-preview {
+  background: rgba(22, 163, 74, 0.10) !important;
+  border-color: rgba(22, 163, 74, 0.25) !important;
+}
+.ap-modal-content .ap-inclusion-pill {
+  background: rgba(22, 163, 74, 0.15) !important;
+  color: #86efac !important;
+  border-color: rgba(22, 163, 74, 0.30) !important;
+}
+
+/* Cancel button inside modal */
+.ap-modal-content .ap-table-btn {
+  background: rgba(167, 235, 242, 0.08) !important;
+  border-color: rgba(167, 235, 242, 0.22) !important;
+  color: #A7EBF2 !important;
+}
+.ap-modal-content .ap-table-btn:hover {
+  background: rgba(167, 235, 242, 0.16) !important;
+  border-color: #54ACBF !important;
+  color: #E7F9FC !important;
+}
+
+/* Save button */
+.ap-modal-content .ap-submit-btn {
+  background: linear-gradient(135deg, #26658C, #023859) !important;
+  box-shadow: 0 8px 24px rgba(38, 101, 140, 0.40) !important;
+}
+.ap-modal-content .ap-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #54ACBF, #26658C) !important;
+  box-shadow: 0 12px 32px rgba(84, 172, 191, 0.45) !important;
+}
+
+/* Close X button on dark background */
+.ap-modal-close {
+  background: rgba(167, 235, 242, 0.10) !important;
+  border-color: rgba(167, 235, 242, 0.22) !important;
+  color: #A7EBF2 !important;
+}
+.ap-modal-close:hover {
+  background: rgba(239, 68, 68, 0.20) !important;
+  border-color: rgba(239, 68, 68, 0.40) !important;
+  color: #fca5a5 !important;
+}
+
+/* File input inside modal */
+.ap-modal-content input[type="file"].ap-input {
+  color: #A7EBF2 !important;
+}
+
+/* Type badge (PACKAGE / SERVICE) row color tweak */
+.ap-modal-content span[style*="primary-l"],
+.ap-modal-content span[style*="amber-l"] {
+  filter: brightness(0.85) saturate(1.3);
+}
+
+/* ================================================================
+   FACILITIES CHECKBOX GRID - Dark theme match
+   The inline style uses var(--surface) which resolves to #F5FCFD
+   (near-white). Override it to match the dark navy card background.
+   ================================================================ */
+
+/* Standalone page: .ap-page > .ap-card */
+.ap-page .ap-card .ap-field-group > div[style*="background"] {
+  background: rgba(167, 235, 242, 0.06) !important;
+  border-color: rgba(167, 235, 242, 0.20) !important;
+}
+
+/* Checkbox labels inside the grid */
+.ap-page .ap-card .ap-field-group > div[style*="background"] label {
+  color: #A7EBF2 !important;
+}
+
+/* Modal context: same override */
+.ap-modal-content .ap-field-group > div[style*="background"] {
+  background: rgba(167, 235, 242, 0.06) !important;
+  border-color: rgba(167, 235, 242, 0.20) !important;
+}
+.ap-modal-content .ap-field-group > div[style*="background"] label {
+  color: #A7EBF2 !important;
+}
+
+/* Checkbox accent colour */
+.ap-page .ap-card input[type="checkbox"],
+.ap-modal-content input[type="checkbox"] {
+  accent-color: #54ACBF !important;
 }

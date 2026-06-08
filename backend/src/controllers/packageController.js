@@ -22,6 +22,8 @@ exports.createPackage = async (req, res) => {
       pricingType, includedKM, extraKMCharge,
       // Package fields
       itinerary, inclusions, duration,
+      // Map pin
+      latitude, longitude,
     } = req.body;
 
     const imagePaths = req.files ? req.files.map(f => `/uploads/${f.filename}`) : [];
@@ -47,6 +49,10 @@ exports.createPackage = async (req, res) => {
       creator,
       image:       imagePath,
       listingType: type,
+
+      // Map pin coordinates
+      latitude:    latitude  && latitude  !== '' ? safeNum(latitude)  : null,
+      longitude:   longitude && longitude !== '' ? safeNum(longitude) : null,
 
       // Service-only fields
       serviceCategory: serviceCategory || 'Hotel Package',
@@ -78,20 +84,85 @@ exports.createPackage = async (req, res) => {
    ───────────────────────────────────────────────────────────── */
 exports.updatePackage = async (req, res) => {
   try {
-    const updateData = { ...req.body };
+    const {
+      name, description, price, category, location,
+      listingType,
+      // Package fields
+      itinerary, inclusions, duration,
+      // Service fields
+      serviceCategory, languages, specialization,
+      pricingType, includedKM, extraKMCharge,
+      // Location pin — FormData sends these as strings
+      latitude, longitude,
+    } = req.body;
+
+    const safeNum = v => { const n = Number(v); return isNaN(n) ? null : n; };
+
+    // Build update object with explicit safe parsing (mirrors createPackage)
+    const updateData = {};
+
+    if (name        !== undefined) updateData.name        = name;
+    if (description !== undefined) updateData.description = description;
+    if (location    !== undefined) updateData.location    = location;
+    if (listingType !== undefined) updateData.listingType = listingType;
+
+    // Price — FormData sends strings; guard NaN
+    if (price !== undefined && price !== '') updateData.price = safeNum(price);
+
+    // Category — empty string crashes Mongoose ObjectId cast
+    if (category !== undefined) {
+      updateData.category = category && category.trim() !== '' ? category : undefined;
+    }
+
+    // Map pin coordinates — FormData sends as strings, parse safely
+    if (latitude  !== undefined && latitude  !== '') updateData.latitude  = safeNum(latitude);
+    if (longitude !== undefined && longitude !== '') updateData.longitude = safeNum(longitude);
+
+    // Package-only fields
+    if (itinerary  !== undefined) updateData.itinerary  = itinerary;
+    if (duration   !== undefined) updateData.duration   = duration;
+    if (inclusions !== undefined) updateData.inclusions = parseArr(inclusions);
+
+    // Service-only fields
+    if (serviceCategory !== undefined) updateData.serviceCategory = serviceCategory;
+    if (specialization  !== undefined) updateData.specialization  = specialization;
+    if (languages       !== undefined) updateData.languages       = parseArr(languages);
+
+    // Numeric vehicle fields
+    if (includedKM    !== undefined && String(includedKM).trim()    !== '')
+      updateData.includedKM    = safeNum(includedKM);
+    if (extraKMCharge !== undefined && String(extraKMCharge).trim() !== '')
+      updateData.extraKMCharge = safeNum(extraKMCharge);
+
+    // pricingType — auto-set by serviceCategory if not explicitly sent
+    if (pricingType !== undefined) {
+      updateData.pricingType = pricingType;
+    } else if (serviceCategory) {
+      if (serviceCategory === 'Hire Vehicle') updateData.pricingType = 'Per KM';
+      else if (['Guide','Chauffeur Guide','Rent Vehicle'].includes(serviceCategory))
+        updateData.pricingType = 'Per Day';
+    }
+
+    // Images — only replace if new files uploaded
     if (req.files && req.files.length > 0) {
       updateData.images = req.files.map(f => `/uploads/${f.filename}`);
       updateData.image  = updateData.images[0];
     }
-    // Parse arrays if sent as strings
-    if (typeof updateData.languages  === 'string') updateData.languages  = parseArr(updateData.languages);
-    if (typeof updateData.inclusions === 'string') updateData.inclusions = parseArr(updateData.inclusions);
-    const updated = await Package.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+    const updated = await Package.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },   // explicit $set prevents accidental field removal
+      { new: true, runValidators: false }
+    );
+
+    if (!updated) return res.status(404).json({ message: 'Package not found' });
     res.json(updated);
   } catch (err) {
+    console.error('[updatePackage]', err.message);
     res.status(500).json({ message: err.message });
   }
 };
+
 
 /* ─────────────────────────────────────────────────────────────
    DELETE /api/packages/:id

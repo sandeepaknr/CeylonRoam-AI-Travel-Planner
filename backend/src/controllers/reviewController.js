@@ -57,3 +57,27 @@ exports.handleReaction = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+/* ── DELETE /api/reviews/:id ──────────────────────────────────
+   Only the author of the review can delete it.
+   The requesting userId is passed as a query param: ?userId=xxx
+   ──────────────────────────────────────────────────────────── */
+exports.deleteReview = async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.id);
+    if (!review) return res.status(404).json({ message: "Review not found" });
+
+    // Ownership check — compare stored userId with the requester
+    const authorId  = review.userId?.toString();
+    const requesterId = req.query.userId || req.body.userId;
+
+    if (authorId !== requesterId) {
+      return res.status(403).json({ message: "You can only delete your own reviews" });
+    }
+
+    await Review.findByIdAndDelete(req.params.id);
+    res.json({ message: "Review deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

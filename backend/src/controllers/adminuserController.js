@@ -20,20 +20,20 @@ exports.suspendUser = async (req, res) => {
   }
 };
 
-/* ─────────────────────────────────────────────────────────────
+/* 
    DELETE /api/accountmanagement/users/delete/:id
    Admin: cascading delete — Packages → Bookings → User
-   ───────────────────────────────────────────────────────────── */
+    */
 exports.deleteUserCascade = async (req, res) => {
   const { id } = req.params;
   try {
-    // 1️⃣  Find all packages this user created (need IDs for booking cleanup)
+    //   Find all packages this user created (need IDs for booking cleanup)
     const userPackages = await Package.find({ creator: id }).select("_id");
     const packageIds   = userPackages.map(p => p._id);
 
-    // 2️⃣  Delete associated bookings
-    //     — bookings the user made (bookedBy)
-    //     — bookings referencing packages they own (package field)
+    //  Delete associated bookings
+    //  bookings the user made (bookedBy)
+    //  bookings referencing packages they own (package field)
     const bookingResult = await Booking.deleteMany({
       $or: [
         { bookedBy: id },
@@ -41,10 +41,10 @@ exports.deleteUserCascade = async (req, res) => {
       ],
     });
 
-    // 3️⃣  Delete all packages they created
+    //  Delete all packages they created
     const packageResult = await Package.deleteMany({ creator: id });
 
-    // 4️⃣  Delete the user document
+    // Delete the user document
     const deletedUser = await User.findByIdAndDelete(id);
     if (!deletedUser) return res.status(404).json({ message: "User not found" });
 
@@ -57,4 +57,4 @@ exports.deleteUserCascade = async (req, res) => {
     console.error("[deleteUserCascade]", err.message);
     res.status(500).json({ message: "Cascade delete failed: " + err.message });
   }
-};
+};

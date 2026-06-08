@@ -54,14 +54,31 @@ exports.generateTripPlan = async (req, res) => {
                 const formattedResponse = {
                     status: "success",
                     tripTitle: `Sri Lanka ${days}-Day Adventure`,
-                    totalEstimatedCost: `LKR ${aiData.total_cost}`,
-                    remainingBudget: `LKR ${aiData.remaining_budget}`,
+                    totalEstimatedCost: aiData.total_cost,
+                    remainingBudget: aiData.remaining_budget,
                     fullStory: aiData.ai_story,
                     itinerary: aiData.itinerary.map(day => ({
                         day: day.Day,
                         date: day.Date,
                         destination: day.Region,
-                        activities: day.Places.map(p => `${p.Name} (Distance: ${p.Distance_to_Hotel}km, Time: ${p.Visit_Time}hrs)`),
+                        activities: day.Places.map(p => {
+                            // Distance_to_Hotel was added to day_places in the Python backend.
+                            // This null-guard ensures we NEVER render "undefinedkm" even if the
+                            // Python script is an older version that didn't include the field.
+                            const distKm = (p.Distance_to_Hotel != null)
+                                ? p.Distance_to_Hotel
+                                : parseFloat((p.Travel_Time * 50).toFixed(1)); // fallback: Travel_Time × 50 km/h avg
+                            const accessNote = p.Access_Warning ? ` ${p.Access_Warning}` : '';
+                            // Travel_Time = dist_to_next / speed_kmph → varies per stop (proportional to distance).
+                            // Visit_Time = estimate_visit_time(category) → fixed by category (e.g. always 1.5 for
+                            // temples/default), which is why ALL stops showed identical "1.5hrs" regardless of
+                            // distance. We display Travel_Time here because the label reads "Time:" and users
+                            // expect journey duration, not time-at-destination.
+                            const travelTime = (p.Travel_Time != null)
+                                ? p.Travel_Time
+                                : parseFloat((distKm / 45).toFixed(1)); // fallback: dist / 45 km/h (car default)
+                            return `${p.Name} (Distance: ${distKm}km, Time: ${travelTime}hrs)${accessNote}`;
+                        }),
                         accommodation: day.Hotel,
                         mapUrl: day.Map_URL,
                         warnings: `${day.Holiday_Warning} ${day.Weather_Warning}`.trim()

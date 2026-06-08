@@ -1,38 +1,26 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../api/axios";
-import { AuthContext } from "../context/AuthContext";
+import { useOfflineData } from "../context/OfflineDataContext";
+import { LuWifiOff } from "react-icons/lu";
 import "./styles/mybookings.css";
 
 export default function MyBookings() {
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedSlip, setSelectedSlip] = useState(null); 
-  const { user } = useContext(AuthContext);
+  // ── Offline-aware data from context ──────────────────────────────────────
+  const { bookings, isOffline, loading: ctxLoading } = useOfflineData();
+  const loading = ctxLoading.bookings;
+
+  const [selectedSlip, setSelectedSlip] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchMyBookings = async () => {
-      if (!user?._id) return;
-      try {
-        const res = await API.get(`/bookings/my-bookings?userId=${user._id}`);
-        setBookings(res.data);
-      } catch (err) {
-        console.error("Axios Error:", err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMyBookings();
-  }, [user]);
 
   const viewSlip = async (bookingId) => {
     try {
       const res = await API.get(`/seller-bookings/slip/${bookingId}`);
       setSelectedSlip(res.data);
     } catch {
-      toast.error("⏳ Receipt is still being processed. Please check back later.");
+      toast.error("Receipt is still being processed. Please check back later.");
     }
   };
 
@@ -41,9 +29,17 @@ export default function MyBookings() {
   return (
     <div className="my-bookings-container">
       <div className="bookings-header">
-        <h1>🎒 My Bookings</h1>
+        <h1>My Bookings</h1>
         <p>Manage your upcoming journeys and payment history.</p>
       </div>
+
+      {/* ── Offline indicator banner ── */}
+      {isOffline && (
+        <div className="offline-banner" role="alert">
+          <LuWifiOff size={16} />
+          <span>You're offline — showing cached bookings. Some data may be outdated.</span>
+        </div>
+      )}
 
       {bookings.length === 0 ? (
         <div className="empty-state">
@@ -64,12 +60,12 @@ export default function MyBookings() {
               <div className="card-info">
                 <h3>{b.packageId?.name || "Tour Experience"}</h3>
                 <div className="info-row">
-                  <span>📅 Start:</span>
-                  <strong>{new Date(b.startDate).toLocaleDateString()}</strong>
+                  <span>Start:</span>
+                  <span className="info-value">{new Date(b.startDate).toLocaleDateString()}</span>
                 </div>
                 <div className="info-row">
-                  <span>⏳ Duration:</span>
-                  <strong>{b.numberOfDays} Days</strong>
+                  <span>Duration:</span>
+                  <span className="info-value">{b.numberOfDays} Days</span>
                 </div>
               </div>
 
@@ -79,14 +75,14 @@ export default function MyBookings() {
                     className="pay-now-btn" 
                     onClick={() => navigate(`/payment/${b._id}`)}
                   >
-                    💳 Complete Payment
+                    Complete Payment
                   </button>
                 ) : (
                   <div className="payment-success-actions">
-                    <div className="paid-badge">✅ Paid</div>
+                    <div className="paid-badge"> Paid</div>
                     {b.status === "Confirmed" && (
                       <button className="view-slip-mini" onClick={() => viewSlip(b._id)}>
-                        📄 View Receipt
+                        View Receipt
                       </button>
                     )}
                   </div>
@@ -119,7 +115,7 @@ export default function MyBookings() {
               </div>
             </div>
             <div className="invoice-footer">
-              <button className="print-action" onClick={() => window.print()}>🖨️ Print Receipt</button>
+              <button className="print-action" onClick={() => window.print()}>Print Receipt</button>
               <button className="close-action" onClick={() => setSelectedSlip(null)}>Close</button>
             </div>
           </div>
